@@ -1,0 +1,196 @@
+---
+title: "Initial Project Ideas"
+author: "Salome Steinke"
+date: "26.04.2019"
+output:
+  pdf_document: default
+  word_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+# Initial Project Ideas
+
+Type of cancer chosen: Breast Cancer 
+
+## The Dataset
+
+Loading Dataset as follows:
+```{r Data}
+allDepMapData = readRDS("~/4.FS/Bioinfo/DepMap19Q1_allData.RDS")
+names(allDepMapData)
+```
+
+The list named `allDepMapData` contains the following matrices:
+
+* **Gene expression**: consists of TPM (transcripts per million) values reflecting level of gene expression. Higher values suggest overexpression of genes. Matrix rows are gene names and columns cancer cell line identifiers. Column and row names *character*; TPM values *integer*
+
+```{r Visualising Data1}
+dim(allDepMapData$expression)
+typeof(col(allDepMapData$expression))
+```
+
+* **Gene copy number**: consists of gene copy number (CN) values. When two alleles per gene present CN = 2, deletions shown by CN < 2 and amplifications CN > 2. Matrix rows are gene names and columns cancer cell line identifiers.
+
+* **Gene mutations**: Annotation file for various mutations observed in sample. `isDeleterious` flag specificies if mutation has functional effect or not.
+
+* **Gene knockdown (CERES)**: Gene knockdown scores. These scores measure how essential a particular gene is to cell survival, by reflecting whether a knockdown of the gene reduces , increases or leads to no change of cell proliferation. Smaller values refer to higher importance. Matrix rows are gene names and columns cancer cell line identifiers.
+
+```{r Visualising Data2}
+dim(allDepMapData$kd.ceres)
+```
+
+* **Gene knockdown (Probability)**: The probabilty for the effect of gene knockdown, with higher probabilities signifying a high likelyhood of the gene reducing cell proliferation. 
+
+```{r Visualising Data3}
+dim(allDepMapData$kd.prob)
+```
+
+* **Annotation**: This matrix gives information regarding cell lines. The `CCLE_Name` encoded as cell line name _ Tissue of origin. The `DepMap_ID`gives uniform cell line identifiers used in all data sets. The columns  `Primary.Disease` and `Subtype.Disease` refer to tissue/tumor of origin. 
+
+```{r Visualising Data4}
+dim(allDepMapData$annotation)
+colnames(allDepMapData$annotation)
+rownames(allDepMapData$annotation)
+
+```
+
+## Questions so far
+
+1. Which genes are in dataset? 
+2. Which genes are we interested in?
+3. What are cell line identifiers? Which ones do we have? Perhaps analyse using the *Annotation Matrix*
+4. Analyse TPM levels for selected genes and cell line identifiers *(Gene expression matrix)*
+5. Analyse *Gene knockdown matrix* to check for importance of genes in cancer cell lines for survival. Compare to *Gene knockdown probability* to check for probability of reducing/increasing cell proliferation.
+6. Analyse gene copy numbers for genes and cell line identifiers to identify in which cell lines mutations have occured (compare gene copy numbers for different cell lines) *(Gene copy number matrix)*
+7. In cell lines where mutations detected check if they have functional effect or not *(Gene mutations matrix)*
+
+## Things to do
+
+* identify 3-5 most prominent mutations/genetic alterations (ideally those difficult to target clinically)
+
+* identify appropriate cell line models
+
+* read Papers and extract interesting questions, methods, analysis
+
+* Questions with milestones/ timeframe 
+
+* Data clean up 
+
+* Data exploration (Descriptive statistics, graphical representations of data and interdependancies )
+
+* Dimensionality reduction (PCA? ; kmeans or clustering of samples)
+
+* find which are most correlated mutations/copy number changes
+
+* functional/biological relationship between correlated alterations
+
+* find clinically approved drugs for correlated alterations
+
+* Data modelling (prediction of cell line sensitivity to knockdown or impact of gene mutation/copy number on gene expression)
+
+
+# NOTES ON RESEARCH PAPERS
+### BREAST CANCER MUTATIONS
+### A Comprehensive Pan-Cancer Molecular Study of Gynecologic and Breast Cancers (Berger et al., 2018):
+
+*	Focus on invasive breast carcinoma (BRCA) (1087 Patients)
+* Mutations: TP53; PIK3CA; MYC, CCND1
+*	ARID1A, ERBB3, BRCA1, FBXW7, KMT2C, PIK3CA, PIK3R1, PPP2R1A, PTEN, and TP53 were mutated at higher frequencies across the Pan-Gyn tumor types than across the non-Gyn types (false discovery rate [FDR] < 0.01, Fisher’s exact test) (Figure 1A)
+*	The top ﬁve most frequently mutated genes were TP53 (44% of samples mutated), PIK3CA (32%), PTEN (20%), ARID1A (14%), and PIK3R1 (11%)
+*	Correlation coefficient calculations with heat maps and tree diagrams (unsupervised hierarchical clustering) showing clusters 
+*	Mutation signatures- unique mutation types – displayed using six substitution subtypes
+    +	<https://cancer.sanger.ac.uk/cosmic/signatures>
+    +	Breast cancer mutation signatures: Signature 1, signature 3, signature 5 (aetiology unknown), signature 8, signature 17 and signature 18 (aetiology unknown), signature 20, signature 26 
+    +	May be interesting to compare identified mutations in genes from own dataset to the substitution types known for breast cancer 
+*	Breast cancer associated with COSMIC 5
+*	Methods used: 
+    + Fisher’s Extact test with Bejamini-Hochberg method for adjusted for false discovery rates
+    +	Mann Whitney U test to identify genes with significant differs between meidain methylation levels of genes between two groups
+    +	MutSigCV v1.4 <www.broadinstitute.org>
+    +	Silhouette analysis 
+    +	T-test and Wilcoxon Rank Sum Test 
+    +	Survival analysis with R package “survival” 
+        -	Kaplan-Meier or Cox Proportional Hazards Models 
+        - For more info:  <https://www.datacamp.com/community/tutorials/survival-analysis-R> 
+
+### Comprehensive Molecular Portraits of Invasive Lobular Breast Cancer (Ciriello et al., 2015):
+
+*	817 breast tumor samples
+*	Invasive lobular carcinoma (ILC)- second most prevalent histologic subtype of invasive breast cancer (10-15% oof all cases)
+    +	Most were identified as Luminal 
+*	E-cadherin (CDH1) loss in 90% of cases
+    +	Rare HER2 protein overexpression or amplification
+    +	Tumor invasion and metastasis in other tumor types including diffuse gastric cancer 
+*	ILC, IDC, mixed and other carcinoma types
+*	Mutations targeting PTEN, TBX3, FOXA1, PIK3CA, CDH1
+    +	PTEN loss associated with increased AKT phosphorylation 
+    +	GATA3 mutations- high expression luminal A IDC- differential modulation of ER activity in ILC/IDC
+    +	TP53 und PIK3CA in ILC und IDC as well as MYC
+    +	ILC cases enriched in CDH1 mutations
+    +	Recurrently mutated genes identified by MutSigCV2 
+    +	Recurrent copy-number alterations estimated by GISTIC
+*	FOXA1
+    +	Key ER transcriptional modulator coordinating ER DAN binding within a large protein cmplex by modifying chromatin accessibility and mediating long-range DNA interactions
+    +	Mutation cluster in loop 2 of forkhead-DNA (three a-helices, 3 ß-strands and two loops) binding and C-term. transactivation domains 
+*	PTEN
+    + Homozygous deletions, somatic mutations and mutually exclusive with PIK3CA mutations 
+    +	Lower PTEN protein in LumA ILC than LumA IDC
+    +	PTEN protein as negative regulator of Akt activity 
+*	68 mutated genes, 47 regions of gain, 63 regions of loss identified 
+* Genetic difference between ER+/luminal and ER-/basal-like breast cancer 
+*	HER2+ breast tumours
+
+### Comprehensive molecular portraits of human breast tumours (The Cancer Genome Atlas et al., 2012):
+
+*	TP53, PIK3CA and GATA3 with subtype-associated mutations in GATA3, PIK3CA and MAP3K1 with luminal A subtype
+*	Similar aetiology and therapeutic opportunities with ovarian cancer
+*	Three groups of breast cancer
+    + Oestrogen receptor (ER) positive group most numerous and diverse
+    +	HER2 (or ERBB2) amplified group- great clinical success in targeting HER2
+    +	Basal-like breast cancers (triple-negative breast cancers) lack expression of ER, progesterone receptor (PR) and HER2
+    +	PIK3CA, PTEN, AKT1, TP53, GATA3, CDH1, RB1, MLL3, MAP3K1 and CDKN1B
+    +	With novel mutations: TBX3, RUNX1, CBFB, AFF2, PIK3R1, PTPN22, PTPRD, NF1, SF3B1 and CCND3
+    +	FOXA1 and CTCF transcription factor mutations
+    + The luminal A subtype harboured the most significantly mutated genes, with the most frequent being PIK3CA (45%), followed by MAP3K1, GATA3, TP53, CDH1 and MAP2K4. (missense)
+    +	Luminal B cancers : TP53 and PIK3CA (29% each) most frequent (missense)
+    +	Basal like cancers: TP53 (nonsense, frame shift)
+    + HER2E subtype: high frequency of TP53 (72%) and PIK3CA (39%) mutations + lower frequency with PIK3R1 (4%)
+* Luminal/ER+: 
+    +	ESR1, GATA3, FOXA1, XBP1 and MYB
+    +	GATA3 and FOXA1 mutated in mutually exclusive fashion 
+    + PIK3CA high mutation frequency 
+    +	Frequent MAP3K1 and MAP2K4 mutation 
+    + MEMo analysis: all MAP3K1 and MAP2K4 mutations were in luminal tumors (almost mutually exclusive to each other though
+    +	TP53 highest in luminal A cancers
+    + Hyperactivation transcriptional activity with MYC and FOXMI proliferation 
+    +	Luminal A tumours- retain RB1 and TP53 activity
+* BRCA1/BRCA2
+*	Basel-like cancers
+*	TP53, RB1 and BRCA1 mutations 
+
+>References: 
+
+>Berger, A.C., Korkut, A., Kanchi, R.S., Hegde, A.M., Lenoir, W., Liu, W., Liu, Y., Fan, H., Shen, H., Ravikumar, V., et al. (2018). A Comprehensive Pan-Cancer Molecular Study of Gynecologic and Breast Cancers. Cancer Cell 33, 690-705.e699.
+>Ciriello, G., Gatza, Michael L., Beck, Andrew H., Wilkerson, Matthew D., Rhie, Suhn K., Pastore, A., Zhang, H., McLellan, M., Yau, C., Kandoth, C., et al. (2015). Comprehensive Molecular Portraits of Invasive Lobular Breast Cancer. Cell 163, 506-519.
+>The Cancer Genome Atlas, N., Koboldt, D.C., Fulton, R.S., McLellan, M.D., Schmidt, H., Kalicki-Veizer, J., McMichael, J.F., Fulton, L.L., Dooling, D.J., Ding, L., et al. (2012). Comprehensive molecular portraits of human breast tumours. Nature 490, 61.
+
+### Possible Mutations for analysis: 
+1.	PTEN 
+
+2.	TP53
+
+3.	PIK3CA
+
+4.	MYC
+
+5.	GATA3
+
+6.	BRCA1/BRCA2
+
+7.	RB1
+
+
+
+
