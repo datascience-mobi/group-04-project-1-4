@@ -189,7 +189,7 @@ rownames(allDepMapData$annotation)
 *	Further analysis showed a strong connection to the germ line of ~10% of breast cancers, including BRCA1 mutations,
   confirming the TNBC subclass (not the best description I ever made 😊)
   
-  ###Genetic Interactions in Cancer Progression and Treatment DOI: 10.1016/j.cell.2011.03.020
+  ###Genetic Interactions in Cancer Progression and Treatment (Ashworth et al.2011) DOI: 10.1016/j.cell.2011.03.020
   
  
 
@@ -198,6 +198,7 @@ rownames(allDepMapData$annotation)
 >Berger, A.C., Korkut, A., Kanchi, R.S., Hegde, A.M., Lenoir, W., Liu, W., Liu, Y., Fan, H., Shen, H., Ravikumar, V., et al. (2018). A Comprehensive Pan-Cancer Molecular Study of Gynecologic and Breast Cancers. Cancer Cell 33, 690-705.e699.
 >Ciriello, G., Gatza, Michael L., Beck, Andrew H., Wilkerson, Matthew D., Rhie, Suhn K., Pastore, A., Zhang, H., McLellan, M., Yau, C., Kandoth, C., et al. (2015). Comprehensive Molecular Portraits of Invasive Lobular Breast Cancer. Cell 163, 506-519.
 >The Cancer Genome Atlas, N., Koboldt, D.C., Fulton, R.S., McLellan, M.D., Schmidt, H., Kalicki-Veizer, J., McMichael, J.F., Fulton, L.L., Dooling, D.J., Ding, L., et al. (2012). Comprehensive molecular portraits of human breast tumours. Nature 490, 61.
+Ashworth, A., Lord, C.J. & Reis-Filho, J.S., 2011. Genetic Interactions in Cancer Progression and Treatment. Cell, 145(1), S.30–38
 
 ### Possible Mutations for analysis: 
 1.	PTEN 
