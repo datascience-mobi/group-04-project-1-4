@@ -77,6 +77,14 @@ rownames(allDepMapData$annotation)
 * Questions with milestones/ timeframe 
 
 * Data clean up 
+```{r}
+#finding all breast cancer cell lines
+which(allDepMapData$annotation[4]== "Breast Cancer")
+Breast_Cancer_Celllines <- subset(allDepMapData$annotation, Primary.Disease == "Breast Cancer")
+#see what we got
+summary(Breast_Cancer_Celllines)
+```
+
 
 * Data exploration (Descriptive statistics, graphical representations of data and interdependancies )
 
