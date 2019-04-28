@@ -199,6 +199,31 @@ summary(Breast_Cancer_Celllines)
   
   ###Genetic Interactions in Cancer Progression and Treatment (Ashworth et al.2011) DOI: 10.1016/j.cell.2011.03.020
   
+### Predicting Cancer-Speciﬁc Vulnerability via Data-Driven Detection of Synthetic Lethality:
+
+*	Synthetic lethality: inhibition of two nonessential genes lethal while inhibition of a single gene is not
+*	Targeting synthetic lethal (SL) partners in treatment
+*	Use of DAISY (data mining synthetic lethality identification pipeline)
+    ++	Genomic survival of the fittest (SoF) based on observation that cancer cells having lost two SL-paried genes don’t survive – SL cells elimination form population hence somatic copy number alterations (SCNA) and somatic mutation data can detect this inactivation events
+    ++	SL pairs of given gene can be detected underexpression or low copy number induces essentiality of the gene
+    ++	Pairwise gene coexpression 
+    ++	Gene pairs fulfilling all three of the above 
+    ++	Detection of overactivity also possible by selecting two genes if expression is correlated and if overactivity of one induces essentiality of the other (first examining if gene B becomes essential when gene A is overactive; second if gene B has a higher SCNA level when gene A is overactive)
+    ++	Returns p values denoting significance of SL or SDL interaction
+*	Wilcoxon rank sum p values 
+*	Predicting gene essentiality is cell-line-specific 
+*	What are ROC curves? 
+*	Signed Kaplan-Meier (KM) score 
+*	Experimental procedures section most interesting for us:
+    ++	(1) Wilcoxon rank sum test to determine of gene B significantly higher SCNA levels when gene A is inactive/overactive in rest of samples. Ouput= gene pairs that pass the test with specific significant level
+    ++	(2) input: gene essentiality data with SCNA and gene expression profiles. Wilcoxon rank sum test to determine if Gene B lower scores where gene A inactive/overactive 
+    ++	P value < 0.05 used with Bonferroni correction 
+    ++	Gene defined underexpressed if SCAN below -0.3; likewise overactive when above 0.3 
+    ++	Generally genes in sample underexpressed if in 10th percentile of all expression levels and overexpressed if above the 90the percentile 
+    ++ For clustered genes and gene maps visit < http://www.cs.tau.ac.il/livnatje/SL_network.zip >
+
+
+  
  
 
 >References: 
@@ -207,6 +232,7 @@ summary(Breast_Cancer_Celllines)
 >Ciriello, G., Gatza, Michael L., Beck, Andrew H., Wilkerson, Matthew D., Rhie, Suhn K., Pastore, A., Zhang, H., McLellan, M., Yau, C., Kandoth, C., et al. (2015). Comprehensive Molecular Portraits of Invasive Lobular Breast Cancer. Cell 163, 506-519.
 >The Cancer Genome Atlas, N., Koboldt, D.C., Fulton, R.S., McLellan, M.D., Schmidt, H., Kalicki-Veizer, J., McMichael, J.F., Fulton, L.L., Dooling, D.J., Ding, L., et al. (2012). Comprehensive molecular portraits of human breast tumours. Nature 490, 61.
 Ashworth, A., Lord, C.J. & Reis-Filho, J.S., 2011. Genetic Interactions in Cancer Progression and Treatment. Cell, 145(1), S.30–38
+>Jerby-Arnon, Livnat, et al. “Predicting cancer-specific vulnerability via data-driven detection of synthetic lethality.” Cell 158.5 (2014): 1199-120
 
 ### Possible Mutations for analysis: 
 1.	PTEN 
