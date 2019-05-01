@@ -65,6 +65,10 @@ rownames(allDepMapData$annotation)
 5. Analyse *Gene knockdown matrix* to check for importance of genes in cancer cell lines for survival. Compare to *Gene knockdown probability* to check for probability of reducing/increasing cell proliferation.
 6. Analyse gene copy numbers for genes and cell line identifiers to identify in which cell lines mutations have occured (compare gene copy numbers for different cell lines) *(Gene copy number matrix)*
 7. In cell lines where mutations detected check if they have functional effect or not *(Gene mutations matrix)*
+8. which are importat driver mutations in breast cancer? Which are the most important passenger mutations associated with them?
+9. ist there an association between driver and passenger alterations? Could synthetic lethal interactions be established by interfering in the interactions between driver and passenger genes?
+10.are there any drugs availabe so far targeting the mutations?
+11. how could the obtained data be used for cancer therapy?
 
 ## Things to do
 
