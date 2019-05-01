@@ -294,10 +294,10 @@ Ashworth, A., Lord, C.J. & Reis-Filho, J.S., 2011. Genetic Interactions in Cance
 
 8. PARP
 
-9.  GANAB
+9. 	GANAB
 
-10. PRKCSH
+10.	PRKCSH
 
-11. RNF43
+11.	RNF43
 
 
