@@ -226,7 +226,7 @@ summary(Breast_Cancer_Celllines)
     
  * **synthetic lethal interaction (SLI)**: interaction of two genes which is only lethal if both genes are perturbated BUT NOT if only one gene is perturbated  
     ++ involves cancer-specific interaction which is "non-oncogene addiction" + one tumour-specific somatic mutation
-    ++ mutations may contribute both to tumour prolieration and/or an increase in tumour vulnerability to tgerapeutics
+    ++ mutations may contribute both to tumour proliferation and/or an increase in tumour vulnerability to tgerapeutics
     ++ therapeutical concept: targeting of the passenger mutation (= second-site synthetic lethal target) & overcoming undruggable "oncogene addiction" mutations
  * **challenges in identfying SLI:
     ++ SLI may be condition-dependend (both refering to genetic background & cellular conditions)
