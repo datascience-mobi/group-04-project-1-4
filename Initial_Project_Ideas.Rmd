@@ -81,14 +81,41 @@ rownames(allDepMapData$annotation)
 * Questions with milestones/ timeframe 
 
 * Data clean up 
+ - Extracting BCCL as dataframe
 ```{r}
 #finding all breast cancer cell lines
-which(allDepMapData$annotation[4]== "Breast Cancer")
+BCNumbers <- which(allDepMapData$annotation[4]== "Breast Cancer")
 Breast_Cancer_Celllines <- subset(allDepMapData$annotation, Primary.Disease == "Breast Cancer")
 #see what we got
 summary(Breast_Cancer_Celllines)
+# copy expression matrix to new dataframes
+df1 <- allDepMapData$expression
+df2 <- allDepMapData$copynumber
+df3 <- allDepMapData$kd.ceres
+df4 <- allDepMapData$kd.prob
+#change column names to numbers for easier handling
+names(df1) <- c(1:544)
+names(df2) <- c(1:544)
+names(df3) <- c(1:544)
+names(df4) <- c(1:544)
+#extract BCCL as dataframe
+BCCL_Expression <- as.data.frame( df1[, c(BCNumbers)])
+BCCl_Copynumber <- as.data.frame( df2[, c(BCNumbers)])
+BCCL_kd.ceres <- as.data.frame( df3[, c(BCNumbers)])
+BCCL_kd.prob <- as.data.frame( df4[, c(BCNumbers)])
+dim(BCCL_Expression)
+dim(BCCl_Copynumber)
+dim(BCCL_kd.ceres)
+dim(BCCL_kd.prob)
 ```
+ 
+ - Data clean up 
+ 
+```{r}
+summary(BCExpression) # i will start with Expression Matrix but not with much thoughs about it 
 
+```
+ 
 
 * Data exploration (Descriptive statistics, graphical representations of data and interdependancies )
 
