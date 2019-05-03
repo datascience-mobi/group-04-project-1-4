@@ -67,7 +67,7 @@ rownames(allDepMapData$annotation)
 7. In cell lines where mutations detected check if they have functional effect or not *(Gene mutations matrix)*
 8. which are importat driver mutations in breast cancer? Which are the most important passenger mutations associated with them?
 9. ist there an association between driver and passenger alterations? Could synthetic lethal interactions be established by interfering in the interactions between driver and passenger genes?
-10.are there any drugs availabe so far targeting the mutations?
+10. are there any drugs availabe so far targeting the mutations?
 11. how could the obtained data be used for cancer therapy?
 
 ## Things to do
@@ -315,6 +315,7 @@ Ashworth, A., Lord, C.J. & Reis-Filho, J.S., 2011. Genetic Interactions in Cance
 >Jerby-Arnon, Livnat, et al. “Predicting cancer-specific vulnerability via data-driven detection of synthetic lethality.” Cell 158.5 (2014): 1199-120
 
 ### Possible Mutations for analysis: 
+
 1.	PTEN 
 
 2.	TP53
@@ -337,4 +338,28 @@ Ashworth, A., Lord, C.J. & Reis-Filho, J.S., 2011. Genetic Interactions in Cance
 
 11.	RNF43
 
+### Meeting 1: Friday, 03/05/2019
 
+* **main problem: no expression data for healthy cells:** 
+  ++ no specification of alterations in gene expression in cancer cells compared to healty cells
+  ++ no specification possible if knockdown of a gene which has a deleterious effect on cancer cells does not have a deleterious effect on heathy cells
+      -> solution: rely on information about cancer-specific mutations given in papers
+  
+* **strategy for overexpression (both):**
+  ++ identify driver mutations in papers
+  ++ identfy cell lines with certain driver mutations
+  ++ get ceres score for driver mutation (negative!) & correlate with all other ceres values of selected cell lines
+      -> assumption: second-site targets should also have negative ceres scores!!!
+      -> conclusion: high correlation between ceres scores of interacting mutations (high positives)
+  ++ in mutation matrix for selected cell lines: look for mutation of second-site targets
+  
+* **strategy for overespression of driver gene and underexpression of second-site target:**
+  ++ identify driver mutations in papers
+  ++ identfy cell lines with certain driver mutations
+  ++ correlate expression data (TPM) of driver mutations (high TPM) with data of all other genes in selected cell lines
+      -> assumption: low expression profiles for second-site targets
+      -> conclusion: high negative correlation values 
+  ++ in ceres matrix: look for ceres scores of second-site targets 
+      -> ceres scores of second-site mutations supposed to be 0 (gene knockout ~ underexpression)
+  ++ select cell lines with overpressed driver mutation & non-underexpressed second-site target & get ceres scores for driver mutations
+      -> assumption: ceres score for driver mutation (non-underexpressed second-site target) > ceres score for diver mutation (overexpressed second-site target) (reason: background of underxpressed second-side target enhances cell viability & proliferation )
