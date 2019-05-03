@@ -363,6 +363,20 @@ Ashworth, A., Lord, C.J. & Reis-Filho, J.S., 2011. Genetic Interactions in Cance
       -> ceres scores of second-site mutations supposed to be 0 (gene knockout ~ underexpression)
   ++ select cell lines with overpressed driver mutation & non-underexpressed second-site target & get ceres scores for driver mutations
       -> assumption: ceres score for driver mutation (non-underexpressed second-site target) > ceres score for diver mutation (overexpressed second-site target) (reason: background of underxpressed second-side target enhances cell viability & proliferation )
-### Meeting 2: Friday... with david
-*GGPlot2
-*linear regression to make assumtion to ceres
+      
+### Meeting 2: Friday... with David
+
+* **visualize gene expression data from different samples:**
+  ++ create boxplot for expression data of different samples & align them for comparison
+  ++ data has to be transformed in order to fit boxplots -> find advice online
+  ++ R package: GGPlot2 (recommended by David, helpful desriptions & cheat sheets online)
+  
+* **linear regression to make assumptions regarding ceres scores:**
+  ++ x-axis: TPMs; y-axis: ceres values 
+      -> do ceres scores correlate with expression patterns of driver mutations/second-site targets?
+      
+* **check how relevant driver mutations are for cancer cells using PCA:**
+  ++ assumption: driver mutations should contribute much to the overall variance
+  ++ maybe also check contribution of second-site targets to PCs, HOWEVER impacht of second-site targets could be smaller as they are non-oncogenic and only act as "co-effectors" regarding the proliferation of tumour cells
+  ++ which data set to use? -> suggestion: ceres scores as both driver mutations & second-site mutations should contribute to a greater extend here, otherwise we coud use the TPM matrix (but again normalization with reference to "healthy" gene expression patterns may be problematic)
+  ++ add-on: check whether there are clusters of cancer samples in which an increase in proliferation is driven by one or two main mutations
