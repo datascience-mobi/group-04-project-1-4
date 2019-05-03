@@ -3,8 +3,8 @@ title: "Initial Project Ideas"
 author: "Salome Steinke"
 date: "26.04.2019"
 output:
-  pdf_document: default
   word_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -283,7 +283,7 @@ summary(BCCL_Expression)
     ++ therapeutic approaches may involve increasing the tumour susceptibility to conventional treatments (i.e. chemotherapy) & exploiting SLI by manipulation of the second-side targets (passenger mutation, e.g. PARP-inhibitot in breast cancer)
     ++ HOWEVER resistances & off-target effects have yet been poorly studied 
 
- ### Toward an integrated map of genetic interactions in cancer cells (Rauscher et al.2018 )DOI: 10.15252/msb.20177656
+### Toward an integrated map of genetic interactions in cancer cells (Rauscher et al.2018 )DOI: 10.15252/msb.20177656
 
 * As basics for a new modelling method:
   + Previous description: statistical epitasis, defined as statistical deviation from the additive combination of two (gene) loci and how it affects the phenotype of interest
