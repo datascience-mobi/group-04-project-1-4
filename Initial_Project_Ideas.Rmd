@@ -363,3 +363,6 @@ Ashworth, A., Lord, C.J. & Reis-Filho, J.S., 2011. Genetic Interactions in Cance
       -> ceres scores of second-site mutations supposed to be 0 (gene knockout ~ underexpression)
   ++ select cell lines with overpressed driver mutation & non-underexpressed second-site target & get ceres scores for driver mutations
       -> assumption: ceres score for driver mutation (non-underexpressed second-site target) > ceres score for diver mutation (overexpressed second-site target) (reason: background of underxpressed second-side target enhances cell viability & proliferation )
+### Meeting 2: Friday... with david
+*GGPlot2
+*linear regression to make assumtion to ceres
