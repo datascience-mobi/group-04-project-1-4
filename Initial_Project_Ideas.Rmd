@@ -113,13 +113,30 @@ BCCL_Expression <- BCCL_Expression[order(rownames(BCCL_Expression)), ]
 BCCl_Copynumber <- BCCl_Copynumber[order(rownames(BCCl_Copynumber)), ]
 BCCL_kd.ceres <- BCCL_kd.ceres[order(rownames(BCCL_kd.ceres)), ]
 BCCL_kd.prob <- BCCL_kd.prob[order(rownames(BCCL_kd.prob)), ]
-# dont try to transpose the matrix before we reduced the rows. Rstudio said goodbye to my computer ;).
+# include patients ID as first row in BCCL dataframes
+Patients_ID <- BCCL_Annotation[1] #get patients ID from annotation matrix
+tPatients_ID <- t(Patients_ID) #transpose Patients_ID because it was a column and we want to insert it as row
+rownamesold <- rownames(BCCL_kd.ceres) # save old rownames
+existingDF <- BCCL_kd.ceres  # define variables for BCCL_kd.ceres
+r <- 1
+newrow <- tPatients_ID
+#defining a function we can use more often to insert rows
+insertRow <- function(existingDF, newrow, r) { 
+    existingDF[seq(r+1,nrow(existingDF)+1),] <- existingDF[seq(r,nrow(existingDF)),]
+    existingDF[r,] <- newrow
+    existingDF
+}
+BCCL_kd.ceres <- insertRow(existingDF, newrow, r)
+rownames(BCCL_kd.ceres) <- c("Deep_ID", rownamesold) # change rownames back 
+BCCL_kd.ceres[1:2, ]
 ```
  
- - Data clean up 
+ - extracting data for specific driver mutation 
  
 ```{r}
-summary(BCCL_Expression) 
+#find ceres values of MYC mutation
+BCCL_kd.ceres["MYC", c(1:28)]
+
 ```
  
 
