@@ -316,7 +316,8 @@ Ashworth, A., Lord, C.J. & Reis-Filho, J.S., 2011. Genetic Interactions in Cance
 
 ### Possible Mutations for analysis: 
 
-1.	PTEN 
+1.	PTEN: tumor suppressor gene which is silenced by the means of point mutations or promotor methylation in aprox. 42.5 % of breast cancer patients     (https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3742525/), function of protein and lipid phosphatase with role in apoptosis & negative regulation of proliferation (https://www.uniprot.org/uniprot/P60484)
+      -> if we are looking for overexpressed driver mutations PTEN might be unsuitable
 
 2.	TP53
 
