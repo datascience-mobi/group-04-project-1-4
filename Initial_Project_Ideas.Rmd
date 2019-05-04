@@ -344,7 +344,8 @@ Ashworth, A., Lord, C.J. & Reis-Filho, J.S., 2011. Genetic Interactions in Cance
 
 5.	GATA3
 
-6.	BRCA1/BRCA2
+6.	BRCA1/BRCA2: cumulative cancer risk for mutation carriers (deletions, premature Stop codon, missense) until age of 80 years 72% and 69%, respectively (https://jamanetwork.com/journals/jama/fullarticle/2632503, https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4537700/), BRCA1 function: E3 ubiquitin-protein ligase with role in tumor suppression, BRCA2 function:involved in DSB repair & homologous recombination (https://www.uniprot.org/uniprot/P51587)
+      -> again: these driver mutations do not lead to overexpression
 
 7.	RB1
 
