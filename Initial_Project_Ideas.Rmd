@@ -390,11 +390,13 @@ Ashworth, A., Lord, C.J. & Reis-Filho, J.S., 2011. Genetic Interactions in Cance
   ++ data has to be transformed in order to fit boxplots -> find advice online
   ++ R package: GGPlot2 (recommended by David, helpful desriptions & cheat sheets online)
       
-      installation requires download of latest Rtools version: https://cran.r-project.org/bin/windows/Rtools/ 
   
-```{r load ggplot2}
+```{r install ggplot2}
+# requires installation of latest Rtool version: https://cran.r-project.org/bin/windows/Rtools/ 
 # install package ggplot2
 install.packages("ggplot2")
+# load package
+library("ggplot2")
 ```
   
 * **linear regression to make assumptions regarding ceres scores:**
