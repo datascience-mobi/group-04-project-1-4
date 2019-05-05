@@ -116,9 +116,8 @@ BCCL_kd.prob <- BCCL_kd.prob[order(rownames(BCCL_kd.prob)), ]
 #subset Mutation matrix in BCCL
 BCCL_Mutation <- allDepMapData$mutation[c(BCCL_Numbers)]
 ```
- 
-```{r}
-# include patients ID as first row in BCCL dataframes
+ - include patients ID as first row in BCCL dataframes
+```{r echo=FALSE}
 Patients_ID <- BCCL_Annotation[1] #get patients ID from annotation matrix
 tPatients_ID <- t(Patients_ID) #transpose Patients_ID because it was a column and we want to insert it as row
 rownameskdc <- rownames(BCCL_kd.ceres) # save old rownames
@@ -159,11 +158,10 @@ rownames(BCCL_kd.prob_ID) <- c("Deep_ID", rownameskdp)
  
 ```{r}
 #find ceres values of MYC mutation
-View(BCCL_kd.ceres["MYC", c(1:28)]) #looks good
-#find cell lines with MYC mutation
-
-
-
+View(BCCL_kd.ceres["MYC", ])
+View(BCCL_Expression["MYC",])
+View(BCCl_Copynumber["MYC",])
+#find cell lines with MYC mutation -> doesn`t look good :) 
 ```
  
 
@@ -385,6 +383,12 @@ Ashworth, A., Lord, C.J. & Reis-Filho, J.S., 2011. Genetic Interactions in Cance
 
 11.	RNF43
 
+```{r echo=TRUE}
+tBCCL_Expression <- t(BCCL_Expression)
+boxplot(tBCCL_Expression[, c("MYC", "PTEN", "TP53", "PIK3CA", "GATA3", "BRCA1", "BRCA2", "RB1", "GANAB", "PRKCSH", "RNF43")], xlab = "Suggested driver mutations", ylab ="Transcripts per million")
+
+```
+
 ### Meeting 1: Friday, 03/05/2019
 
 * **main problem: no expression data for healthy cells:** 
@@ -417,7 +421,7 @@ Ashworth, A., Lord, C.J. & Reis-Filho, J.S., 2011. Genetic Interactions in Cance
   ++ create boxplot for expression data of different samples & align them for comparison
   ++ data has to be transformed in order to fit boxplots -> find advice online
   ++ R package: GGPlot2 (recommended by David, helpful desriptions & cheat sheets online)
-      
+       -> done above :)
   
 ```{r install ggplot2}
 # requires installation of latest Rtool version: https://cran.r-project.org/bin/windows/Rtools/ 
