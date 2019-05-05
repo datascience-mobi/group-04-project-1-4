@@ -163,6 +163,7 @@ View(BCCL_kd.ceres["MYC", c(1:28)]) #looks good
 #find cell lines with MYC mutation
 
 
+
 ```
  
 
@@ -366,7 +367,8 @@ Ashworth, A., Lord, C.J. & Reis-Filho, J.S., 2011. Genetic Interactions in Cance
 
 3.	PIK3CA
 
-4.	MYC
+4.	MYC 
+    has high copynumber in BCCL_Copynumber sometimes, but i couldn`t find mutations in a quick manual view
 
 5.	GATA3
 
