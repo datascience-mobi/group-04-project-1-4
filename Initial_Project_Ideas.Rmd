@@ -361,15 +361,19 @@ Ashworth, A., Lord, C.J. & Reis-Filho, J.S., 2011. Genetic Interactions in Cance
 1.	PTEN: tumor suppressor gene which is silenced by the means of point mutations or promotor methylation in aprox. 42.5 % of breast cancer patients     (https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3742525/), function of protein and lipid phosphatase with role in apoptosis & negative regulation of proliferation (https://www.uniprot.org/uniprot/P60484)
       -> if we are looking for overexpressed driver mutations PTEN might be unsuitable
 
-2.	TP53
+2.	TP53: mutated in approx. 23% of breast cancers. 70% of alterations in brest cancer are missense mutations (esp. codon 220 and codon 163). Not a mere loss-of-function but rather conference of oncogenic properties to p53. Set of 40 promoters and 10 novel genes controlled and bound by oncogenic p53
+(https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3483014/)
 
-3.	PIK3CA: 
+3.	PIK3CA: occurs in 20-30% of all cases. Especially negative impact in HER2-positive tumors. 
+(https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6113507/)
+Most likely observed however in ER-positive/HER2-negative tumors. Gain-of-fuction mutations of molecules loacted on signalling pathway for growth, cell-clye progession, translation and antiapoptosis.
+Gene Amplification reported! (https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4440424/)
       
 
 4.	MYC 
     has high copynumber in BCCL_Copynumber sometimes, but i couldn`t find mutations in a quick manual view
 
-5.	GATA3: role in cancer progression stil is not clear, especially, there seeems to be no correlation between expression levels and tumour aggressiveness. transription factor with crucial role in cell differentiation (https://academic.oup.com/ajcp/article/144/5/756/1761258)
+5.	GATA3: role in cancer progression still not clear, especially, there seems to be no correlation between expression levels and tumour aggressiveness. transcription factor with crucial role in cell differentiation (https://academic.oup.com/ajcp/article/144/5/756/1761258)
 
 6.	BRCA1/BRCA2: cumulative cancer risk for mutation carriers (deletions, premature Stop codon, missense) until age of 80 years 72% and 69%, respectively (https://jamanetwork.com/journals/jama/fullarticle/2632503, https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4537700/), BRCA1 function: E3 ubiquitin-protein ligase with role in tumor suppression, BRCA2 function:involved in DSB repair & homologous recombination (https://www.uniprot.org/uniprot/P51587)
       -> again: these driver mutations do not lead to overexpression
