@@ -363,17 +363,19 @@ Ashworth, A., Lord, C.J. & Reis-Filho, J.S., 2011. Genetic Interactions in Cance
 
 2.	TP53
 
-3.	PIK3CA
+3.	PIK3CA: 
+      
 
 4.	MYC 
     has high copynumber in BCCL_Copynumber sometimes, but i couldn`t find mutations in a quick manual view
 
-5.	GATA3
+5.	GATA3: role in cancer progression stil is not clear, especially, there seeems to be no correlation between expression levels and tumour aggressiveness. transription factor with crucial role in cell differentiation (https://academic.oup.com/ajcp/article/144/5/756/1761258)
 
 6.	BRCA1/BRCA2: cumulative cancer risk for mutation carriers (deletions, premature Stop codon, missense) until age of 80 years 72% and 69%, respectively (https://jamanetwork.com/journals/jama/fullarticle/2632503, https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4537700/), BRCA1 function: E3 ubiquitin-protein ligase with role in tumor suppression, BRCA2 function:involved in DSB repair & homologous recombination (https://www.uniprot.org/uniprot/P51587)
       -> again: these driver mutations do not lead to overexpression
 
-7.	RB1
+7.	RB1: tumor suppressor gene which is typically downregulated or completely lost in cancer cells (https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3055199/), promotor of G0-G1 transition in cell cycle (https://www.uniprot.org/uniprot/P06400)
+      -> HOWEVER RB1 is thought to be downregulated by phosphorylation by CCND1 which is upregulated in 50% of breast cancers 
 
 8.	PARP
 
@@ -382,6 +384,8 @@ Ashworth, A., Lord, C.J. & Reis-Filho, J.S., 2011. Genetic Interactions in Cance
 10.	PRKCSH
 
 11.	RNF43
+
+12. CDH1: encodes E-cadherin protein which has a role in cell adhesion, increase in cell mobility and metastasis, is expressed normally in many breast cancer cells as mutations mainly concern the extracellular domain and, thus, decrease adhesion to ECM and enable metastases (https://link.springer.com/article/10.1007/s10689-016-9869-5)
 
 ```{r echo=TRUE}
 tBCCL_Expression <- t(BCCL_Expression)
