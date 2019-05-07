@@ -405,7 +405,7 @@ boxplot(tBCCL_Expression[, c("MYC", "PTEN", "TP53", "PIK3CA", "GATA3", "BRCA1", 
   ++ in mutation matrix for selected cell lines: look for mutation of second-site targets
   
 * **strategy for overespression of driver gene and underexpression of second-site target:**
-  ++ identify driver mutations in papers
+  ++ identify driver mutations in paper
   ++ identfy cell lines with certain driver mutations
   ++ correlate expression data (TPM) of driver mutations (high TPM) with data of all other genes in selected cell lines
       -> assumption: low expression profiles for second-site targets
@@ -437,6 +437,7 @@ library("ggplot2")
       
 * **check how relevant driver mutations are for cancer cells using PCA:**
   ++ assumption: driver mutations should contribute much to the overall variance
-  ++ maybe also check contribution of second-site targets to PCs, HOWEVER impacht of second-site targets could be smaller as they are non-oncogenic and only act as "co-effectors" regarding the proliferation of tumour cells
+  ++ maybe also check contribution of second-site targets to PCs, HOWEVER impact of second-site targets could be smaller as they are non-oncogenic and only act as "co-effectors" regarding the proliferation of tumour cells
   ++ which data set to use? -> suggestion: ceres scores as both driver mutations & second-site mutations should contribute to a greater extend here, otherwise we coud use the TPM matrix (but again normalization with reference to "healthy" gene expression patterns may be problematic)
   ++ add-on: check whether there are clusters of cancer samples in which an increase in proliferation is driven by one or two main mutations
+  
