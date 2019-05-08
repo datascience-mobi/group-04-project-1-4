@@ -368,6 +368,13 @@ Ashworth, A., Lord, C.J. & Reis-Filho, J.S., 2011. Genetic Interactions in Cance
 (https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6113507/)
 Most likely observed however in ER-positive/HER2-negative tumors. Gain-of-fuction mutations of molecules loacted on signalling pathway for growth, cell-clye progession, translation and antiapoptosis.
 Gene Amplification reported! (https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4440424/)
+
+PIK3CA seems to be overexpressed in breast cancer and thereby suited for a closer look. Furthermore it was found to be prevalent in BLBC and HER2-positive tumors. (But use as subtype indicator remains unclear)
+In the cited paper, ca. 48% of patients had strong gene activity.
+27% were PIK3CA negative.
+
+Source:
+https://www.ncbi.nlm.nih.gov/pubmed/19701705
       
 
 4.	MYC 
