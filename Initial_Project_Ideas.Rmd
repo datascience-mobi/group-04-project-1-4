@@ -364,6 +364,10 @@ Ashworth, A., Lord, C.J. & Reis-Filho, J.S., 2011. Genetic Interactions in Cance
 2.	TP53: mutated in approx. 23% of breast cancers. 70% of alterations in brest cancer are missense mutations (esp. codon 220 and codon 163). Not a mere loss-of-function but rather conference of oncogenic properties to p53. Set of 40 promoters and 10 novel genes controlled and bound by oncogenic p53
 (https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3483014/)
 
+TP53 is a tumor suppressor, and thereby not useful for overexpression profiles. Also, it is supposed to not be lost by deleterious events. Loss is caused by misssense mutations.
+
+Quick Information: https://www.genecards.org/cgi-bin/carddisp.pl?gene=TP53
+
 3.	PIK3CA: occurs in 20-30% of all cases. Especially negative impact in HER2-positive tumors. 
 (https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6113507/)
 Most likely observed however in ER-positive/HER2-negative tumors. Gain-of-fuction mutations of molecules loacted on signalling pathway for growth, cell-clye progession, translation and antiapoptosis.
@@ -405,6 +409,7 @@ Source: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6324669/
 
 12. CDH1: encodes E-cadherin protein which has a role in cell adhesion, increase in cell mobility and metastasis, is expressed normally in many breast cancer cells as mutations mainly concern the extracellular domain and, thus, decrease adhesion to ECM and enable metastases (https://link.springer.com/article/10.1007/s10689-016-9869-5)
 
+13. ERBB2 is overexpressed in 30% of breast carcinomas; Source: https://www.ncbi.nlm.nih.gov/books/NBK6194/
 ```{r echo=TRUE}
 tBCCL_Expression <- t(BCCL_Expression)
 boxplot(tBCCL_Expression[, c("MYC", "PTEN", "TP53", "PIK3CA", "GATA3", "BRCA1", "BRCA2", "RB1", "GANAB", "PRKCSH", "RNF43")], xlab = "Suggested driver mutations", ylab ="Transcripts per million")
