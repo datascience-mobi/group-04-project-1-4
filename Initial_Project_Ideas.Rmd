@@ -446,7 +446,7 @@ boxplot(tBCCL_Expression[, c("MYC", "PTEN", "TP53", "PIK3CA", "GATA3", "BRCA1", 
        -> done above :)
   
 ```{r install ggplot2}
-# requires installation of latest Rtool version: https://cran.r-project.org/bin/windows/Rtools/ 
+# requires installation of latest Rtool version
 # install package ggplot2
 install.packages("ggplot2")
 # load package
