@@ -372,6 +372,12 @@ Gene Amplification reported! (https://www.ncbi.nlm.nih.gov/pmc/articles/PMC44404
 
 4.	MYC 
     has high copynumber in BCCL_Copynumber sometimes, but i couldn`t find mutations in a quick manual view
+    
+    MYC overexpression leads to breast cancer, but also depends on the loss of linked tumor suppressors, such as BRCA1.[a]
+    MYC induces genetic abberations to overcome barriers to protect normal cell proliferation processes. The alterations include the         overexpression of BCL-2, loss of p53 or p19ARF.
+    Furthermore, MYC is linked to oncogene-addiction in breast cancer. [b]
+    Source: [a] https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3092228/ 
+    [b] https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4031954/
 
 5.	GATA3: role in cancer progression still not clear, especially, there seems to be no correlation between expression levels and tumour aggressiveness. transcription factor with crucial role in cell differentiation (https://academic.oup.com/ajcp/article/144/5/756/1761258)
 
