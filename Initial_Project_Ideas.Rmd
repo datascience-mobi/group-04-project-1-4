@@ -449,3 +449,31 @@ library("ggplot2")
   ++ which data set to use? -> suggestion: ceres scores as both driver mutations & second-site mutations should contribute to a greater extend here, otherwise we coud use the TPM matrix (but again normalization with reference to "healthy" gene expression patterns may be problematic)
   ++ add-on: check whether there are clusters of cancer samples in which an increase in proliferation is driven by one or two main mutations
   
+### Meeting 3: Wednesday (08.05.2019)
+  
+  * healthy cells data will not be provided use cells without mutation as reference cells instead (eg.wildtype could be assumed as cells with only TP53)- could be visualised by heatmaps
+  * in code part: generatre graphics with mutations of each driver mutation- use this to determine which genes are commonly mutated and compare to literature references 
+  
+  * suggested presentation structure: 
+    ++ descriptive statistic & data exploration (boxplots/bar plots- get a feeling for the data): barplots showing CERES scores for all genes in each sample- very general visualisation in the framework of data exploration 
+    ++ boxplot TPM values 
+    ++ more specific analysis: 20 most important genes- boxplot expression levels with all samples 
+    ++ analysis of ceres scores for genes which are mutated and then decide which mutations to continue analysis with
+    ++ PCA: k-means unsupervised learning eg. k=2 clustering cell lines according to expression of second site target (dimensionality reduction) or PCA with ceres scores 
+    ++ ceres scores of driver mutations and compare with ceres scores of all remaining genes (negative score for driver mutations and second site targets correlate with equally high ceres scores)- method: t-tests 
+    ++ prediction- regression analysis - (Hint: do not predict expression based on other factors) mutation correlations could be labelled using literature research however we only have 28 cell lines (research in synthetic lethality database) 
+    ++ Sunday/Monday send presentation to David to check 
+    
+### Presentation structure
+
+1.	Introduction: (Lennart)
+    ++	Breast cancer
+    ++ concept of driver mutations and second site targets- aim to analyze the correlation and interaction 
+    ++	Introduction of interesting genes/Driver mutations (summary of literature research) 
+2.	Questions derived from literature (Salome) – explanation second site tares, influence, correlation with diver mutations, want to find which ones are present, correlation with driver mutations, impact on cell viability, therapy
+3.	Data exploration- general visualization + Data exploration of second site target (Elias)
+4.	Stepwise workflow of analysis  (Lisa)
+    ++	Project end = Anfang Juli 2019
+    
+Powerpoint layout: Salome by evening of 08.05.2019 
+
