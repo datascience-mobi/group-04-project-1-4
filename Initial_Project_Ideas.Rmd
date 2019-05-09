@@ -409,10 +409,13 @@ https://www.ncbi.nlm.nih.gov/pubmed/19701705
 Source: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6324669/
 
 9. 	GANAB
-
+and
 10.	PRKCSH
+  bothe were mentioned as " candidate regulators" of the Wnt pathway. Vut I found no data supporting this evidence or even giving any data in which part of clinical cases it is overexpressed. I would suggest to not include these two genes in our project. 
+  Source: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5820685/
 
-11.	RNF43
+11.	RNF43: RNF43 is defined as a tumor suppressor. Relevant mutations are not reported.
+ Source: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4283570/
 
 12. CDH1: encodes E-cadherin protein which has a role in cell adhesion, increase in cell mobility and metastasis, is expressed normally in many breast cancer cells as mutations mainly concern the extracellular domain and, thus, decrease adhesion to ECM and enable metastases (https://link.springer.com/article/10.1007/s10689-016-9869-5)
 
