@@ -116,6 +116,13 @@ BCCL_kd.prob <- BCCL_kd.prob[order(rownames(BCCL_kd.prob)), ]
 #subset Mutation matrix in BCCL
 BCCL_Mutation <- allDepMapData$mutation[c(BCCL_Numbers)]
 ```
+  - first look on the data
+```{r}
+boxplot(BCCL_Expression, xlab = "Genes expressed in cell", ylab ="Transcripts per million") #plot all genes against transcripts
+#i continue the work in extra file to generate less spam :)
+```
+ 
+
  - include patients ID as first row in BCCL dataframes
 ```{r echo=FALSE}
 Patients_ID <- BCCL_Annotation[1] #get patients ID from annotation matrix
