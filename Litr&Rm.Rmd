@@ -1,5 +1,5 @@
 ---
-title: "Initial Project Ideas"
+title: "Literature research, marks and roadmap (needs cleanup)"
 author: "Salome Steinke"
 date: "26.04.2019"
 output:
@@ -81,96 +81,6 @@ rownames(allDepMapData$annotation)
 * Questions with milestones/ timeframe 
 
 * Data clean up and exploratory
-
- - Extracting BCCL as dataframe
-```{r}
-#finding all breast cancer cell lines
-BCCL_Numbers <- which(allDepMapData$annotation[4]== "Breast Cancer")
-BCCL_Annotation <- subset(allDepMapData$annotation, Primary.Disease == "Breast Cancer")
-#see what we got
-summary(BCCL_Annotation)
-# copy expression matrix to new dataframes
-df1 <- allDepMapData$expression
-df2 <- allDepMapData$copynumber
-df3 <- allDepMapData$kd.ceres
-df4 <- allDepMapData$kd.prob
-#change column names to numbers for easier handling
-names(df1) <- c(1:544)
-names(df2) <- c(1:544)
-names(df3) <- c(1:544)
-names(df4) <- c(1:544)
-#extract BCCL as dataframe
-BCCL_Expression <- as.data.frame( df1[, c(BCCL_Numbers)])
-BCCl_Copynumber <- as.data.frame( df2[, c(BCCL_Numbers)])
-BCCL_kd.ceres <- as.data.frame( df3[, c(BCCL_Numbers)])
-BCCL_kd.prob <- as.data.frame( df4[, c(BCCL_Numbers)])
-dim(BCCL_Expression)
-dim(BCCl_Copynumber)
-dim(BCCL_kd.ceres)
-dim(BCCL_kd.prob)
-#reorder rows alphabetically
-BCCL_Expression <- BCCL_Expression[order(rownames(BCCL_Expression)), ]
-BCCl_Copynumber <- BCCl_Copynumber[order(rownames(BCCl_Copynumber)), ]
-BCCL_kd.ceres <- BCCL_kd.ceres[order(rownames(BCCL_kd.ceres)), ]
-BCCL_kd.prob <- BCCL_kd.prob[order(rownames(BCCL_kd.prob)), ]
-#subset Mutation matrix in BCCL
-BCCL_Mutation <- allDepMapData$mutation[c(BCCL_Numbers)]
-```
-  - first look on the data
-```{r}
-boxplot(BCCL_Expression, xlab = "Genes expressed in cell", ylab ="Transcripts per million") #plot all genes against transcripts
-#i continue the work in extra file to generate less spam :)
-```
- 
-
- - include patients ID as first row in BCCL dataframes
-```{r echo=FALSE}
-Patients_ID <- BCCL_Annotation[1] #get patients ID from annotation matrix
-tPatients_ID <- t(Patients_ID) #transpose Patients_ID because it was a column and we want to insert it as row
-rownameskdc <- rownames(BCCL_kd.ceres) # save old rownames
-existingDF <- BCCL_kd.ceres  # define variables for BCCL_kd.ceres
-r <- 1
-newrow <- tPatients_ID
-#defining a function we can use more often to insert rows
-insertRow <- function(existingDF, newrow, r) { 
-    existingDF[seq(r+1,nrow(existingDF)+1),] <- existingDF[seq(r,nrow(existingDF)),]
-    existingDF[r,] <- newrow
-    existingDF
-}
-BCCL_kd.ceres_ID <- insertRow(existingDF, newrow, r)
-rownames(BCCL_kd.ceres_ID) <- c("Deep_ID", rownameskdc) # change rownames back 
-BCCL_kd.ceres_ID[1:2, ]
-#do the same with other 3 dataframes
-rownamesex <- rownames(BCCL_Expression) #save rownames
-existingDF <- BCCL_Expression  # define variables for BCCL_Erpression
-r <- 1
-newrow <- tPatients_ID
-BCCL_Expression_ID <- insertRow(existingDF, newrow, r)
-rownames(BCCL_Expression_ID) <- c("Deep_ID", rownamesex)
-rownamescn <- rownames(BCCl_Copynumber) #save rownames
-existingDF <- BCCl_Copynumber  # define variables for BCCL_Copynumber
-r <- 1
-newrow <- tPatients_ID
-BCCl_Copynumber_ID <- insertRow(existingDF, newrow, r)
-rownames(BCCl_Copynumber_ID) <- c("Deep_ID", rownamescn)
-rownameskdp <- rownames(BCCL_kd.prob) #save rownames
-existingDF <- BCCL_kd.prob  # define variables for BCCL_kd.prob
-r <- 1
-newrow <- tPatients_ID
-BCCL_kd.prob_ID <- insertRow(existingDF, newrow, r)
-rownames(BCCL_kd.prob_ID) <- c("Deep_ID", rownameskdp)
-```
- 
- - extracting data for specific driver mutation 
- 
-```{r}
-#find ceres values of MYC mutation
-View(BCCL_kd.ceres["MYC", ])
-View(BCCL_Expression["MYC",])
-View(BCCl_Copynumber["MYC",])
-#find cell lines with MYC mutation -> doesn`t look good :) 
-```
- 
 
 * Data exploration (Descriptive statistics, graphical representations of data and interdependancies )
 
@@ -420,11 +330,7 @@ and
 12. CDH1: encodes E-cadherin protein which has a role in cell adhesion, increase in cell mobility and metastasis, is expressed normally in many breast cancer cells as mutations mainly concern the extracellular domain and, thus, decrease adhesion to ECM and enable metastases (https://link.springer.com/article/10.1007/s10689-016-9869-5)
 
 13. ERBB2 is overexpressed in 30% of breast carcinomas; Source: https://www.ncbi.nlm.nih.gov/books/NBK6194/
-```{r echo=TRUE}
-tBCCL_Expression <- t(BCCL_Expression)
-boxplot(tBCCL_Expression[, c("MYC", "PTEN", "TP53", "PIK3CA", "GATA3", "BRCA1", "BRCA2", "RB1", "GANAB", "PRKCSH", "RNF43")], xlab = "Suggested driver mutations", ylab ="Transcripts per million")
 
-```
 
 ### Meeting 1: Friday, 03/05/2019
 
@@ -459,14 +365,6 @@ boxplot(tBCCL_Expression[, c("MYC", "PTEN", "TP53", "PIK3CA", "GATA3", "BRCA1", 
   ++ data has to be transformed in order to fit boxplots -> find advice online
   ++ R package: GGPlot2 (recommended by David, helpful desriptions & cheat sheets online)
        -> done above :)
-  
-```{r install ggplot2}
-# requires installation of latest Rtool version
-# install package ggplot2
-install.packages("ggplot2")
-# load package
-library("ggplot2")
-```
   
 * **linear regression to make assumptions regarding ceres scores:**
   ++ x-axis: TPMs; y-axis: ceres values 

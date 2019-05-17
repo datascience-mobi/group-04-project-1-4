@@ -1,0 +1,12 @@
+---
+title: "Characterisation of SST"
+author: "Elias Benjamin Farr"
+date: "17 Mai 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Taten sind Ameisenbären
