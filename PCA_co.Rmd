@@ -13,13 +13,17 @@ install.packages("grid")
 insall.packages("plyr")
 ```
 
+PCA but not yet complete!
 ``` {r PCA}
 Expression.pca = prcomp(BCCL_Expression, center = T, scale. = T)  # centering and scaling of data
 summary(Expression.pca)
 plot(Expression.pca, type = "l")  # First two componets explain most of the variability in the data
 plot(Expression.pca$rotation[, 1], Expression.pca$rotation[, 2], col = [, 1], pch = 19, xlab = "PC1", ylab = "PC2") # doesn't work yet 
 ```
+From first analysis visible that PC1 and PC2 contribute to greatest variability of data set!
 
+
+Visualising PCA with ggbiplot and ggplot2 package- does not work yet 
 ```{r nicer.visualisation}
 library(ggbiplot) #doesn't work yet
 g = ggbiplot(Expression.pca, obs.scale = 1, var.scale = 1,  groups = wine.class, ellipse = TRUE, circle = TRUE)
