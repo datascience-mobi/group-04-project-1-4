@@ -15,10 +15,16 @@ insall.packages("plyr")
 
 PCA but not yet complete!
 ``` {r PCA}
-Expression.pca = prcomp(BCCL_Expression, center = T, scale. = T)  # centering and scaling of data
+tBCCL_Expression = t(BCCL_Expression)
+Expression.pca = prcomp(tBCCL_Expression, center = F, scale. = F)  # centering and scaling of data not possible since row of zeros cannot be scaled down to varianz 1 due to the "AARSP1" column consisting only of zeros
+#cleaning matrix of AARSP1 column
+rmv_AARSP1 = which(colnames(tBCCL_Expression) %in% c("AARSP1")) 
+cl_tBCCL_Expression = data[, -rmv_AARSP1] 
+
 summary(Expression.pca)
+Expression.pca
 plot(Expression.pca, type = "l")  # First two componets explain most of the variability in the data
-plot(Expression.pca$rotation[, 1], Expression.pca$rotation[, 2], col = [, 1], pch = 19, xlab = "PC1", ylab = "PC2") # doesn't work yet 
+plot(Expression.pca$rotation[, 1], Expression.pca$rotation[, 2],pch = 19, xlab = "PC1", ylab = "PC2") 
 ```
 From first analysis visible that PC1 and PC2 contribute to greatest variability of data set!
 
