@@ -19,7 +19,7 @@ tBCCL_Expression = t(BCCL_Expression)
 Expression.pca = prcomp(tBCCL_Expression, center = F, scale. = F)  # centering and scaling of data not possible since row of zeros cannot be scaled down to varianz 1 due to the "AARSP1" column consisting only of zeros
 #cleaning matrix of AARSP1 column
 rmv_AARSP1 = which(colnames(tBCCL_Expression) %in% c("AARSP1")) 
-cl_tBCCL_Expression = data[, -rmv_AARSP1] 
+cl_tBCCL_Expression = cl_tBCCL_Expression[, -rmv_AARSP1] # however scaling still does not work since Zero-column still there need now to filter all columns which are 0
 
 summary(Expression.pca)
 Expression.pca
