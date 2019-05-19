@@ -4,4 +4,27 @@ author: "Elias Benjamin Farr"
 date: "17 Mai 2019"
 output: html_document
 ---
-greetings <3 
+First test PCA
+```{r PCA.packages.install}
+install.packages("remotes")
+remotes::install_github("vqv/ggbiplot")
+install.packages("scales")
+install.packages("grid")
+insall.packages("plyr")
+```
+
+``` {r PCA}
+Expression.pca = prcomp(BCCL_Expression, center = T, scale. = T)  # centering and scaling of data
+summary(Expression.pca)
+plot(Expression.pca, type = "l")  # First two componets explain most of the variability in the data
+plot(Expression.pca$rotation[, 1], Expression.pca$rotation[, 2], col = [, 1], pch = 19, xlab = "PC1", ylab = "PC2") # doesn't work yet 
+```
+
+```{r nicer.visualisation}
+library(ggbiplot) #doesn't work yet
+g = ggbiplot(Expression.pca, obs.scale = 1, var.scale = 1,  groups = wine.class, ellipse = TRUE, circle = TRUE)
+g = g + scale_color_discrete(name = '') 
+g = g + theme(legend.direction = 'horizontal', legend.position = 'top')
+g
+```
+
