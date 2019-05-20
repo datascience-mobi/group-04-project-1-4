@@ -15,40 +15,14 @@ Thank you for this warm welcome, Elias! :)
 #requirements to run this code#
 in order to run this you will need: BCCL_kd.ceres, tPatients_ID, BCCL_Mutation
 
-#Generate pre_mutImpact matrix containing all ceres values and with IDs as colnames#
 
+
+#Generate pre_mutImpact matrix containing all CERES values and with IDs as colnames#
 ```{r} 
 pre_mutImpact <- BCCL_kd.ceres
 colnames(pre_mutImpact)<-tPatients_ID
 ```
-#Generate loops for generation of mutImpact matrix#
 
-perform exchange for every cell line/ID and select correct list in BCCL_Mutation matrix by checking for colnames of pre_mutImpact matrix:
-generate outer loop running from j={1:28} to check for every cell line/ID:
-```{r}
-colnames(pre_mutImpact)[i]
-```
-
-get gene name of gene in row i in pre_mutImpact matrix to look for in BCCL_mutation matrix:
-so we can generate an inner loop running from i=(i:17634) looking at each gene 
-```{r}
-rownames(pre_mutImpact)[i]
-```
-
-this might serve as a loop for our purposes:
-```{r}
-for (j in 1:28){
-  lineID <- colnames(pre_mutImpact)[j]
-  for (i in 1:17634){
-    GOI <- rownames(pre_mutImpact)[i]
-    if (GOI %in% BCCL_Mutation[[lineID]]["Hugo_Symbol"]){
-      mutImpact[GOI, lineID] <- NA
-    } else {
-      mutImpact[GOI, lineID] <- pre_mutImpact[GOI, lineID]
-    }
-  }
-}
-```
 
 #generate empty mutImpact matrix
 ```{r}
@@ -56,3 +30,19 @@ mutImpact <- matrix( , nrow = 17634, ncol = 28)
 colnames(mutImpact)<-colnames(pre_mutImpact)
 rownames(mutImpact)<-rownames(pre_mutImpact)
 ```
+
+#fill mutImpact matrix with values
+```{r}
+for (j in 1:ncol(pre_mutImpact)){
+  lineID <- colnames(pre_mutImpact)[j] #select a column-name aka cell line
+  for (i in 1:nrow(pre_mutImpact)){
+    GOI <- rownames(pre_mutImpact)[i] #select a gene
+    if (GOI %in% BCCL_Mutation[[lineID]]$Hugo_Symbol){
+      mutImpact[i, j] <- NA 
+    } else {
+      mutImpact[i, j] <- pre_mutImpact[i, j] 
+    }#replace CERES value with NA in case the gene is not mutated
+  }
+}
+```
+
