@@ -38,9 +38,9 @@ for (j in 1:ncol(pre_mutImpact)){
   for (i in 1:nrow(pre_mutImpact)){
     GOI <- rownames(pre_mutImpact)[i] #select a gene
     if (GOI %in% BCCL_Mutation[[lineID]]$Hugo_Symbol){
-      mutImpact[i, j] <- NA 
+      mutImpact[i, j] <- pre_mutImpact[i, j]
     } else {
-      mutImpact[i, j] <- pre_mutImpact[i, j] 
+      mutImpact[i, j] <- NA
     }#replace CERES value with NA in case the gene is not mutated
   }
 }
