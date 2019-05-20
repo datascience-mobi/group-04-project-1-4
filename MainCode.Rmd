@@ -1,9 +1,10 @@
 ---
 title: "Main Code"
-author: "Elias Benjamin Farr"
+author: "Elias Benjamin Farr, Lisa Marie Milchsack"
 date: "17 Mai 2019"
 output: html_document
 ---
+#installation of required packages
 ```{r install ggplot2}
 # requires installation of latest Rtool version
 # install package ggplot2
@@ -12,6 +13,7 @@ install.packages("ggplot2")
 library("ggplot2")
 ```
 
+#data clean up
 ```{r}
 #finding all breast cancer cell lines
 BCCL_Numbers <- which(allDepMapData$annotation[4]== "Breast Cancer")
@@ -81,4 +83,29 @@ r <- 1
 newrow <- tPatients_ID
 BCCL_kd.prob_ID <- insertRow(existingDF, newrow, r)
 rownames(BCCL_kd.prob_ID) <- c("Deep_ID", rownameskdp)
+```
+
+#generation of mutImpact matrix
+```{r}
+#Generate pre_mutImpact matrix containing all CERES values and with IDs as colnames
+pre_mutImpact <- BCCL_kd.ceres
+colnames(pre_mutImpact)<-tPatients_ID
+
+#generate empty mutImpact matrix
+mutImpact <- matrix( , nrow = 17634, ncol = 28)
+colnames(mutImpact)<-colnames(pre_mutImpact)
+rownames(mutImpact)<-rownames(pre_mutImpact)
+
+#fill mutImpact matrix with values
+for (j in 1:ncol(pre_mutImpact)){
+  lineID <- colnames(pre_mutImpact)[j] #select a column-name aka cell line
+  for (i in 1:nrow(pre_mutImpact)){
+    GOI <- rownames(pre_mutImpact)[i] #select a gene
+    if (GOI %in% BCCL_Mutation[[lineID]]$Hugo_Symbol){
+      mutImpact[i, j] <- pre_mutImpact[i, j]
+    } else {
+      mutImpact[i, j] <- NA
+    }#replace CERES value with NA in case the gene is not mutated
+  }
+}
 ```
