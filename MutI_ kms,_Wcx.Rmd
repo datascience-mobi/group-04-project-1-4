@@ -42,8 +42,17 @@ for (j in 1:28){
   for (i in 1:17634){
     GOI <- rownames(pre_mutImpact)[i]
     if (GOI %in% BCCL_Mutation[[lineID]]["Hugo_Symbol"]){
-      pre_mutImpact[GOI, lineID] <- NA
+      mutImpact[GOI, lineID] <- NA
+    } else {
+      mutImpact[GOI, lineID] <- pre_mutImpact[GOI, lineID]
     }
   }
 }
+```
+
+#generate empty mutImpact matrix
+```{r}
+mutImpact <- matrix( , nrow = 17634, ncol = 28)
+colnames(mutImpact)<-colnames(pre_mutImpact)
+rownames(mutImpact)<-rownames(pre_mutImpact)
 ```
