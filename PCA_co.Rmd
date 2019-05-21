@@ -4,19 +4,24 @@ author: "Elias Benjamin Farr"
 date: "17 Mai 2019"
 output: html_document
 ---
+Objective of PCA:
+  + For this dimension reduction process, we try to find similarity in the dataset.
+  + Prinicipal Components describe the directions with the most varianc in data.
+
+
 First test PCA
 ```{r PCA.packages.install}
 install.packages("remotes")
 remotes::install_github("vqv/ggbiplot")
 install.packages("scales")
 install.packages("grid")
-insall.packages("plyr")
+install.packages("plyr")
 ```
 
 PCA but not yet complete!
 ``` {r PCA}
 tBCCL_Expression = t(BCCL_Expression)
-Expression.pca = prcomp(tBCCL_Expression, center = F, scale. = F)  # centering and scaling of data not possible since row of zeros cannot be scaled down to varianz 1 due to the "AARSP1" column consisting only of zeros
+Expression.pca = prcomp(tBCCL_Expression, center = F, scale. = F)  # centering and scaling of data not possible since row of zeros cannot be scaled down to variance 1 due to the "AARSP1" column consisting only of zeros
 #cleaning matrix of AARSP1 column
 rmv_AARSP1 = which(colnames(tBCCL_Expression) %in% c("AARSP1")) 
 cl_tBCCL_Expression = cl_tBCCL_Expression[, -rmv_AARSP1] # however scaling still does not work since Zero-column still there need now to filter all columns which are 0
@@ -31,10 +36,23 @@ From first analysis visible that PC1 and PC2 contribute to greatest variability 
 
 Visualising PCA with ggbiplot and ggplot2 package- does not work yet 
 ```{r nicer.visualisation}
-library(ggbiplot) #doesn't work yet
-g = ggbiplot(Expression.pca, obs.scale = 1, var.scale = 1,  groups = wine.class, ellipse = TRUE, circle = TRUE)
+install.packages("remotes")
+remotes::install_github("vqv/ggbiplot")
+library(ggbiplot) #loading the packages #doesn't work yet
+g = ggbiplot(Expression.pca, obs.scale = 1, var.scale = 1,  groups = dimnames, ellipse = TRUE, circle = TRUE)
 g = g + scale_color_discrete(name = '') 
 g = g + theme(legend.direction = 'horizontal', legend.position = 'top')
 g
 ```
+It seems like Salome & Lennart both used the example presented in https://tgmstat.wordpress.com/2013/11/28/computing-and-visualizing-pca-in-r/, but while running the plot "g is not found"
 
+A second, silimar approach is given at https://rdrr.io/github/vqv/ggbiplot/f/README.md
+They used the following example:
+```{r seconde PCA plot approach}
+ggbiplot(wine.pca, obs.scale = 1, var.scale = 1,
+  groups = wine.class, ellipse = TRUE, circle = TRUE) +
+  scale_color_discrete(name = '') +
+  theme(legend.direction = 'horizontal', legend.position = 'top')
+```
+Tested the template successfully.Oddly, the "Error in rep(value, length.out = nrows) : 
+  attempt to replicate an object of type 'builtin´ pops up when i substitute wine.pca with Expression.pca.
