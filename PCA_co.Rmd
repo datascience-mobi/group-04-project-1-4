@@ -163,17 +163,8 @@ mutImpact_c = mutImpact[rowSums(is.na(mutImpact)) != ncol(mutImpact),] # remove 
 dim(mutImpact_c) # check gene reduction 
 BCCL_kd.ceres_2 = cbind("Mutation", BCCL_kd.ceres[,2:ncol(BCCL_kd.ceres)]) # insert new column
 
-
-for(j in nrow(BCCL_kd.ceres_2):1){
-  if(rownames(BCCL_kd.ceres_2) %in% rownames(mutImpact_c)){
-    j= "No mutation"
-   BCCL_kd.ceres_2mut = BCCL_kd.ceres_2[j:1]
-  } else {
-  }
-}
-
-#Lisa's try
-for(j in 1:nrow(BCCL_kd.ceres_2)){
+#not yet quite functional yet 
+for(j in 1:nrow(BCCL_kd.ceres_2)1){
   if(rownames(BCCL_kd.ceres_2)[j] %in% rownames(mutImpact_c)){
    BCCL_kd.ceres_2[j:1] = "mutation"
   } else {
