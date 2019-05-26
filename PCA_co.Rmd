@@ -8,7 +8,7 @@ Objective of PCA:
   + For this dimension reduction process, we try to find similarity in the dataset.
   + Prinicipal Components describe the directions with the most varianc in data.
   
--Loading Data
+#Loading Data
 ```{r Load.Data}
 allDepMapData = readRDS("path/to/your/directory/DepMap19Q1_allData.RDS")
 BCCL_Numbers = which(allDepMapData$annotation[4]== "Breast Cancer") 
@@ -43,7 +43,7 @@ BCCL_kd.prob <- BCCL_kd.prob[order(rownames(BCCL_kd.prob)), ]
 BCCL_Mutation <- allDepMapData$mutation[c(BCCL_Numbers)]
 ```
 
- - include patients ID as first row in BCCL dataframes
+#include patients ID as first row in BCCL dataframes
 ```{r echo=FALSE}
 Patients_ID <- BCCL_Annotation[1] #get patients ID from annotation matrix
 tPatients_ID <- t(Patients_ID) #transpose Patients_ID because it was a column and we want to insert it as row
@@ -82,7 +82,7 @@ rownames(BCCL_kd.prob_ID) <- c("Deep_ID", rownameskdp)
 ```
 
 
-PCA but not yet complete!
+#PCA but not yet complete!
 ``` {r PCA}
 install.packages("ggfortify")
 library(ggfortify)
@@ -103,12 +103,11 @@ Sor.Expr.pca.load[1:200,] # first 200 genes do not contain driver mutations - pe
 
 Things to do: 
 * manually scale Expression values 
-* add column to tBCCL_expression which shows mutation or not from  MutImpact Matrix
-* order matrix also according to PC2
+* add column to tBCCL_expression which shows mutation or not from  MutImpact Matrix (?) 
+* could also order matrix also according to PC2
 * assign rank to genes according to PC1 und PC2 (insert 2 columns with appropriate rank- can identify driver mutations)
-*k means clustering 
 
-Same process for CERES scores (needs to be adapted if any changes made above)
+#Same process for CERES scores (needs to be adapted if any changes made above)
 
 ```{r PCA Ceres}
 tBCCL_kd.ceres = t(BCCL_kd.ceres)
@@ -121,5 +120,102 @@ autoplot(Ceres.pca, label = TRUE, label.size = 3) # need to add colour based on 
 Ceres.pca.loadings = Ceres.pca$rotation # loadings PC1 and PC2
 Sor.Ceres.pca.load= -Ceres.pca.loadings [order(Ceres.pca.loadings[,1]),] #managed to order PC1 column according to size (PC2 not yet)
 Sor.Ceres.pca.load[1:200,] # first 200 genes do not contain driver mutations - perhaps assign rank
+```
 
+
+#kmeans for Expression data test
+```{r kmeans}
+install.packages("tidyverse")
+install.packages("factoextra")
+library(tidyverse)
+library(cluster)
+library(factoextra)
+
+BCCL_Expression_rmv = BCCL_Expression[rowSums(BCCL_Expression != 0) > 0, ]
+BCCL_Expression_rmv_s = scale(BCCL_Expression)
+km= kmeans(x = BCCL_Expression_rmv_s, centers = 2, nstart = 10)
+table(km$cluster)
+wss = sapply(2:10, function(k) {
+    kmeans(x = BCCL_Expression_rmv_s, centers = k)$tot.withinss
+})
+plot(2:10, wss, type = "b", pch = 19, xlab = "Number of clusters K", ylab = "Total within-clusters sum of squares") # optimal number 4 clusters
+
+km = kmeans(x = BCCL_Expression_rmv_s, centers = 4, nstart = 10)
+table(km$cluster)
+
+fviz_cluster(km, data=BCCL_Expression_rmv_s)
+
+
+#Same with ceres Matrix
+
+BCCL_CERES_s = scale(BCCL_kd.ceres)
+km_CERES= kmeans(x = BCCL_Expression_rmv_s, centers = 2, nstart = 10)
+table(km_CERES$cluster)
+wss = sapply(2:10, function(k) {
+    kmeans(x = BCCL_Expression_rmv_s, centers = k)$tot.withinss
+})
+plot(2:10, wss, type = "b", pch = 19, xlab = "Number of clusters K", ylab = "Total within-clusters sum of squares") # optimal number 4 
+
+km_CERES = kmeans(x = BCCL_CERES_s, centers = 4, nstart = 10)
+table(km_CERES$cluster)
+
+fviz_cluster(km_CERES, data=BCCL_CERES_s)
+
+
+
+#trying to determine optimal cluster number with silhouette method
+
+s <- sapply(2:10, function(k) {
+  kmeans(x=BCCL_Expression_rmv_s, centers = k);
+  D = dist(BCCL_Expression_rmv_s);
+  si = silhouette(km$cluster, D);
+  si_sum = (summary(si, FUN = mean))
+})
+
+```
+
+
+
+Rest not yet complete for now!
+
+
+#test with autoplot ggfortify but not yet successfull- error message frequent ==> Error in inds_combine(.vars, ind_list) : Position must be between 0 and n
+```{r ggfortify test}
+install.packages("ggfortify")
+library(ggfortify)
+autoplot(kmeans(mutImpact, 2), data = mutImpact,label = TRUE, label.size = 3, frame = TRUE)
+
+```
+
+
+K means clustering mit mutImpact Matrix- not yet successfull due to NA values 
+
+#Loading mutImpact Matrix
+
+```{r loading mutImpactMatrix}
+pre_mutImpact <- BCCL_kd.ceres
+colnames(pre_mutImpact)<-tPatients_ID
+mutImpact <- matrix( , nrow = 17634, ncol = 28)
+colnames(mutImpact)<-colnames(pre_mutImpact)
+rownames(mutImpact)<-rownames(pre_mutImpact)
+for (j in 1:ncol(pre_mutImpact)){
+  lineID <- colnames(pre_mutImpact)[j] #select a column-name aka cell line
+  for (i in 1:nrow(pre_mutImpact)){
+    GOI <- rownames(pre_mutImpact)[i] #select a gene
+    if (GOI %in% BCCL_Mutation[[lineID]]$Hugo_Symbol){
+      mutImpact[i, j] <- pre_mutImpact[i, j]
+    } else {
+      mutImpact[i, j] <- 0
+    }#replace CERES value with 0 in case the gene is not mutated
+  }
+}
+```
+
+
+
+Aussortierter code
+
+#cleaning matrix of AARSP1 column
+rmv_AARSP1 = which(colnames(tBCCL_Expression) %in% c("AARSP1")) 
+cl_tBCCL_Expression = cl_tBCCL_Expression[, -rmv_AARSP1] # however scaling still does not work since Zero-column still there need now to filter all columns which are 0
 
