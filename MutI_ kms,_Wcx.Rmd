@@ -67,4 +67,23 @@ wlxmat <- lapply(1:nrow(mutImpact), function(a) {
 })
 #returns error:  Error in wilcox.test.default(Dvm, potSST, paired = TRUE, na.action = na.exclude) : 
   #not enough (finite) 'x' observations 
+
+#new try... "by foot"
+wlxmat <- sapply(1:nrow(mutImpact), function(a) {
+     wil.p = 0
+     wil.p.sum = 0
+     non.na = 0
+     for (i in 1:ncol(mutImpact)) {
+         if (!is.na(mutImpact["BPI",i]) & !is.na(mutImpact[a,i])) {
+             wil.p = wilcox.test(mutImpact["BPI",i],mutImpact[a,i], paired = TRUE)$p.value
+             non.na = non.na + 1
+         } else {
+             wil.p = 0
+         }
+         wil.p.sum = wil.p.sum + wil.p
+     }
+     wil.p.mean = wil.p.sum/non.na
+ })
+
+#problem is that you cannot change rownames and there is something wrong with the computation as some values are 1 (NAN are the values in case there is no co-existence of the DV and the SST)
 ```
