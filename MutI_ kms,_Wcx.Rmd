@@ -46,3 +46,25 @@ for (j in 1:ncol(pre_mutImpact)){
 }
 ```
 
+##Paired Wilcoxon signed rank test
+
+```{r}
+#generate matrix of driver mutations
+drivMat <- mutImpact[ , c(#colnr of DV)]
+
+#generate 2nd vector of potential SSTS, i = gene
+potSST <- as.vector(mutImpact[a, ])
+
+#select driver mutation to find correspaonding SSTs
+for i in (1:ncol(drivMat) function() {
+  Dvm <- as.vector(drivMat[ ,i]
+})
+
+#suggested loop to design Wilcoxon matrix
+wlxmat <- lapply(1:nrow(mutImpact), function(a) {
+  potSST <- as.vector(mutImpact[a, ])
+  wilcox.test(Dvm, potSST, paired = TRUE, na.action = na.exclude)
+})
+#returns error:  Error in wilcox.test.default(Dvm, potSST, paired = TRUE, na.action = na.exclude) : 
+  #not enough (finite) 'x' observations 
+```
