@@ -82,47 +82,6 @@ rownames(BCCL_kd.prob_ID) <- c("Deep_ID", rownameskdp)
 ```
 
 
-#PCA but not yet complete!
-``` {r PCA}
-install.packages("ggfortify")
-library(ggfortify)
-
-tBCCL_Expression = t(BCCL_Expression)
-Expression.pca = prcomp(tBCCL_Expression, center = T, scale = F, rank = 2)  # scaling not possible due to zeros # rank = 2 since only interested in first 2 PCA components 
-summary(Expression.pca)
-
-plot(Expression.pca, type = "l")  # First 2 components = most of data  variability using Elbow-method 
-autoplot(Expression.pca, label = TRUE, label.size = 3) # need to add colour based on whether driver mutation or not
-
-Expression.pca.loadings = Expression.pca$rotation # laodings PC1 and PC2
-Sor.Expr.pca.load= -Expression.pca.loadings [order(Expression.pca.loadings[,1], Expression.pca.loadings[,2]),] #managed to order PC1 column according to size (PC2 not yet)
-Sor.Expr.pca.load[1:200,] # first 200 genes do not contain driver mutations - perhaps assign rank
-
-```
-
-
-Things to do: 
-* manually scale Expression values 
-* add column to tBCCL_expression which shows mutation or not from  MutImpact Matrix (?) 
-* could also order matrix also according to PC2
-* assign rank to genes according to PC1 und PC2 (insert 2 columns with appropriate rank- can identify driver mutations)
-
-#Same process for CERES scores (needs to be adapted if any changes made above)
-
-```{r PCA Ceres}
-tBCCL_kd.ceres = t(BCCL_kd.ceres)
-Ceres.pca = prcomp(tBCCL_kd.ceres, center = T, scale = T, rank = 2)  
-summary(Ceres.pca)
-
-plot(Ceres.pca, type = "l")  # First 2 components = most of data  variability using Elbow-method 
-autoplot(Ceres.pca, label = TRUE, label.size = 3) # need to add colour based on whether driver mutation or not
-
-Ceres.pca.loadings = Ceres.pca$rotation # loadings PC1 and PC2
-Sor.Ceres.pca.load= -Ceres.pca.loadings [order(Ceres.pca.loadings[,1]),] #managed to order PC1 column according to size (PC2 not yet)
-Sor.Ceres.pca.load[1:200,] # first 200 genes do not contain driver mutations - perhaps assign rank
-```
-
-
 #kmeans for Expression data test
 ```{r kmeans}
 install.packages("tidyverse")
@@ -175,17 +134,7 @@ s <- sapply(2:10, function(k) {
 ```
 
 
-
 Rest not yet complete for now!
-
-
-#test with autoplot ggfortify but not yet successfull- error message frequent ==> Error in inds_combine(.vars, ind_list) : Position must be between 0 and n
-```{r ggfortify test}
-install.packages("ggfortify")
-library(ggfortify)
-autoplot(kmeans(mutImpact, 2), data = mutImpact,label = TRUE, label.size = 3, frame = TRUE)
-
-```
 
 
 K means clustering mit mutImpact Matrix- not yet successfull due to NA values 
@@ -209,11 +158,67 @@ for (j in 1:ncol(pre_mutImpact)){
     }#replace CERES value with 0 in case the gene is not mutated
   }
 }
+
+mutImpact_c = mutImpact[rowSums(is.na(mutImpact)) != ncol(mutImpact),] # remove all genes withall NA values
+dim(mutImpact_c) # check gene reduction 
+
 ```
 
 
 
-Aussortierter code
+
+
+
+AUSSORTIERTER CODE
+
+#test with autoplot ggfortify but not yet successfull- error message frequent ==> Error in inds_combine(.vars, ind_list) : Position must be between 0 and n
+```{r ggfortify test}
+install.packages("ggfortify")
+library(ggfortify)
+autoplot(kmeans(mutImpact, 2), data = mutImpact,label = TRUE, label.size = 3, frame = TRUE)
+
+```
+
+
+#PCA but not yet complete!
+``` {r PCA}
+install.packages("ggfortify")
+library(ggfortify)
+
+tBCCL_Expression = t(BCCL_Expression)
+Expression.pca = prcomp(tBCCL_Expression, center = T, scale = F, rank = 2)  # scaling not possible due to zeros # rank = 2 since only interested in first 2 PCA components 
+summary(Expression.pca)
+
+plot(Expression.pca, type = "l")  # First 2 components = most of data  variability using Elbow-method 
+autoplot(Expression.pca, label = TRUE, label.size = 3) # need to add colour based on whether driver mutation or not
+
+Expression.pca.loadings = Expression.pca$rotation # laodings PC1 and PC2
+Sor.Expr.pca.load= -Expression.pca.loadings [order(Expression.pca.loadings[,1], Expression.pca.loadings[,2]),] #managed to order PC1 column according to size (PC2 not yet)
+Sor.Expr.pca.load[1:200,] # first 200 genes do not contain driver mutations - perhaps assign rank
+
+```
+
+
+Things to do: 
+* manually scale Expression values 
+* add column to tBCCL_expression which shows mutation or not from  MutImpact Matrix (?) 
+* could also order matrix also according to PC2
+* assign rank to genes according to PC1 und PC2 (insert 2 columns with appropriate rank- can identify driver mutations)
+
+#Same process for CERES scores (needs to be adapted if any changes made above)
+
+```{r PCA Ceres}
+tBCCL_kd.ceres = t(BCCL_kd.ceres)
+Ceres.pca = prcomp(tBCCL_kd.ceres, center = T, scale = T, rank = 2)  
+summary(Ceres.pca)
+
+plot(Ceres.pca, type = "l")  # First 2 components = most of data  variability using Elbow-method 
+autoplot(Ceres.pca, label = TRUE, label.size = 3) # need to add colour based on whether driver mutation or not
+
+Ceres.pca.loadings = Ceres.pca$rotation # loadings PC1 and PC2
+Sor.Ceres.pca.load= -Ceres.pca.loadings [order(Ceres.pca.loadings[,1]),] #managed to order PC1 column according to size (PC2 not yet)
+Sor.Ceres.pca.load[1:200,] # first 200 genes do not contain driver mutations - perhaps assign rank
+```
 
 #cleaning matrix of AARSP1 column
 rmv_AARSP1 = which(colnames(tBCCL_Expression) %in% c("AARSP1")) 
