@@ -74,7 +74,7 @@ wlxmat <- sapply(1:nrow(mutImpact), function(a) {
      wil.p.sum = 0
      non.na = 0
      for (i in 1:ncol(mutImpact)) {
-         if (!is.na(mutImpact["BPI",i]) & !is.na(mutImpact[a,i])) {
+         if (!is.na(mutImpact["BPI",i]) & !is.na(mutImpact[a,i])) {#here BPI is supposed to be a DV
              wil.p = wilcox.test(mutImpact["BPI",i],mutImpact[a,i], paired = TRUE)$p.value
              non.na = non.na + 1
          } else {
