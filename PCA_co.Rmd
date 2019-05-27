@@ -175,11 +175,26 @@ for(j in nrow(BCCL_kd.ceres_2):1){
 #Lisa's try
 for(j in 1:nrow(BCCL_kd.ceres_2)){
   if(rownames(BCCL_kd.ceres_2)[j] %in% rownames(mutImpact_c)){
-   BCCL_kd.ceres_2[j:1] = "mutation"
+   BCCL_kd.ceres_2[j,1] = "mutation"
   } else {
-    BCCL_kd.ceres_2[j:1] = "no mutation"
+    BCCL_kd.ceres_2[j,1] = "no mutation"
   }
 }
+
+#Lisa's second try
+BCCL_kd.ceres_an <- BCCL_kd.ceres #generate new data frame
+colnames(BCCL_kd.ceres_an) <- rownames(BCCL_kd.ceres)
+
+#generate new column containing information on mutation status
+BCCL_kd.ceres_an$mutation <- sapply(1:nrow(BCCL_kd.ceres), function(j){
+     if(rownames(BCCL_kd.ceres_an)[j] %in% rownames(mutImpact_c)){
+         BCCL_kd.ceres_an[j,1] = "mutation"
+     } else {
+         BCCL_kd.ceres_an[j,1] = "no mutation"
+     }
+  })
+BCCL_kd.ceres_an[c("mutation", tPatients_ID)]#reorder columns (works in console but not for table...strange :-( )
+
 
 #now I need a loop where for each gene, not a rowname in MutImpact_c replace "mutation" with "No mutation"
 
