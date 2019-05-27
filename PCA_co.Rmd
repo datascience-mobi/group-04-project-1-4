@@ -184,7 +184,7 @@ BCCL_kd.ceres_an$mutation <- sapply(1:nrow(BCCL_kd.ceres), function(j){
          BCCL_kd.ceres_an[j,1] = "no mutation"
      }
   })
-BCCL_kd.ceres_an[c("mutation", tPatients_ID)]#reorder columns (works in console but not for table...strange :-( )
+BCCL_kd.ceres_an <- BCCL_kd.ceres_an[c("mutation", tPatients_ID)]#reorder columns 
 
 
 #now I need a loop where for each gene, not a rowname in MutImpact_c replace "mutation" with "No mutation"
