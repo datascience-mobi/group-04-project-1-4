@@ -180,10 +180,10 @@ wss = sapply(2:10, function(k) {
 })
 plot(2:10, wss, type = "b", pch = 19, xlab = "Number of clusters K", ylab = "Total within-clusters sum of squares") # optimal number 4 
 
-km_CERES = kmeans(x = BCCL_CERES_s, centers = 4, nstart = 10)
-table(km_CERES$cluster)
+km_CERES_an = kmeans(x = BCCL_CERES_an_s, centers = 4, nstart = 10)
+table(km_CERES_an$cluster)
 
-fviz_cluster(km_CERES, data=BCCL_CERES_s)
+fviz_cluster(km_CERES_an, data=BCCL_CERES_an_s, labelsize = 0)
 
 
 
