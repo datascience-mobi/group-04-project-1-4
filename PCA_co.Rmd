@@ -108,10 +108,10 @@ fviz_cluster(km, data=BCCL_Expression_rmv_s)
 #Same with ceres Matrix
 
 BCCL_CERES_s = scale(BCCL_kd.ceres)
-km_CERES= kmeans(x = BCCL_Expression_rmv_s, centers = 2, nstart = 10)
+km_CERES= kmeans(x = BCCL_CERES_s, centers = 2, nstart = 10)
 table(km_CERES$cluster)
 wss = sapply(2:10, function(k) {
-    kmeans(x = BCCL_Expression_rmv_s, centers = k)$tot.withinss
+    kmeans(x = BCCL_CERES_s, centers = k)$tot.withinss
 })
 plot(2:10, wss, type = "b", pch = 19, xlab = "Number of clusters K", ylab = "Total within-clusters sum of squares") # optimal number 4 
 
@@ -142,6 +142,8 @@ K means clustering mit mutImpact Matrix- not yet successfull due to NA values
 #Loading mutImpact Matrix
 
 ```{r loading mutImpactMatrix}
+
+#Loading mutImpact matrix
 pre_mutImpact <- BCCL_kd.ceres
 colnames(pre_mutImpact)<-tPatients_ID
 mutImpact <- matrix( , nrow = 17634, ncol = 28)
@@ -159,27 +161,37 @@ for (j in 1:ncol(pre_mutImpact)){
   }
 }
 
+#selecting only genes mutated once
 mutImpact_c = mutImpact[rowSums(is.na(mutImpact)) != ncol(mutImpact),]# remove all genes withall NA values
 rownamesmutImpc = rownames(mutImpact_c)
 mutImpact_c = cbind(rownamesmutImpc, mutImpact_c[,2:ncol(mutImpact_c)]) # insert new column with row names
 dim(mutImpact_c) # check gene reduction 
 rownameskdc2 = rownames(BCCL_kd.ceres_2)
 BCCL_kd.ceres_2 = cbind(rownameskdc2, BCCL_kd.ceres[,2:ncol(BCCL_kd.ceres)]) # insert new column with row names
+BCCL_kd.ceres_3 = BCCL_kd.ceres_2[BCCL_kd.ceres_2[,"rownameskdc2"] %in%  mutImpact_c[,"rownamesmutImpc"],] 
+BCCL_kd.ceres_3= BCCL_kd.ceres_3[,-c(1)]
+
+# k means clustering with new gene 
+BCCL_CERES_an_s = scale(BCCL_kd.ceres_3)
+km_CERES_an= kmeans(x = BCCL_CERES_an_s, centers = 2, nstart = 10)
+table(km_CERES_an$cluster)
+wss = sapply(2:10, function(k) {
+    kmeans(x = BCCL_CERES_an_s, centers = k)$tot.withinss
+})
+plot(2:10, wss, type = "b", pch = 19, xlab = "Number of clusters K", ylab = "Total within-clusters sum of squares") # optimal number 4 
+
+km_CERES = kmeans(x = BCCL_CERES_s, centers = 4, nstart = 10)
+table(km_CERES$cluster)
+
+fviz_cluster(km_CERES, data=BCCL_CERES_s)
+
+
 
 <<<<<<< HEAD
 BCCL_kd.ceres_3 = BCCL_kd.ceres_2[BCCL_kd.ceres_2[,"rownameskdc2"] %in% mutImpact_c[,"rownamesmutImpc"],] # reduce BCCL_kd.ceres_2 matrix to genes mutated at least once
 
 =======
-#not yet quite functional yet 
-for(j in 1:nrow(BCCL_kd.ceres_2)1){
-  if(rownames(BCCL_kd.ceres_2)[j] %in% rownames(mutImpact_c)){
-   BCCL_kd.ceres_2[j,1] = "mutation"
-  } else {
-    BCCL_kd.ceres_2[j,1] = "no mutation"
-  }
-}
-
-#Lisa's second try
+#Alternative second try
 BCCL_kd.ceres_an <- BCCL_kd.ceres #generate new data frame
 colnames(BCCL_kd.ceres_an) <- rownames(BCCL_kd.ceres)
 
@@ -192,11 +204,7 @@ BCCL_kd.ceres_an$mutation <- sapply(1:nrow(BCCL_kd.ceres), function(j){
      }
   })
 BCCL_kd.ceres_an <- BCCL_kd.ceres_an[c("mutation", tPatients_ID)]#reorder columns 
-
-
-#now I need a loop where for each gene, not a rowname in MutImpact_c replace "mutation" with "No mutation"
->>>>>>> a855cb6fba0ed42e42d6e48afdf9fd42c7245d67
-
+>>>>>>> 
 ```
 
 
