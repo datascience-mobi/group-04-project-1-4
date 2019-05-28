@@ -169,7 +169,9 @@ dim(mutImpact_c) # check gene reduction
 rownameskdc2 = rownames(BCCL_kd.ceres_2)
 BCCL_kd.ceres_2 = cbind(rownameskdc2, BCCL_kd.ceres[,2:ncol(BCCL_kd.ceres)]) # insert new column with row names
 BCCL_kd.ceres_3 = BCCL_kd.ceres_2[BCCL_kd.ceres_2[,"rownameskdc2"] %in%  mutImpact_c[,"rownamesmutImpc"],] 
-BCCL_kd.ceres_3= BCCL_kd.ceres_3[,-c(1)]
+BCCL_kd.ceres_3 = BCCL_kd.ceres_3[,-c(1)]
+BCCL_kd.ceres_3 = cbind(BCCL_kd.ceres_3, rowMeans(BCCL_kd.ceres_3)) #calculate rowmeans 
+BCCL_kd.ceres_3 = BCCL_kd.ceres_3[rowMeans(BCCL_kd.ceres_3)<= 0,] # deletion of genes with CERES > 0
 
 # k means clustering with new gene 
 BCCL_CERES_an_s = scale(BCCL_kd.ceres_3)
@@ -178,12 +180,27 @@ table(km_CERES_an$cluster)
 wss = sapply(2:10, function(k) {
     kmeans(x = BCCL_CERES_an_s, centers = k)$tot.withinss
 })
-plot(2:10, wss, type = "b", pch = 19, xlab = "Number of clusters K", ylab = "Total within-clusters sum of squares") # optimal number 4 
+plot(2:10, wss, type = "b", pch = 19, xlab = "Number of clusters K", ylab = "Total within-clusters sum of squares") # optimal number 4
 
-km_CERES_an = kmeans(x = BCCL_CERES_an_s, centers = 4, nstart = 10)
+
+km_CERES_an = kmeans(x = BCCL_CERES_an_s, centers = 2, nstart = 10)
 table(km_CERES_an$cluster)
+fviz_cluster(km_CERES_an, data=BCCL_CERES_an_s, labelsize = 0) # plotting clusters
 
-fviz_cluster(km_CERES_an, data=BCCL_CERES_an_s, labelsize = 0)
+
+#LABELING DRIVER MUTATIONS 
+# CCND mutation not present in BCCL_kd.ceres_3 matrix but ERBB2, ERBB2IP, MYCBP, PARP10 and PIK3CA found 
+
+drivermut =  matrix(c("ERBB2", "ERBB2IP","MYCBP", "PARP10", "PIK3CA"), nrow=5, ncol=1) # create matrix with driver mutation names
+
+BCCL_kd.ceres_3["Driver mutation"] <- sapply(1:nrow(BCCL_kd.ceres_3), function(j){
+     if(rownames(BCCL_kd.ceres_3)[j] %in% drivermut){
+         BCCL_kd.ceres_3[j,1] = "driver mutation"
+     } else {
+         BCCL_kd.ceres_3[j,1] = "no driver mutation"
+     }
+  })
+# labeling driver mutations with "driver mutation in BCCL_kd.ceres_3" 
 
 
 
