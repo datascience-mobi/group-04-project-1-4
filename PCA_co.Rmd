@@ -101,8 +101,7 @@ table(km$cluster)
 
 fviz_cluster(km, data=BCCL_Expression_rmv_s)
 
-
-#trying to determine optimal cluster number with silhouette method
+#trying to determine optimal cluster number with silhouette method- not yet functional 
 
 s <- sapply(2:10, function(k) {
   kmeans(x=BCCL_Expression_rmv_s, centers = k);
@@ -110,11 +109,10 @@ s <- sapply(2:10, function(k) {
   si = silhouette(km$cluster, D);
   si_sum = (summary(si, FUN = mean))
 })
-
 ```
 
 
-#Loading mutImpact Matrix
+#kmeans with CERES scores
 
 ```{r kmeans ceres}
 #loading required packages
@@ -185,13 +183,10 @@ data_clus_3 = BCCL_kd.ceres_3[data_cluster == 3,] #dataframe with all 1148 genes
 barplot(data_clus_3[,"rowMeans(BCCL_kd.ceres_3)"], main="Gene cluster 3", xlab="CERES scores") 
 
 
-
-
 #LABELING DRIVER MUTATIONS 
 # CCND mutation not present in BCCL_kd.ceres_3 matrix but ERBB2, ERBB2IP, MYCBP, PARP10 and PIK3CA found. ERBB2IP however not in same cluster as other driver mutations 
 
-drivermut =  matrix(c("ERBB2","MYCBP", "PARP10", "PIK3CA"), nrow=4, ncol=1) # create matrix with driver mutation names
-
+drivermut =  c("ERBB2","MYCBP", "PARP10", "PIK3CA") # create vector with driver mutation names
 data_clus_4 = data_clus_3
 data_clus_4["Driver mutation"] <- sapply(1:nrow(data_clus_3), function(j){
      if(rownames(data_clus_4)[j] %in% drivermut){
@@ -202,12 +197,12 @@ data_clus_4["Driver mutation"] <- sapply(1:nrow(data_clus_3), function(j){
   }) # labeling driver mutations with "driver mutation" in data_clus_3 
 
 
-
-
-
-
-
 ```
+
+
+
+
+
 
 ```{r code}
 <<<<<<< HEAD
@@ -227,34 +222,11 @@ BCCL_kd.ceres_an$mutation <- sapply(1:nrow(BCCL_kd.ceres), function(j){
      }
   })
 BCCL_kd.ceres_an <- BCCL_kd.ceres_an[c("mutation", tPatients_ID)]#reorder columns 
->>>>>>> 
-```
-
-
-
-
-
-
-AUSSORTIERTER CODE
-
-```{r loop}
-#now I need a loop where for each gene, not a rowname in MutImpact_c replace "mutation" with "No mutation"
-#not yet quite functional yet 
-for(j in 1:nrow(BCCL_kd.ceres_2)){
-  if(rownames(BCCL_kd.ceres_2)[j] %in% rownames(mutImpact_c)){
-   BCCL_kd.ceres_3 = BCCL_kd.ceres_2[-c(j),]
-  } else {}
-}
 
 ```
 
-#test with autoplot ggfortify but not yet successfull- error message frequent ==> Error in inds_combine(.vars, ind_list) : Position must be between 0 and n
-```{r ggfortify test}
-install.packages("ggfortify")
-library(ggfortify)
-autoplot(kmeans(mutImpact, 2), data = mutImpact,label = TRUE, label.size = 3, frame = TRUE)
 
-```
+
 
 
 #PCA but not yet complete!
