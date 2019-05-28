@@ -187,17 +187,19 @@ barplot(data_clus_3[,"rowMeans(BCCL_kd.ceres_3)"], main="Gene cluster 3", xlab="
 # CCND mutation not present in BCCL_kd.ceres_3 matrix but ERBB2, ERBB2IP, MYCBP, PARP10 and PIK3CA found. ERBB2IP however not in same cluster as other driver mutations 
 
 drivermut =  c("ERBB2","MYCBP", "PARP10", "PIK3CA") # create vector with driver mutation names
-data_clus_4 = data_clus_3
-data_clus_4["Driver mutation"] <- sapply(1:nrow(data_clus_3), function(j){
-     if(rownames(data_clus_4)[j] %in% drivermut){
-         data_clus_4[j,1] = "driver mutation"
+data_clus_3e = data_clus_3
+data_clus_3e["Driver mutation"] <- sapply(1:nrow(data_clus_3), function(j){
+     if(rownames(data_clus_3e)[j] %in% drivermut){
+         data_clus_3e[j,1] = "driver mutation"
      } else {
-         data_clus_4[j,1] = "no driver mutation"
+         data_clus_3e[j,1] = "no driver mutation"
      }
-  }) # labeling driver mutations with "driver mutation" in data_clus_3 
+  }) # labeling driver mutations with "driver mutation" in data_clus_3e 
 
 
 ```
+
+
 
 
 
