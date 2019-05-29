@@ -130,3 +130,17 @@ finalFrame <- finalFrame[,2:ncol(finalFrame)]
 colnames(finalFrame) <- driver_mut
 head(finalFrame)
 ```
+#show which genes are not potential SSTs
+```{r}
+#generate matrix containing all non-SSTs
+non_potSSTs <- BCCL_kd.ceres[-which(rownames(BCCL_kd.ceres) == rownames(mutImpact_r)),]
+
+#add information on SST status in BCCL_kd.ceres matrix
+BCCL_kd.ceres_an$SST_status <- sapply(1:nrow(BCCL_kd.ceres_an), function(c) {
+  if (rownames(BCCL_kd.ceres_an)[c] %in% rownames(mutImpact_r)) {
+    BCCL_kd.ceres_an[c, 2] = "pot SST"
+  } else {
+    BCCL_kd.ceres_an[c, 2] = "no SST"
+  }
+})
+BCCL_kd.ceres_an <- BCCL_kd.ceres_an[c("mutation", "SST_status", tPatients_ID)]#reorder columns
