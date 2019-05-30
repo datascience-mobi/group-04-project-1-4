@@ -78,15 +78,8 @@ BCCL_kd.prob_ID <- insertRow(existingDF, newrow, r)
 rownames(BCCL_kd.prob_ID) <- c("Deep_ID", rownameskdp)
 ```
 
-
 #kmeans for Expression data test
 ```{r kmeans}
-install.packages("tidyverse")
-install.packages("factoextra")
-library(tidyverse)
-library(cluster)
-library(factoextra)
-
 BCCL_Expression_rmv = BCCL_Expression[rowSums(BCCL_Expression != 0) > 0, ]
 BCCL_Expression_rmv_s = scale(BCCL_Expression)
 km= kmeans(x = BCCL_Expression_rmv_s, centers = 2, nstart = 10)
@@ -111,9 +104,7 @@ s <- sapply(2:10, function(k) {
 })
 ```
 
-
-#kmeans with CERES scores
-
+#generating kmeans input matrix
 ```{r kmeans ceres}
 #loading required packages
 install.packages("tidyverse")
@@ -152,8 +143,16 @@ BCCL_kd.ceres_3 = BCCL_kd.ceres_2[BCCL_kd.ceres_2[,"rownameskdc2"] %in%  mutImpa
 BCCL_kd.ceres_3 = BCCL_kd.ceres_3[,-c(1)]
 BCCL_kd.ceres_3 = cbind(BCCL_kd.ceres_3, rowMeans(BCCL_kd.ceres_3)) #calculate rowmeans 
 BCCL_kd.ceres_3 = BCCL_kd.ceres_3[rowMeans(BCCL_kd.ceres_3)<= 0,] # deletion of genes with CERES > 0
+```
 
-# k means clustering with new gene 
+# k means clustering with new input matrix 
+```{r kmeans clustering}
+
+install.packages("tidyverse")
+install.packages("factoextra")
+library(tidyverse)
+library(cluster)
+library(factoextra)
 
 km_CERES= kmeans(x = BCCL_kd.ceres_3, centers = 2, nstart = 10)
 table(km_CERES$cluster)
@@ -161,7 +160,6 @@ wss = sapply(2:10, function(k) {
     kmeans(x = BCCL_kd.ceres_3, centers = k)$tot.withinss
 })
 plot(2:10, wss, type = "b", pch = 19, xlab = "Number of clusters K", ylab = "Total within-clusters sum of squares") # optimal number 4
-
 
 km_CERES= kmeans(x = BCCL_kd.ceres_3, centers = 4, nstart = 10)
 table(km_CERES$cluster)
@@ -180,8 +178,6 @@ data_cluster = km_CERES$cluster
 rownames(data_cluster) = rownames(BCCL_kd.ceres_3)
 data_clus_3 = BCCL_kd.ceres_3[data_cluster == 3,] #dataframe with all 1148 genes in same cluster as driver mutations 
 
-barplot(data_clus_3[,"rowMeans(BCCL_kd.ceres_3)"], main="Gene cluster 3", xlab="CERES scores") 
-
 
 #LABELING DRIVER MUTATIONS 
 # CCND mutation not present in BCCL_kd.ceres_3 matrix but ERBB2, ERBB2IP, MYCBP, PARP10 and PIK3CA found. ERBB2IP however not in same cluster as other driver mutations 
@@ -195,16 +191,45 @@ data_clus_3e["Driver mutation"] <- sapply(1:nrow(data_clus_3), function(j){
          data_clus_3e[j,1] = "no driver mutation"
      }
   }) # labeling driver mutations with "driver mutation" in data_clus_3e 
+```
 
+# Data visualisation of 4 driver mutations 
+```{data visualisation}
 
+barplot(data_clus_3[,"rowMeans(BCCL_kd.ceres_3)"], main="Gene cluster 3", xlab="CERES scores") 
+
+GOI= BCCL_kd.ceres[c("ERBB2","MYCBP", "PARP10", "PIK3CA"),]
+cellsamples = coln
+CERES_boxplot = ggplot(GOI, aes(x = drivermut, y = GOI)) +
+        geom_boxplot(fill = fill, colour = line, alpha = 0.7,
+                     outlier.colour = "#1F3552", outlier.shape = 20) +
+        scale_y_continuous(name = "CERES scores",
+                           breaks = seq(0, 175, 25),
+                           limits=c(0, 175)) +
+        scale_x_discrete(name = "Driver mutations") +
+        ggtitle("CERES scores of selected driver mutations")
+CERES_boxplot
+```
+
+#PCA using BCCL_kd.ceres_3
+```{r PCA BCCL_kd.ceres_3}
+install.packages("ggfortify")
+library(ggfortify)
+
+tBCCL_kd.ceres = t(BCCL_kd.ceres_3[,-c(28)]) # transformation of BCCL_kd.ceres_3 matrix
+CERES.pca = prcomp(tBCCL_kd.ceres, center = T, scale = T, rank = 2)  
+summary(CERES.pca)
+
+plot(CERES.pca, type = "l")  # Identify PCs with most variabilit SS
+autoplot(CERES.pca, label = TRUE, label.size = 3) # need to add colour based on whether driver mutation or not
+
+CERES.pca.loadings = CERES.pca$rotation # loadings PC1 and PC2
+Sor.CERES.pca.load= -CERES.pca.loadings [order(CERES.pca.loadings[,1]),] #managed to order PC1 column according to size (PC2 not yet)
+Sor.CERES.pca.load[1:200,] # first 200 genes do not contain driver mutations 
 ```
 
 
-
-
-
-
-
+#Alternativ Code 
 
 ```{r code}
 <<<<<<< HEAD
@@ -226,52 +251,3 @@ BCCL_kd.ceres_an$mutation <- sapply(1:nrow(BCCL_kd.ceres), function(j){
 BCCL_kd.ceres_an <- BCCL_kd.ceres_an[c("mutation", tPatients_ID)]#reorder columns 
 
 ```
-
-
-
-
-
-#PCA but not yet complete!
-``` {r PCA}
-install.packages("ggfortify")
-library(ggfortify)
-
-tBCCL_Expression = t(BCCL_Expression)
-Expression.pca = prcomp(tBCCL_Expression, center = T, scale = F, rank = 2)  # scaling not possible due to zeros # rank = 2 since only interested in first 2 PCA components 
-summary(Expression.pca)
-
-plot(Expression.pca, type = "l")  # First 2 components = most of data  variability using Elbow-method 
-autoplot(Expression.pca, label = TRUE, label.size = 3) # need to add colour based on whether driver mutation or not
-
-Expression.pca.loadings = Expression.pca$rotation # laodings PC1 and PC2
-Sor.Expr.pca.load= -Expression.pca.loadings [order(Expression.pca.loadings[,1], Expression.pca.loadings[,2]),] #managed to order PC1 column according to size (PC2 not yet)
-Sor.Expr.pca.load[1:200,] # first 200 genes do not contain driver mutations - perhaps assign rank
-
-```
-
-
-Things to do: 
-* manually scale Expression values 
-* add column to tBCCL_expression which shows mutation or not from  MutImpact Matrix (?) 
-* could also order matrix also according to PC2
-* assign rank to genes according to PC1 und PC2 (insert 2 columns with appropriate rank- can identify driver mutations)
-
-#Same process for CERES scores (needs to be adapted if any changes made above)
-
-```{r PCA Ceres}
-tBCCL_kd.ceres = t(BCCL_kd.ceres)
-Ceres.pca = prcomp(tBCCL_kd.ceres, center = T, scale = T, rank = 2)  
-summary(Ceres.pca)
-
-plot(Ceres.pca, type = "l")  # First 2 components = most of data  variability using Elbow-method 
-autoplot(Ceres.pca, label = TRUE, label.size = 3) # need to add colour based on whether driver mutation or not
-
-Ceres.pca.loadings = Ceres.pca$rotation # loadings PC1 and PC2
-Sor.Ceres.pca.load= -Ceres.pca.loadings [order(Ceres.pca.loadings[,1]),] #managed to order PC1 column according to size (PC2 not yet)
-Sor.Ceres.pca.load[1:200,] # first 200 genes do not contain driver mutations - perhaps assign rank
-```
-
-#cleaning matrix of AARSP1 column
-rmv_AARSP1 = which(colnames(tBCCL_Expression) %in% c("AARSP1")) 
-cl_tBCCL_Expression = cl_tBCCL_Expression[, -rmv_AARSP1] # however scaling still does not work since Zero-column still there need now to filter all columns which are 0
-
