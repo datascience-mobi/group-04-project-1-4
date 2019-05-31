@@ -87,3 +87,19 @@ wil.p.mean = wil.p.sum/non.na
 
 #problem is that you cannot change rownames and there is something wrong with the computation as some values are 1 (NAN are the values in case there is no co-existence of the DV and the SST)
 ```
+##So maybe it would be useful to try a PCA on the mutImpact matrix, since it did not really work out in the expression matrix.
+
+```{r}
+table(is.na(mutImpact)) #counting the NAs over the whole mutImpact matrix.
+PCA_mutimpact <- mutImpact #creating a copy
+dim(PCA_mutimpact) #removing all NAs by a for loop and replacing them with a zero
+for (i in 1:17634){} 
+  for(j in 1:28)
+    if (is.na(PCA_mutimpact[i,j])){
+      PCA_mutimpact[i,j] <- 0
+    }
+}
+}
+anyNA(PCA_mutimpact) #verify if all NAs are removed
+
+
