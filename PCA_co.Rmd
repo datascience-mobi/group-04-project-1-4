@@ -1,10 +1,13 @@
 ---
-title: "kmeans -> Dmut"
+title: "PCA and related plots -> Dmut"
 author: "Elias Benjamin Farr"
 date: "17 Mai 2019"
 output: html_document
 ---
-
+Objective of PCA:
+  + For this dimension reduction process, we try to find similarity in the dataset.
+  + Prinicipal Components describe the directions with the most varianc in data.
+  
 #Loading Data
 ```{r Load.Data}
 allDepMapData = readRDS("path/to/your/directory/DepMap19Q1_allData.RDS")
@@ -75,136 +78,15 @@ BCCL_kd.prob_ID <- insertRow(existingDF, newrow, r)
 rownames(BCCL_kd.prob_ID) <- c("Deep_ID", rownameskdp)
 ```
 
-#generating kmeans input matrix
-```{r kmeans ceres}
 
-#Loading mutImpact matrix
-pre_mutImpact <- BCCL_kd.ceres
-colnames(pre_mutImpact)<-tPatients_ID
-mutImpact <- matrix( , nrow = 17634, ncol = 28)
-colnames(mutImpact)<-colnames(pre_mutImpact)
-rownames(mutImpact)<-rownames(pre_mutImpact)
-for (j in 1:ncol(pre_mutImpact)){
-  lineID <- colnames(pre_mutImpact)[j] #select a column-name aka cell line
-  for (i in 1:nrow(pre_mutImpact)){
-    GOI <- rownames(pre_mutImpact)[i] #select a gene
-    if (GOI %in% BCCL_Mutation[[lineID]]$Hugo_Symbol){
-      mutImpact[i, j] <- pre_mutImpact[i, j]
-    } else {
-      mutImpact[i, j] <- NA
-    }#replace CERES value with NA in case the gene is not mutated
-  }
-}
-
-# selecting only genes mutated at least once and with Ceres >= 0
-mutImpact_c = mutImpact[rowSums(is.na(mutImpact)) != ncol(mutImpact),]# remove all genes withall NA values
-rownamesmutImpc = rownames(mutImpact_c)
-mutImpact_c = cbind(rownamesmutImpc, mutImpact_c[,2:ncol(mutImpact_c)]) # insert new column with row names
-dim(mutImpact_c) # check gene reduction 
-rownameskdc2 = rownames(BCCL_kd.ceres)
-BCCL_kd.ceres_2 = cbind(rownameskdc2, BCCL_kd.ceres[,2:ncol(BCCL_kd.ceres)]) # insert new column with row names
-BCCL_kd.ceres_3 = BCCL_kd.ceres_2[BCCL_kd.ceres_2[,"rownameskdc2"] %in%  mutImpact_c[,"rownamesmutImpc"],] 
-BCCL_kd.ceres_3 = BCCL_kd.ceres_3[,-c(1)]
-BCCL_kd.ceres_3 = cbind(BCCL_kd.ceres_3, rowMeans(BCCL_kd.ceres_3)) #calculate rowmeans 
-BCCL_kd.ceres_3 = BCCL_kd.ceres_3[rowMeans(BCCL_kd.ceres_3)<= 0,] # deletion of genes with CERES > 0
-```
-
-# k means clustering with new input matrix 
-```{r kmeans clustering}
-
-#loading required packages 
+#kmeans for Expression data test
+```{r kmeans}
 install.packages("tidyverse")
 install.packages("factoextra")
 library(tidyverse)
 library(cluster)
 library(factoextra)
 
-km_CERES= kmeans(x = BCCL_kd.ceres_3, centers = 2, nstart = 10)
-table(km_CERES$cluster)
-wss = sapply(2:10, function(k) {
-    kmeans(x = BCCL_kd.ceres_3, centers = k)$tot.withinss
-})
-plot(2:10, wss, type = "b", pch = 19, xlab = "Number of clusters K", ylab = "Total within-clusters sum of squares") # optimal number 4
-
-km_CERES= kmeans(x = BCCL_kd.ceres_3, centers = 4, nstart = 10)
-table(km_CERES$cluster)
-fviz_cluster(km_CERES, data=BCCL_kd.ceres_3, labelsize = 6) # plotting clusters
-
-km_CERES$cluster["ERBB2"]
-km_CERES$cluster["ERBB2IP"]
-km_CERES$cluster["MYCBP"]
-km_CERES$cluster["PARP10"]
-km_CERES$cluster["PIK3CA"] 
-
-# all driver mutations in cluster 2 when centers = 2
-# all driver mutations but ERBB2IP in cluster 3 when centers = 4 => hence ERBB2IP eliminated
-
-data_cluster = km_CERES$cluster
-rownames(data_cluster) = rownames(BCCL_kd.ceres_3)
-data_clus_3 = BCCL_kd.ceres_3[data_cluster == 3,] #dataframe with all 1148 genes in same cluster as driver mutations 
-
-
-#LABELING DRIVER MUTATIONS 
-# CCND mutation not present in BCCL_kd.ceres_3 matrix but ERBB2, ERBB2IP, MYCBP, PARP10 and PIK3CA found. ERBB2IP however not in same cluster as other driver mutations - eliminated
-
-drivermut =  c("ERBB2","MYCBP", "PARP10", "PIK3CA") # create vector with driver mutation names
-data_clus_3e = data_clus_3
-data_clus_3e["Driver mutation"] <- sapply(1:nrow(data_clus_3), function(j){
-     if(rownames(data_clus_3e)[j] %in% drivermut){
-         data_clus_3e[j,1] = "driver mutation"
-     } else {
-         data_clus_3e[j,1] = "no driver mutation"
-     }
-  }) # labeling driver mutations with "driver mutation" in data_clus_3e 
-```
-
-# Data visualisation of 4 driver mutations 
-```{data visualisation}
-
-barplot(data_clus_3[,"rowMeans(BCCL_kd.ceres_3)"], main="Gene cluster 3", xlab="CERES scores") 
-
-GOI= BCCL_kd.ceres[c("ERBB2","MYCBP", "PARP10", "PIK3CA"),]
-GOI_MYCBP = cbind(t(GOI[c("MYCBP"),]), "MYCBP")
-GOI_PARP10 = cbind(t(GOI[c("PARP10"),]), "PARP10")
-GOI_PIK3CA = cbind(t(GOI[c("PIK3CA"),]), "PIK3CA")
-GOI_ERBB2 = cbind(t(GOI[c("ERBB2"),]), "ERBB2")
-CERES_driver_mut = rbind(GOI_ERBB2, GOI_MYCBP, GOI_PARP10, GOI_PIK3CA)
-colnames(CERES_driver_mut) = c("CERES score","Driver mutation")
-CERESscore = CERES_driver_mut[,"CERES score"]
-Drivermutation = CERES_driver_mut[,"Driver mutation"]
-CERES_boxplot = ggplot(CERES_driver_mut, aes(x = Drivermutation, y = CERESscore)) +
-        geom_boxplot(aes(fill=Drivermutation), outlier.alpha = 0.7,
-                     outlier.colour = "#1F3552", outlier.shape = 20, outlier.size = 0.2) +
-       ggtitle("CERES scores of selected driver mutations") 
-CERES_boxplot
-```
-
-#PCA using BCCL_kd.ceres_3
-```{r PCA BCCL_kd.ceres_3}
-install.packages("ggfortify")
-library(ggfortify)
-
-tBCCL_kd.ceres = t(BCCL_kd.ceres_3[,-c(28)]) # transformation of BCCL_kd.ceres_3 matrix
-CERES.pca = prcomp(tBCCL_kd.ceres, center = T, scale = T, rank = 2)  
-summary(CERES.pca)
-
-plot(CERES.pca, type = "l")  # Identify PCs with most variabilit SS
-autoplot(CERES.pca, label = TRUE, label.size = 3) # need to add colour based on whether driver mutation or not
-
-CERES.pca.loadings = CERES.pca$rotation # loadings PC1 and PC2
-Sor.CERES.pca.load= -CERES.pca.loadings [order(CERES.pca.loadings[,1]),] #managed to order PC1 column according to size (PC2 not yet)
-Sor.CERES.pca.load[1:200,] # first 200 genes do not contain driver mutations 
-```
-
-
-
-
-
-
-#Alternativ Code 
-
-#kmeans for Expression data test
-```{r kmeans}
 BCCL_Expression_rmv = BCCL_Expression[rowSums(BCCL_Expression != 0) > 0, ]
 BCCL_Expression_rmv_s = scale(BCCL_Expression)
 km= kmeans(x = BCCL_Expression_rmv_s, centers = 2, nstart = 10)
@@ -229,6 +111,101 @@ s <- sapply(2:10, function(k) {
 })
 ```
 
+
+#kmeans with CERES scores
+
+```{r kmeans ceres}
+#loading required packages
+install.packages("tidyverse")
+install.packages("factoextra")
+library(tidyverse)
+library(cluster)
+library(factoextra)
+
+#Loading mutImpact matrix
+pre_mutImpact <- BCCL_kd.ceres
+colnames(pre_mutImpact)<-tPatients_ID
+mutImpact <- matrix( , nrow = 17634, ncol = 28)
+colnames(mutImpact)<-colnames(pre_mutImpact)
+rownames(mutImpact)<-rownames(pre_mutImpact)
+for (j in 1:ncol(pre_mutImpact)){
+  lineID <- colnames(pre_mutImpact)[j] #select a column-name aka cell line
+  for (i in 1:nrow(pre_mutImpact)){
+    GOI <- rownames(pre_mutImpact)[i] #select a gene
+    if (GOI %in% BCCL_Mutation[[lineID]]$Hugo_Symbol){
+      mutImpact[i, j] <- pre_mutImpact[i, j]
+    } else {
+      mutImpact[i, j] <- NA
+    }#replace CERES value with NA in case the gene is not mutated
+  }
+}
+
+# selecting only genes mutated at least once and with Ceres >= 0
+
+mutImpact_c = mutImpact[rowSums(is.na(mutImpact)) != ncol(mutImpact),]# remove all genes withall NA values
+rownamesmutImpc = rownames(mutImpact_c)
+mutImpact_c = cbind(rownamesmutImpc, mutImpact_c[,2:ncol(mutImpact_c)]) # insert new column with row names
+dim(mutImpact_c) # check gene reduction 
+rownameskdc2 = rownames(BCCL_kd.ceres)
+BCCL_kd.ceres_2 = cbind(rownameskdc2, BCCL_kd.ceres[,2:ncol(BCCL_kd.ceres)]) # insert new column with row names
+BCCL_kd.ceres_3 = BCCL_kd.ceres_2[BCCL_kd.ceres_2[,"rownameskdc2"] %in%  mutImpact_c[,"rownamesmutImpc"],] 
+BCCL_kd.ceres_3 = BCCL_kd.ceres_3[,-c(1)]
+BCCL_kd.ceres_3 = cbind(BCCL_kd.ceres_3, rowMeans(BCCL_kd.ceres_3)) #calculate rowmeans 
+BCCL_kd.ceres_3 = BCCL_kd.ceres_3[rowMeans(BCCL_kd.ceres_3)<= 0,] # deletion of genes with CERES > 0
+
+# k means clustering with new gene 
+
+km_CERES= kmeans(x = BCCL_kd.ceres_3, centers = 2, nstart = 10)
+table(km_CERES$cluster)
+wss = sapply(2:10, function(k) {
+    kmeans(x = BCCL_kd.ceres_3, centers = k)$tot.withinss
+})
+plot(2:10, wss, type = "b", pch = 19, xlab = "Number of clusters K", ylab = "Total within-clusters sum of squares") # optimal number 4
+
+
+km_CERES= kmeans(x = BCCL_kd.ceres_3, centers = 4, nstart = 10)
+table(km_CERES$cluster)
+fviz_cluster(km_CERES, data=BCCL_kd.ceres_3, labelsize = 6) # plotting clusters
+
+km_CERES$cluster["ERBB2"]
+km_CERES$cluster["ERBB2IP"]
+km_CERES$cluster["MYCBP"]
+km_CERES$cluster["PARP10"]
+km_CERES$cluster["PIK3CA"] 
+
+# all driver mutations in cluster 2 when centers = 2
+# all driver mutations but ERBB2IP in cluster 3 when centers = 4 => hence ERBB2IP eliminate
+
+data_cluster = km_CERES$cluster
+rownames(data_cluster) = rownames(BCCL_kd.ceres_3)
+data_clus_3 = BCCL_kd.ceres_3[data_cluster == 3,] #dataframe with all 1148 genes in same cluster as driver mutations 
+
+barplot(data_clus_3[,"rowMeans(BCCL_kd.ceres_3)"], main="Gene cluster 3", xlab="CERES scores") 
+
+
+#LABELING DRIVER MUTATIONS 
+# CCND mutation not present in BCCL_kd.ceres_3 matrix but ERBB2, ERBB2IP, MYCBP, PARP10 and PIK3CA found. ERBB2IP however not in same cluster as other driver mutations 
+
+drivermut =  c("ERBB2","MYCBP", "PARP10", "PIK3CA") # create vector with driver mutation names
+data_clus_3e = data_clus_3
+data_clus_3e["Driver mutation"] <- sapply(1:nrow(data_clus_3), function(j){
+     if(rownames(data_clus_3e)[j] %in% drivermut){
+         data_clus_3e[j,1] = "driver mutation"
+     } else {
+         data_clus_3e[j,1] = "no driver mutation"
+     }
+  }) # labeling driver mutations with "driver mutation" in data_clus_3e 
+
+
+```
+
+
+
+
+
+
+
+
 ```{r code}
 <<<<<<< HEAD
 BCCL_kd.ceres_3 = BCCL_kd.ceres_2[BCCL_kd.ceres_2[,"rownameskdc2"] %in% mutImpact_c[,"rownamesmutImpc"],] # reduce BCCL_kd.ceres_2 matrix to genes mutated at least once
@@ -249,3 +226,52 @@ BCCL_kd.ceres_an$mutation <- sapply(1:nrow(BCCL_kd.ceres), function(j){
 BCCL_kd.ceres_an <- BCCL_kd.ceres_an[c("mutation", tPatients_ID)]#reorder columns 
 
 ```
+
+
+
+
+
+#PCA but not yet complete!
+``` {r PCA}
+install.packages("ggfortify")
+library(ggfortify)
+
+tBCCL_Expression = t(BCCL_Expression)
+Expression.pca = prcomp(tBCCL_Expression, center = T, scale = F, rank = 2)  # scaling not possible due to zeros # rank = 2 since only interested in first 2 PCA components 
+summary(Expression.pca)
+
+plot(Expression.pca, type = "l")  # First 2 components = most of data  variability using Elbow-method 
+autoplot(Expression.pca, label = TRUE, label.size = 3) # need to add colour based on whether driver mutation or not
+
+Expression.pca.loadings = Expression.pca$rotation # laodings PC1 and PC2
+Sor.Expr.pca.load= -Expression.pca.loadings [order(Expression.pca.loadings[,1], Expression.pca.loadings[,2]),] #managed to order PC1 column according to size (PC2 not yet)
+Sor.Expr.pca.load[1:200,] # first 200 genes do not contain driver mutations - perhaps assign rank
+
+```
+
+
+Things to do: 
+* manually scale Expression values 
+* add column to tBCCL_expression which shows mutation or not from  MutImpact Matrix (?) 
+* could also order matrix also according to PC2
+* assign rank to genes according to PC1 und PC2 (insert 2 columns with appropriate rank- can identify driver mutations)
+
+#Same process for CERES scores (needs to be adapted if any changes made above)
+
+```{r PCA Ceres}
+tBCCL_kd.ceres = t(BCCL_kd.ceres)
+Ceres.pca = prcomp(tBCCL_kd.ceres, center = T, scale = T, rank = 2)  
+summary(Ceres.pca)
+
+plot(Ceres.pca, type = "l")  # First 2 components = most of data  variability using Elbow-method 
+autoplot(Ceres.pca, label = TRUE, label.size = 3) # need to add colour based on whether driver mutation or not
+
+Ceres.pca.loadings = Ceres.pca$rotation # loadings PC1 and PC2
+Sor.Ceres.pca.load= -Ceres.pca.loadings [order(Ceres.pca.loadings[,1]),] #managed to order PC1 column according to size (PC2 not yet)
+Sor.Ceres.pca.load[1:200,] # first 200 genes do not contain driver mutations - perhaps assign rank
+```
+
+#cleaning matrix of AARSP1 column
+rmv_AARSP1 = which(colnames(tBCCL_Expression) %in% c("AARSP1")) 
+cl_tBCCL_Expression = cl_tBCCL_Expression[, -rmv_AARSP1] # however scaling still does not work since Zero-column still there need now to filter all columns which are 0
+
