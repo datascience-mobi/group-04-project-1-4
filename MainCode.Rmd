@@ -11,6 +11,13 @@ output: html_document
 install.packages("ggplot2")
 # load package
 library("ggplot2")
+
+'required packages for selection of DV and SSTs
+install.packages("tidyverse")
+install.packages("factoextra")
+library(tidyverse)
+library(cluster)
+library(factoextra)
 ```
 
 #data clean up
