@@ -92,10 +92,53 @@ wil.p.mean = wil.p.sum/non.na
 
 #problem is that you cannot change rownames and there is something wrong with the computation as some values are 1 (NAN are the values in case there is no co-existence of the DV and the SST)
 ```
-##So maybe it would be useful to try a PCA on the mutImpact matrix, since it did not really work out in the expression matrix.
-
+##unpaired Wilcoxon test:
 ```{r}
-<<<<<<< HEAD
+driver_mut <- c("ERBB2","MYCBP", "PARP10", "PIK3CA") #enter driver mutations
+mutImpact_r = mutImpact[rowSums(is.na(mutImpact)) != ncol(mutImpact), ] #_r=reduced: get rid of all the ONLY NA rows (this will save computation)
+
+finalData <- lapply(seq_along(driver_mut), function(a) {
+  driverMutPicker <- driver_mut[a] #pick a driver mutation
+  outputData <- sapply(1:nrow(mutImpact_r), function(b) {
+    row_picker <- mutImpact_r[b,]
+    
+    #row_picker <- row_picker[complete.cases(row_picker)] #pick refernce data and get rid of NA values
+    #print(paste0("I am doing: ",a, ";", b))
+    #Extract the reference
+    refData <- mutImpact_r[which(rownames(mutImpact_r) == driverMutPicker),] #pick the data for the reference driver Mutation
+    #refData <- refData[complete.cases(refData)] #make sure to take no NA values
+    
+    #Make a wilcoxon test --> make an unpaired test: https://stats.stackexchange.com/questions/93734/paired-or-unpaired-wilcoxon-test
+    out <- wilcox.test(as.vector(refData[complete.cases(refData)]), as.vector(row_picker[complete.cases(row_picker)]))
+    #out <- wilcox.test(refData, row_picker, paired = TRUE, na.action = na.exclude)
+    return(out$p.value)
+  })
+  names(outputData) <- rownames(mutImpact_r)
+  return(outputData)
+})
+names(finalData) <- driver_mut
+
+#Reformat the data
+finalData <- lapply(seq_along(finalData), function(a) {
+  out <- as.data.frame(finalData[[a]])
+  return(out)
+})
+#Use the RDS_lists to create the matrix
+rownames2col <- function(inDF, RowName = ".rownames") {
+  temp <- data.frame(rownames(inDF), inDF, row.names = NULL)
+  names(temp)[1] <- RowName
+  temp
+}
+
+#Put all the sublists to a nice dataframe
+finalFrame <- Reduce(function(finalData, y) merge(finalData, y, by = ".rownames", all = TRUE), lapply(finalData, rownames2col))
+rownames(finalFrame) <- finalFrame[,1]
+finalFrame <- finalFrame[,2:ncol(finalFrame)]
+colnames(finalFrame) <- driver_mut
+head(finalFrame)
+```
+#get an overview over SST status
+```{r}
 #generate matrix containing all non-SSTs
 non_potSSTs <- BCCL_kd.ceres[-which(rownames(BCCL_kd.ceres) == rownames(mutImpact_r)),]
 
@@ -130,6 +173,8 @@ SST_cand_MYCBP <- finalFrame %>% select("MYCBP") %>% rownames_to_column() %>% fi
 SST_cand_PARP10 <- finalFrame %>% select("PARP10") %>% rownames_to_column() %>% filter(!is.na(PARP10)) %>% filter(PARP10 < quantile(PARP10, probs = 0.001)) %>% column_to_rownames() #removal of NA required 
 SST_cand_PIK3CA <- finalFrame %>% select("PIK3CA") %>% rownames_to_column() %>% filter(PIK3CA < quantile(PIK3CA, probs = 0.001)) %>% column_to_rownames()
 ```
+
+
 =======
 ```{r}
 table(is.na(mutImpact)) #counting the NAs over the whole mutImpact matrix.

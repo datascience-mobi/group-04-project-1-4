@@ -198,20 +198,86 @@ data_clus_3e["Driver mutation"] <- sapply(1:nrow(data_clus_3), function(j){
 
 
 ```
+# Data visualisation of 4 driver mutations 
+```{data visualisation}
+
+barplot(data_clus_3[,"rowMeans(BCCL_kd.ceres_3)"], main="Gene cluster 3", xlab="CERES scores") 
+
+GOI= BCCL_kd.ceres[c("ERBB2","MYCBP", "PARP10", "PIK3CA"),]
+GOI_MYCBP = cbind(t(GOI[c("MYCBP"),]), "MYCBP")
+GOI_PARP10 = cbind(t(GOI[c("PARP10"),]), "PARP10")
+GOI_PIK3CA = cbind(t(GOI[c("PIK3CA"),]), "PIK3CA")
+GOI_ERBB2 = cbind(t(GOI[c("ERBB2"),]), "ERBB2")
+CERES_driver_mut = rbind(GOI_ERBB2, GOI_MYCBP, GOI_PARP10, GOI_PIK3CA)
+colnames(CERES_driver_mut) = c("CERES score","Driver mutation")
+CERESscore = CERES_driver_mut[,"CERES score"]
+Drivermutation = CERES_driver_mut[,"Driver mutation"]
+CERES_boxplot = ggplot(CERES_driver_mut, aes(x = Drivermutation, y = CERESscore)) +
+        geom_boxplot(aes(fill=Drivermutation), outlier.alpha = 0.7,
+                     outlier.colour = "#1F3552", outlier.shape = 20, outlier.size = 0.2) +
+       ggtitle("CERES scores of selected driver mutations") 
+CERES_boxplot
+```
+
+#PCA using BCCL_kd.ceres_3
+```{r PCA BCCL_kd.ceres_3}
+install.packages("ggfortify")
+library(ggfortify)
+
+tBCCL_kd.ceres = t(BCCL_kd.ceres_3[,-c(28)]) # transformation of BCCL_kd.ceres_3 matrix
+CERES.pca = prcomp(tBCCL_kd.ceres, center = T, scale = T, rank = 2)  
+summary(CERES.pca)
+
+plot(CERES.pca, type = "l")  # Identify PCs with most variabilit SS
+autoplot(CERES.pca, label = TRUE, label.size = 3) # need to add colour based on whether driver mutation or not
+
+CERES.pca.loadings = CERES.pca$rotation # loadings PC1 and PC2
+Sor.CERES.pca.load= -CERES.pca.loadings [order(CERES.pca.loadings[,1]),] #managed to order PC1 column according to size (PC2 not yet)
+Sor.CERES.pca.load[1:200,] # first 200 genes do not contain driver mutations 
+```
+
+
+# first 200 genes do not contain driver mutations
 
 
 
+#Alternativ Code 
 
+#kmeans for Expression data test
+```{r kmeans}
+BCCL_Expression_rmv = BCCL_Expression[rowSums(BCCL_Expression != 0) > 0, ]
+BCCL_Expression_rmv_s = scale(BCCL_Expression)
+km= kmeans(x = BCCL_Expression_rmv_s, centers = 2, nstart = 10)
+table(km$cluster)
+wss = sapply(2:10, function(k) {
+    kmeans(x = BCCL_Expression_rmv_s, centers = k)$tot.withinss
+})
+plot(2:10, wss, type = "b", pch = 19, xlab = "Number of clusters K", ylab = "Total within-clusters sum of squares") # optimal number 4 clusters
 
+km = kmeans(x = BCCL_Expression_rmv_s, centers = 4, nstart = 10)
+table(km$cluster)
+
+fviz_cluster(km, data=BCCL_Expression_rmv_s)
+
+#trying to determine optimal cluster number with silhouette method- not yet functional 
+
+s <- sapply(2:10, function(k) {
+  kmeans(x=BCCL_Expression_rmv_s, centers = k);
+  D = dist(BCCL_Expression_rmv_s);
+  si = silhouette(km$cluster, D);
+  si_sum = (summary(si, FUN = mean))
+})
+```
 
 
 
 ```{r code}
-<<<<<<< HEAD
 BCCL_kd.ceres_3 = BCCL_kd.ceres_2[BCCL_kd.ceres_2[,"rownameskdc2"] %in% mutImpact_c[,"rownamesmutImpc"],] # reduce BCCL_kd.ceres_2 matrix to genes mutated at least once
+````
 
-=======
-#Alternative second try
+
+#Alternative second try to label mutations
+```{r}
 BCCL_kd.ceres_an <- BCCL_kd.ceres #generate new data frame
 colnames(BCCL_kd.ceres_an) <- rownames(BCCL_kd.ceres)
 
@@ -224,10 +290,7 @@ BCCL_kd.ceres_an$mutation <- sapply(1:nrow(BCCL_kd.ceres), function(j){
      }
   })
 BCCL_kd.ceres_an <- BCCL_kd.ceres_an[c("mutation", tPatients_ID)]#reorder columns 
-
 ```
-
-
 
 
 
