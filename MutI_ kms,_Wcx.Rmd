@@ -131,6 +131,7 @@ SST_cand_PARP10 <- finalFrame %>% select("PARP10") %>% rownames_to_column() %>% 
 SST_cand_PIK3CA <- finalFrame %>% select("PIK3CA") %>% rownames_to_column() %>% filter(PIK3CA < quantile(PIK3CA, probs = 0.001)) %>% column_to_rownames()
 ```
 =======
+```{r}
 table(is.na(mutImpact)) #counting the NAs over the whole mutImpact matrix.
 PCA_mutimpact <- mutImpact #creating a copy
 dim(PCA_mutimpact) #removing all NAs by a for loop and replacing them with a zero
@@ -151,4 +152,5 @@ library(ggfortify)
 df <- pca[c(1,2)]
 df <- as.data.frame(sapply(pca[c(1,2)], scale))#to eliminate the error "Error in colMeans(x, na.rm = TRUE) : 'x' must be numeric", since cateogorical variables cannot be sclaed
 autoplot(prcomp(df), loadings = TRUE, loacings.colour = "turquoise", loadings.label = TRUE, loadings.label.size = 3) #we receive the PCA plot
->>>>>>> 21246cd19bf4f57716401bec5ec2f1b522811449
+```
+
