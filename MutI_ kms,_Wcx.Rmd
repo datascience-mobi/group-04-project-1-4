@@ -176,16 +176,16 @@ SST_cand_PIK3CA <- finalFrame %>% select("PIK3CA") %>% rownames_to_column() %>% 
 
 
 =======
-```{r}
+```{r include=FALSE}
 table(is.na(mutImpact)) #counting the NAs over the whole mutImpact matrix.
 PCA_mutimpact <- mutImpact #creating a copy
 dim(PCA_mutimpact) #removing all NAs by a for loop and replacing them with a zero
-for (i in 1:17634){} #for all genes (rows)
-  for(j in 1:28) #for all cell lines (columns)
+for (i in 1:17634){ #for all genes (rows)
+  for(j in 1:28){ #for all cell lines (columns)
     if (is.na(PCA_mutimpact[i,j])){
       PCA_mutimpact[i,j] <- 0
     }
-}
+  }
 }
 anyNA(PCA_mutimpact) #verify if all NAs are removed
 scale(PCA_mutimpact, center = TRUE, scale = TRUE) #unit variance as PCA preperation

@@ -118,7 +118,7 @@ for (j in 1:ncol(pre_mutImpact)){
 ```
 #generation of Input Matrix
 ```{r Input Matrix}
-mutImpact_c = mutImpact[rowSums(is.na(mutImpact)) != ncol(mutImpact),]# remove all genes withall NA values
+mutImpact_c = mutImpact[rowSums(is.na(mutImpact)) != ncol(mutImpact),]# remove all genes with Virall NA values
 rownamesmutImpc = rownames(mutImpact_c)
 mutImpact_c = cbind(rownamesmutImpc, mutImpact_c[,2:ncol(mutImpact_c)]) # insert new column with row names
 dim(mutImpact_c) # check gene reduction 
