@@ -1,13 +1,10 @@
 ---
-title: "PCA and related plots -> Dmut"
+title: "kmeans -> Dmut"
 author: "Elias Benjamin Farr"
 date: "17 Mai 2019"
 output: html_document
 ---
-Objective of PCA:
-  + For this dimension reduction process, we try to find similarity in the dataset.
-  + Prinicipal Components describe the directions with the most varianc in data.
-  
+
 #Loading Data
 ```{r Load.Data}
 allDepMapData = readRDS("path/to/your/directory/DepMap19Q1_allData.RDS")
@@ -78,42 +75,7 @@ BCCL_kd.prob_ID <- insertRow(existingDF, newrow, r)
 rownames(BCCL_kd.prob_ID) <- c("Deep_ID", rownameskdp)
 ```
 
-
-#kmeans for Expression data test
-```{r kmeans}
-install.packages("tidyverse")
-install.packages("factoextra")
-library(tidyverse)
-library(cluster)
-library(factoextra)
-
-BCCL_Expression_rmv = BCCL_Expression[rowSums(BCCL_Expression != 0) > 0, ]
-BCCL_Expression_rmv_s = scale(BCCL_Expression)
-km= kmeans(x = BCCL_Expression_rmv_s, centers = 2, nstart = 10)
-table(km$cluster)
-wss = sapply(2:10, function(k) {
-    kmeans(x = BCCL_Expression_rmv_s, centers = k)$tot.withinss
-})
-plot(2:10, wss, type = "b", pch = 19, xlab = "Number of clusters K", ylab = "Total within-clusters sum of squares") # optimal number 4 clusters
-
-km = kmeans(x = BCCL_Expression_rmv_s, centers = 4, nstart = 10)
-table(km$cluster)
-
-fviz_cluster(km, data=BCCL_Expression_rmv_s)
-
-#trying to determine optimal cluster number with silhouette method- not yet functional 
-
-s <- sapply(2:10, function(k) {
-  kmeans(x=BCCL_Expression_rmv_s, centers = k);
-  D = dist(BCCL_Expression_rmv_s);
-  si = silhouette(km$cluster, D);
-  si_sum = (summary(si, FUN = mean))
-})
-```
-
-
 #kmeans with CERES scores
-
 ```{r kmeans ceres}
 #loading required packages
 install.packages("tidyverse")
@@ -195,9 +157,8 @@ data_clus_3e["Driver mutation"] <- sapply(1:nrow(data_clus_3), function(j){
          data_clus_3e[j,1] = "no driver mutation"
      }
   }) # labeling driver mutations with "driver mutation" in data_clus_3e 
-
-
 ```
+
 # Data visualisation of 4 driver mutations 
 ```{data visualisation}
 
@@ -236,7 +197,6 @@ Sor.CERES.pca.load= -CERES.pca.loadings [order(CERES.pca.loadings[,1]),] #manage
 Sor.CERES.pca.load[1:200,] # first 200 genes do not contain driver mutations 
 ```
 
-
 # first 200 genes do not contain driver mutations
 
 
@@ -270,12 +230,9 @@ s <- sapply(2:10, function(k) {
 ```
 
 
-
 ```{r code}
 BCCL_kd.ceres_3 = BCCL_kd.ceres_2[BCCL_kd.ceres_2[,"rownameskdc2"] %in% mutImpact_c[,"rownamesmutImpc"],] # reduce BCCL_kd.ceres_2 matrix to genes mutated at least once
-````
-
-
+```
 #Alternative second try to label mutations
 ```{r}
 BCCL_kd.ceres_an <- BCCL_kd.ceres #generate new data frame
@@ -293,8 +250,7 @@ BCCL_kd.ceres_an <- BCCL_kd.ceres_an[c("mutation", tPatients_ID)]#reorder column
 ```
 
 
-
-#PCA but not yet complete!
+#Expression PCA
 ``` {r PCA}
 install.packages("ggfortify")
 library(ggfortify)
@@ -312,14 +268,7 @@ Sor.Expr.pca.load[1:200,] # first 200 genes do not contain driver mutations - pe
 
 ```
 
-
-Things to do: 
-* manually scale Expression values 
-* add column to tBCCL_expression which shows mutation or not from  MutImpact Matrix (?) 
-* could also order matrix also according to PC2
-* assign rank to genes according to PC1 und PC2 (insert 2 columns with appropriate rank- can identify driver mutations)
-
-#Same process for CERES scores (needs to be adapted if any changes made above)
+#Same process for CERES scores
 
 ```{r PCA Ceres}
 tBCCL_kd.ceres = t(BCCL_kd.ceres)
@@ -333,8 +282,3 @@ Ceres.pca.loadings = Ceres.pca$rotation # loadings PC1 and PC2
 Sor.Ceres.pca.load= -Ceres.pca.loadings [order(Ceres.pca.loadings[,1]),] #managed to order PC1 column according to size (PC2 not yet)
 Sor.Ceres.pca.load[1:200,] # first 200 genes do not contain driver mutations - perhaps assign rank
 ```
-
-#cleaning matrix of AARSP1 column
-rmv_AARSP1 = which(colnames(tBCCL_Expression) %in% c("AARSP1")) 
-cl_tBCCL_Expression = cl_tBCCL_Expression[, -rmv_AARSP1] # however scaling still does not work since Zero-column still there need now to filter all columns which are 0
-
