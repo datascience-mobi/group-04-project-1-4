@@ -161,23 +161,49 @@ data_clus_3e["Driver mutation"] <- sapply(1:nrow(data_clus_3), function(j){
 
 # Data visualisation of 4 driver mutations 
 ```{data visualisation}
-
 barplot(data_clus_3[,"rowMeans(BCCL_kd.ceres_3)"], main="Gene cluster 3", xlab="CERES scores") 
 
+# CERES_boxplot
 GOI= BCCL_kd.ceres[c("ERBB2","MYCBP", "PARP10", "PIK3CA"),]
-GOI_MYCBP = cbind(t(GOI[c("MYCBP"),]), "MYCBP")
-GOI_PARP10 = cbind(t(GOI[c("PARP10"),]), "PARP10")
-GOI_PIK3CA = cbind(t(GOI[c("PIK3CA"),]), "PIK3CA")
-GOI_ERBB2 = cbind(t(GOI[c("ERBB2"),]), "ERBB2")
-CERES_driver_mut = rbind(GOI_ERBB2, GOI_MYCBP, GOI_PARP10, GOI_PIK3CA)
-colnames(CERES_driver_mut) = c("CERES score","Driver mutation")
-CERESscore = CERES_driver_mut[,"CERES score"]
-Drivermutation = CERES_driver_mut[,"Driver mutation"]
-CERES_boxplot = ggplot(CERES_driver_mut, aes(x = Drivermutation, y = CERESscore)) +
-        geom_boxplot(aes(fill=Drivermutation), outlier.alpha = 0.7,
-                     outlier.colour = "#1F3552", outlier.shape = 20, outlier.size = 0.2) +
-       ggtitle("CERES scores of selected driver mutations") 
+CERES_driver_mut= melt(GOI)
+CERES_driver_mut$variable=rep(c("ERBB2","MYCBP", "PARP10", "PIK3CA"), ncol(GOI))
+
+CERES_boxplot = ggplot(CERES_driver_mut, aes(x = variable, y = value)) +
+       geom_boxplot(aes(fill=variable), outlier.alpha = 0.7,
+                     outlier.colour = "red", outlier.shape = 20, outlier.size = 2) +
+        labs(title = 'CERES scores of selected driver mutations', x = 'Selected driver   mutations', y = 'CERES scores') +
+            theme_minimal() +
+            geom_jitter(width = 0.2) +
+            scale_fill_manual(values=wes_palette(n=3, name="GrandBudapest")) +
+            theme(legend.position ='none',
+                  plot.title = element_text(hjust = 0.4),
+                  axis.text.x = element_text(angle = 0, vjust = 0, hjust=0.5),
+                  legend.title= element_blank(),
+                  axis.title.x = element_blank(),
+                  strip.text.y = element_text(angle = 0))
 CERES_boxplot
+
+
+#Expression_boxplot
+GOI_Exp= BCCL_Expression[c("ERBB2","MYCBP", "PARP10", "PIK3CA"),]
+Expression_driver_mut= melt(GOI_Exp)
+Expression_driver_mut$variable=rep(c("ERBB2","MYCBP", "PARP10", "PIK3CA"), ncol(GOI_Exp))
+
+Expression_boxplot = ggplot(Expression_driver_mut, aes(x = variable, y = value)) +
+       geom_boxplot(aes(fill=variable), outlier.alpha = 0.7,
+                     outlier.colour = "red", outlier.shape = 20, outlier.size = 2) +
+        labs(title = 'Transcripts per million (TPM) of selected driver mutations', x = 'Selected driver mutations', y = 'Transcripts per million (TPM)') +
+            theme_minimal() +
+            geom_jitter(width = 0.2) +
+            scale_fill_manual(values=wes_palette(n=3, name="GrandBudapest")) +
+            theme(legend.position ='none',
+                  plot.title = element_text(hjust = 0.4),
+                  axis.text.x = element_text(angle = 0, vjust = 0, hjust=0.5),
+                  legend.title= element_blank(),
+                  axis.title.x = element_blank(),
+                  strip.text.y = element_text(angle = 0))
+Expression_boxplot
+```
 ```
 
 #PCA using BCCL_kd.ceres_3
@@ -197,7 +223,10 @@ Sor.CERES.pca.load= -CERES.pca.loadings [order(CERES.pca.loadings[,1]),] #manage
 Sor.CERES.pca.load[1:200,] # first 200 genes do not contain driver mutations 
 ```
 
-# first 200 genes do not contain driver mutations
+
+
+
+
 
 
 
@@ -269,7 +298,6 @@ Sor.Expr.pca.load[1:200,] # first 200 genes do not contain driver mutations - pe
 ```
 
 #Same process for CERES scores
-
 ```{r PCA Ceres}
 tBCCL_kd.ceres = t(BCCL_kd.ceres)
 Ceres.pca = prcomp(tBCCL_kd.ceres, center = T, scale = T, rank = 2)  
