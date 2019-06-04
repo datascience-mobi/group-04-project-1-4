@@ -23,4 +23,32 @@ LinResdf1 <- subset(LinResdf0, colname == drivmutCL)
 
 
 ```
+## Idea suggestions for Regression model task
 
+Generally, it was recommended to split the dataset in training:test data (e.g. 80:20) to design a model.
+
+##Training data
+Designs linear regression
+# Step 1: Quick overview
+  + Scatter plot; checks if relation is linear and additive
+  + boxplot; detection of strong outliers (I don´t really expect this, but could still be done)
+  + density plot; checks if response variable is close to normal distribution (maybe useful for F-test?)
+  
+# Step 2: Design and linear regression
+  + with ln() function; optional insertion of 95% CI
+  
+# Step 3: evaluate model
+  + Is hypothesis supported? (-> estimate, std. error, p-value)
+  + Check model fit
+    + Residuals should me symm. dist. around 0 (bell shape, use histogram [ggplot2])
+    + multiple R squares, should be close to 1 on 0-1 range
+    + F-statistics: use p-value to interprete signaficiance for model to fit data
+    
+If these factors are verified:
+
+## Prediction with test data
+  + run model with test data, then calculate prediction accuracy and error rates
+  
+## Ideas collected from:
+[linked phrase](https://www.dataquest.io/blog/statistical-learning-for-predictive-modeling-r/)
+[linked phrase](http://r-statistics.co/Linear-Regression.html#Predicting%20Linear%20Models)
