@@ -12,7 +12,7 @@ install.packages("ggplot2")
 # load package
 library("ggplot2")
 
-'required packages for selection of DV and SSTs
+#required packages for selection of DV and SSTs
 install.packages("tidyverse")
 install.packages("factoextra")
 library(tidyverse)
@@ -221,7 +221,7 @@ summary(finalFrame$MYCBP)
 summary(finalFrame$PARP10)
 summary(finalFrame$PIK3CA)
 
-#select eight most promising SST candidates based on lowest p-values - libraries needed: dplyr, tibble (included in "tidyverse") -> I will try and find a simpler version for this code.. I am pretty sure you can handle this with an apply command
+#select eight most promising SST candidates based on highest p-values - libraries needed: dplyr, tibble (included in "tidyverse") -> I will try and find a simpler version for this code.. I am pretty sure you can handle this with an apply command
 SST_cand_ERBB2 <- finalFrame %>% select("ERBB2") %>% rownames_to_column() %>% filter(ERBB2 > quantile(ERBB2, probs = 0.999)) %>% column_to_rownames()
 SST_cand_MYCBP <- finalFrame %>% select("MYCBP") %>% rownames_to_column() %>% filter(MYCBP > quantile(MYCBP, probs = 0.999)) %>% column_to_rownames()
 SST_cand_PARP10 <- finalFrame %>% select("PARP10") %>% rownames_to_column() %>% filter(!is.na(PARP10)) %>% filter(PARP10 > quantile(PARP10, probs = 0.999)) %>% column_to_rownames() #removal of NA required 

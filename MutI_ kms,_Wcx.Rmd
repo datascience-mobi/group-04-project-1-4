@@ -167,7 +167,7 @@ summary(finalFrame$MYCBP)
 summary(finalFrame$PARP10)
 summary(finalFrame$PIK3CA)
 
-#select eight most promising SST candidates based on lowest p-values - libraries needed: dplyr, tibble (included in "tidyverse") -> I will try and find a simpler version for this code.. I am pretty sure you can handle this with an apply command
+#select eight most promising SST candidates based on highest p-values - libraries needed: dplyr, tibble (included in "tidyverse") -> I will try and find a simpler version for this code.. I am pretty sure you can handle this with an apply command
 SST_cand_ERBB2 <- finalFrame %>% select("ERBB2") %>% rownames_to_column() %>% filter(ERBB2 > quantile(ERBB2, probs = 0.999)) %>% column_to_rownames()
 SST_cand_MYCBP <- finalFrame %>% select("MYCBP") %>% rownames_to_column() %>% filter(MYCBP > quantile(MYCBP, probs = 0.999)) %>% column_to_rownames()
 SST_cand_PARP10 <- finalFrame %>% select("PARP10") %>% rownames_to_column() %>% filter(!is.na(PARP10)) %>% filter(PARP10 > quantile(PARP10, probs = 0.999)) %>% column_to_rownames() #removal of NA required 
@@ -199,3 +199,31 @@ df <- as.data.frame(sapply(pca[c(1,2)], scale))#to eliminate the error "Error in
 autoplot(prcomp(df), loadings = TRUE, loacings.colour = "turquoise", loadings.label = TRUE, loadings.label.size = 3) #we receive the PCA plot
 ```
 
+#new try - identification of SSTs
+```{r}
+driver_mut <- c("ERBB2","MYCBP", "PARP10", "PIK3CA") #enter driver mutations
+mutImpact_r = mutImpact[rowSums(is.na(mutImpact)) != ncol(mutImpact), ] #_r=reduced: get rid of all the ONLY NA rows (this will save computation)
+mutImpact_df <- as.data.frame(t(mutImpact_r)) #generate data frame based on reduced mutImpact matrix
+
+finalData <- lapply(seq_along(driver_mut), function(a) {
+  driverMutPicker <- driver_mut[a] #pick a driver mutation
+  outputData <- sapply(1:ncol(mutImpact_df), function(b) {
+    refgene_picker <- mutImpact_df[,b] #pick reference gene
+    refData <- mutImpact_df %>% select(driverMutPicker, b) #select values of driver mutation and reference gene
+    
+    #check whether mutations co-occur
+    if (rowSums(is.na(refData)) == 0) {
+      refData_subset <- refData %>% drop.na()
+      out <- wilcox.test(as.vector(refData_subset[,1]), as.vector(refData_subset[,2]), paired = TRUE)
+    } else {
+      out <- NA
+    }
+    return(out$p.value)
+  })
+  names(outputData) <- rownames(mutImpact_r)
+  return(outputData)
+})
+names(finalData) <- driver_mut
+
+#error: the condition has length > 1 and only the first element will be usedError: $ operator is invalid for atomic vectors
+```
