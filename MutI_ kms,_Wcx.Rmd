@@ -196,7 +196,7 @@ install.packages("ggfortify")
 library(ggfortify)
 df <- pca[c(1,2)]
 df <- as.data.frame(sapply(pca[c(1,2)], scale))#to eliminate the error "Error in colMeans(x, na.rm = TRUE) : 'x' must be numeric", since cateogorical variables cannot be sclaed
-autoplot(prcomp(df), loadings = TRUE, loacings.colour = "turquoise", loadings.label = TRUE, loadings.label.size = 3) #we receive the PCA plot
+autoplot(prcomp(df), loadings = TRUE, loadings.colour = "turquoise", loadings.label = TRUE, loadings.label.size = 3) #we receive the PCA plot
 ```
 
 #new try - identification of SSTs
@@ -218,7 +218,7 @@ finalData <- lapply(seq_along(driver_mut), function(a) {
     } else {
       out <- NA
     }
-    return(out$p.value)
+    return(out)
   })
   names(outputData) <- rownames(mutImpact_r)
   return(outputData)
