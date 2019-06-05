@@ -189,3 +189,41 @@ finalFrame <- finalFrame[,2:ncol(finalFrame)]
 colnames(finalFrame) <- driver_mut
 head(finalFrame)
 ```
+
+#get an overview over SST status
+```{r}
+#generate matrix containing all non-SSTs
+non_potSSTs <- BCCL_kd.ceres[-which(rownames(BCCL_kd.ceres) == rownames(mutImpact_r)),]
+
+#add information on SST status in BCCL_kd.ceres matrix
+BCCL_kd.ceres_an$SST_status <- sapply(1:nrow(BCCL_kd.ceres_an), function(c) {
+  if (rownames(BCCL_kd.ceres_an)[c] %in% rownames(mutImpact_r)) {
+    BCCL_kd.ceres_an[c, 2] = "pot SST"
+  } else {
+    BCCL_kd.ceres_an[c, 2] = "no SST"
+  }
+})
+BCCL_kd.ceres_an <- BCCL_kd.ceres_an[c("mutation", "SST_status", tPatients_ID)]#reorder columns
+```
+
+#look for real SSTs based on Wilcoxon test data
+```{r}
+#visualize distribution of p-vlaues for each DV
+par(mfrow =c(1,4))
+plot(finalFrame$ERBB2, type = "p", pch = 19, xlab = "gene Index", ylab = "mean p-value Wilcoxon Test" )
+plot(finalFrame$MYCBP, type = "p", pch = 19, xlab = "gene Index", ylab = "mean p-value Wilcoxon Test" )
+plot(finalFrame$PARP10, type = "p", pch = 19, xlab = "gene Index", ylab = "mean p-value Wilcoxon Test" )
+plot(finalFrame$PIK3CA, type = "p", pch = 19, xlab = "gene Index", ylab = "mean p-value Wilcoxon Test" )
+
+#get summary of distribution
+summary(finalFrame$ERBB2)
+summary(finalFrame$MYCBP)
+summary(finalFrame$PARP10)
+summary(finalFrame$PIK3CA)
+
+#select eight most promising SST candidates based on lowest p-values - libraries needed: dplyr, tibble (included in "tidyverse") -> I will try and find a simpler version for this code.. I am pretty sure you can handle this with an apply command
+SST_cand_ERBB2 <- finalFrame %>% select("ERBB2") %>% rownames_to_column() %>% filter(ERBB2 > quantile(ERBB2, probs = 0.999)) %>% column_to_rownames()
+SST_cand_MYCBP <- finalFrame %>% select("MYCBP") %>% rownames_to_column() %>% filter(MYCBP > quantile(MYCBP, probs = 0.999)) %>% column_to_rownames()
+SST_cand_PARP10 <- finalFrame %>% select("PARP10") %>% rownames_to_column() %>% filter(!is.na(PARP10)) %>% filter(PARP10 > quantile(PARP10, probs = 0.999)) %>% column_to_rownames() #removal of NA required 
+SST_cand_PIK3CA <- finalFrame %>% select("PIK3CA") %>% rownames_to_column() %>% filter(PIK3CA > quantile(PIK3CA, probs = 0.999)) %>% column_to_rownames()
+```

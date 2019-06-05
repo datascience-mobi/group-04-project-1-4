@@ -168,10 +168,10 @@ summary(finalFrame$PARP10)
 summary(finalFrame$PIK3CA)
 
 #select eight most promising SST candidates based on lowest p-values - libraries needed: dplyr, tibble (included in "tidyverse") -> I will try and find a simpler version for this code.. I am pretty sure you can handle this with an apply command
-SST_cand_ERBB2 <- finalFrame %>% select("ERBB2") %>% rownames_to_column() %>% filter(ERBB2 < quantile(ERBB2, probs = 0.001)) %>% column_to_rownames()
-SST_cand_MYCBP <- finalFrame %>% select("MYCBP") %>% rownames_to_column() %>% filter(MYCBP < quantile(MYCBP, probs = 0.001)) %>% column_to_rownames()
-SST_cand_PARP10 <- finalFrame %>% select("PARP10") %>% rownames_to_column() %>% filter(!is.na(PARP10)) %>% filter(PARP10 < quantile(PARP10, probs = 0.001)) %>% column_to_rownames() #removal of NA required 
-SST_cand_PIK3CA <- finalFrame %>% select("PIK3CA") %>% rownames_to_column() %>% filter(PIK3CA < quantile(PIK3CA, probs = 0.001)) %>% column_to_rownames()
+SST_cand_ERBB2 <- finalFrame %>% select("ERBB2") %>% rownames_to_column() %>% filter(ERBB2 > quantile(ERBB2, probs = 0.999)) %>% column_to_rownames()
+SST_cand_MYCBP <- finalFrame %>% select("MYCBP") %>% rownames_to_column() %>% filter(MYCBP > quantile(MYCBP, probs = 0.999)) %>% column_to_rownames()
+SST_cand_PARP10 <- finalFrame %>% select("PARP10") %>% rownames_to_column() %>% filter(!is.na(PARP10)) %>% filter(PARP10 > quantile(PARP10, probs = 0.999)) %>% column_to_rownames() #removal of NA required 
+SST_cand_PIK3CA <- finalFrame %>% select("PIK3CA") %>% rownames_to_column() %>% filter(PIK3CA > quantile(PIK3CA, probs = 0.999)) %>% column_to_rownames()
 ```
 
 
