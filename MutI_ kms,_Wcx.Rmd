@@ -227,3 +227,48 @@ names(finalData) <- driver_mut
 
 #error: the condition has length > 1 and only the first element will be usedError: $ operator is invalid for atomic vectors
 ```
+
+#new try based on reduced CERES madtrix - identification of SSTs
+```{r}
+driver_mut <- c("ERBB2","MYCBP", "PARP10", "PIK3CA") #enter driver mutations
+mutImpact_r <- mutImpact[rowSums(is.na(mutImpact)) != ncol(mutImpact), ] #_r=reduced: get rid of all the ONLY NA rows (this will save computation)
+mutImpact_kd.ceres <- BCCL_kd.ceres[rownames(BCCL_kd.ceres) %in% rownames(mutImpact_r),] # create matrix containing CERES scores of genes which are mutated once at minimum
+colnames(mutImpact_kd.ceres) <- tPatients_ID 
+
+testData <- lapply(seq_along(driver_mut), function(a) {
+  driverMutPicker <- driver_mut[a] #pick a driver mutation
+  driverMutData <- mutImpact_kd.ceres[driverMutPicker,] #get ceres scores of driver mutation
+  
+  outputData <- sapply(1:nrow(mutImpact_kd.ceres), function(b) {
+    refGeneData <- mutImpact_kd.ceres[b,] #get ceres scores of reference gene (potential SST)
+    
+    if (rownames(refGeneData) != driverMutPicker) {
+      out <- wilcox.test(as.numeric(driverMutData), as.numeric(refGeneData), paired = TRUE)$p.value #get p-value of wilcoxon signed-rank test
+      return(out)
+    }
+  })
+  names(outputData) <- rownames(mutImpact_r)
+  return(outputData)
+})
+names(testData) <- driver_mut
+
+#Reformat the data
+testData <- lapply(seq_along(testData), function(a) {
+  out <- as.data.frame(testData[[a]])
+  return(out)
+})
+
+#Use the RDS_lists to create the matrix
+rownames2col <- function(inDF, RowName = ".rownames") {
+  temp <- data.frame(rownames(inDF), inDF, row.names = NULL)
+  names(temp)[1] <- RowName
+  temp
+}
+
+#Put all the sublists to a nice dataframe
+testFrame <- Reduce(function(testlData, y) merge(testData, y, by = ".rownames", all = TRUE), lapply(testData, rownames2col))
+rownames(testFrame) <- testFrame[,1]
+testFrame <- testFrame[,2:ncol(testFrame)]
+colnames(testFrame) <- driver_mut
+head(testFrame)
+```
