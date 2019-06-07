@@ -272,3 +272,60 @@ testFrame <- testFrame[,2:ncol(testFrame)]
 colnames(testFrame) <- driver_mut
 head(testFrame)
 ```
+
+## final version
+#2nd new try based on reduced CERES madtrix - identification of SSTs
+```{r}
+driver_mut <- c("ERBB2","MYCBP", "PARP10", "PIK3CA") #enter driver mutations
+mutImpact_r <- mutImpact[rowSums(is.na(mutImpact)) != ncol(mutImpact), ] #_r=reduced: get rid of all the ONLY NA rows (this will save computation)
+mutImpact_kd.ceres <- BCCL_kd.ceres[rownames(BCCL_kd.ceres) %in% rownames(mutImpact_r),] # create matrix containing CERES scores of genes which are mutated once at minimum
+colnames(mutImpact_kd.ceres) <- tPatients_ID 
+
+testData <- lapply(seq_along(driver_mut), function(a) {
+  driverMutPicker <- driver_mut[a] #pick a driver mutation
+  driverMutData <- mutImpact_kd.ceres[driverMutPicker,] #get ceres scores of driver mutation
+  
+  outputData <- sapply(1:nrow(mutImpact_kd.ceres), function(b) {
+    refGeneData <- mutImpact_kd.ceres[b,] #get ceres scores of reference gene (potential SST)
+    
+    if (rownames(refGeneData) != driverMutPicker) {
+      out <- wilcox.test(as.numeric(driverMutData), as.numeric(refGeneData), paired = TRUE)$p.value #get p-value of wilcoxon signed-rank test
+      out <- as.data.frame(out, rownames(mutImpact_r)[b]) 
+      return(out)
+    }
+  })
+  test = do.call(rbind, outputData)
+  rownames(test) <- rownames(mutImpact_r)[which(rownames(mutImpact_r) != driverMutPicker)]
+  return(test)
+})
+names(testData) <- driver_mut
+
+lapply(testData, function(a) head(a)) #look at the data
+
+
+```
+#look for real SSTs based on Wilcoxon test data
+```{r}
+#get summary of distribution
+summary(testData$ERBB2)
+summary(testData$MYCBP)
+summary(testData$PARP10)
+summary(testData$PIK3CA)
+
+#select 15 most promising SST candidates based on highest p-values - libraries needed: dplyr, tibble (included in "tidyverse")
+
+SST_cand_ERBB2 <- as.data.frame(testData$ERBB2, col.names = names(testData$ERBB2)) #create new data frame containing testData for ERBB2
+SST_cand_MYCBP <- as.data.frame(testData$MYCBP, col.names = names(testData$MYCBP))
+SST_cand_PARP10 <- as.data.frame(testData$PARP10, col.names = names(testData$PARP10))
+SST_cand_PIK3CA <- as.data.frame(testData$PIK3CA, col.names = names(testData$PIK3CA))
+
+names(SST_cand_ERBB2) = "ERBB2" #rename column
+names(SST_cand_MYCBP) = "MYCBP"
+names(SST_cand_PARP10) = "PARP10"
+names(SST_cand_ERBB2) = "PIK3CA"
+
+SST_cand_ERBB2 <- SST_cand_ERBB2 %>%rownames_to_column() %>% top_n(15) %>% column_to_rownames() #select 15 genes with highest p-value
+SST_cand_MYCBP <- SST_cand_MYCBP %>% rownames_to_column() %>% top_n(15) %>% column_to_rownames()
+SST_cand_PARP10 <- SST_cand_PARP10 %>% rownames_to_column() %>% top_n(15) %>% column_to_rownames()
+SST_cand_PIK3CA <- SST_cand_PIK3CA %>% rownames_to_column() %>% top_n(15) %>% column_to_rownames()
+```
