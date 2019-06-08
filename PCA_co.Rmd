@@ -136,7 +136,7 @@ BCCL_kd.ceres_optKS <- CERES_Optimal_K(BCCL_kd.ceresKS, "CERES Optimal Clusters 
 # plotting wss function 
 optimalKprocessedData <- lapply(seq_along(BCCL_kd.ceres_optKS), function(a){
   dtPicker <- as.data.frame(BCCL_kd.ceres_optKS[[a]]) # one vector picked and formatted into dataframe
-  dtPicker$Sample <- names(BCCL_kd.ceres_optKS)[a] #sample added as label
+  dtPicker$Cell_Sample <- names(BCCL_kd.ceres_optKS)[a] #sample added as label
   dtPicker$OptimalK <- 1:nrow(dtPicker) 
   return(dtPicker)
 })
@@ -146,8 +146,10 @@ colnames(optimalKprocessedData) <- c("WSS", "Sample", "OptimalK")
 
 # using ggplot to plot output 
 ggplot(data = optimalKprocessedData, aes(x=OptimalK, y=WSS))+
-  geom_line(aes(color=Sample))+
-  labs(title = 'Optimal number of clusters k', x = 'Number of clusters k', y = 'WSS') +
+  geom_line(aes(color=Cell_Sample))+
+  title = ("Optimal number of clusters k") +
+  xlab("Number of clusters")+
+  ylab("WSS")+
   theme_minimal() +
            theme(legend.position ='bottom',
                   plot.title = element_text(hjust = 0.5),
