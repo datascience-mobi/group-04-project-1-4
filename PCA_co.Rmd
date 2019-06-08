@@ -115,17 +115,50 @@ BCCL_kd.ceres_3 = BCCL_kd.ceres_3[,-c(1)]
 BCCL_kd.ceres_3 = cbind(BCCL_kd.ceres_3, rowMeans(BCCL_kd.ceres_3)) #calculate rowmeans 
 BCCL_kd.ceres_3 = BCCL_kd.ceres_3[rowMeans(BCCL_kd.ceres_3)<= 0,] # deletion of genes with CERES > 0
 
-# k means clustering with new gene 
+#determining optimal cluster number k
+BCCL_kd.ceresKS = BCCL_kd.ceres_3[,-c(28)] # remove CERES average column
 
-km_CERES= kmeans(x = BCCL_kd.ceres_3, centers = 2, nstart = 10)
-table(km_CERES$cluster)
-wss = sapply(2:10, function(k) {
-    kmeans(x = BCCL_kd.ceres_3, centers = k)$tot.withinss
+CERES_Optimal_K <- function(BCCL_kd.ceresKS, specifier) {
+  output <- lapply(1:ncol(BCCL_kd.ceresKS), function(a){
+   df <- scale(BCCL_kd.ceresKS[,a]) # pick one column of input data and scale 
+   wss <-(nrow(df-1))*sum(apply(df,2,var)) #compute wss
+   for (i in 2:15){ # for k between 2 and 15
+     set.seed(1234)
+     wss[i] <- sum(kmeans(df, centers = i)$withinss)} 
+   return(wss)
+  })
+names (output) <- colnames(BCCL_kd.ceresKS) # rename the output 
+return(output)
+}
+
+BCCL_kd.ceres_optKS <- CERES_Optimal_K(BCCL_kd.ceresKS, "CERES Optimal Clusters k") 
+
+# plotting wss function 
+optimalKprocessedData <- lapply(seq_along(BCCL_kd.ceres_optKS), function(a){
+  dtPicker <- as.data.frame(BCCL_kd.ceres_optKS[[a]]) # one vector picked and formatted into dataframe
+  dtPicker$Sample <- names(BCCL_kd.ceres_optKS)[a] #sample added as label
+  dtPicker$OptimalK <- 1:nrow(dtPicker) 
+  return(dtPicker)
 })
-plot(2:10, wss, type = "b", pch = 19, xlab = "Number of clusters K", ylab = "Total within-clusters sum of squares") # optimal number 4
+
+optimalKprocessedData <- as.data.frame(rbindlist(optimalKprocessedData)) # output into dataframe
+colnames(optimalKprocessedData) <- c("WSS", "Sample", "OptimalK")
+
+# using ggplot to plot output 
+ggplot(data = optimalKprocessedData, aes(x=OptimalK, y=WSS))+
+  geom_line(aes(color=Sample))+
+  labs(title = 'Optimal number of clusters k', x = 'Number of clusters k', y = 'WSS') +
+  theme_minimal() +
+           theme(legend.position ='bottom',
+                  plot.title = element_text(hjust = 0.5),
+                  axis.text.x = element_text(angle = 0, vjust = 0, hjust=0.5),
+                  legend.title= element_blank(),
+                  axis.title.x = element_blank(),
+                  strip.text.y = element_text(angle = 0))
 
 
-km_CERES= kmeans(x = BCCL_kd.ceres_3, centers = 4, nstart = 10)
+# k means clustering with optimal cluster number=3
+km_CERES= kmeans(x = BCCL_kd.ceres_3, centers = 3, nstart = 10)
 table(km_CERES$cluster)
 fviz_cluster(km_CERES, data=BCCL_kd.ceres_3, labelsize = 6) # plotting clusters
 
