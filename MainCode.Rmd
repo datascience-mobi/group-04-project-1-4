@@ -15,9 +15,11 @@ library("ggplot2")
 #required packages for selection of DV and SSTs
 install.packages("tidyverse")
 install.packages("factoextra")
+install.packages("data.table")
 library(tidyverse)
 library(cluster)
 library(factoextra)
+library(data.table)
 ```
 
 #data clean up
@@ -150,80 +152,58 @@ data_clus_3e["Driver mutation"] <- sapply(1:nrow(data_clus_3), function(j){
 #find potential SSTs: Wilcoxon test
 ```{r}
 driver_mut <- c("ERBB2","MYCBP", "PARP10", "PIK3CA") #enter driver mutations
-mutImpact_r = mutImpact[rowSums(is.na(mutImpact)) != ncol(mutImpact), ] #_r=reduced: get rid of all the ONLY NA rows (this will save computation)
+mutImpact_r <- mutImpact[rowSums(is.na(mutImpact)) != ncol(mutImpact), ] #_r=reduced: get rid of all the ONLY NA rows (this will save computation)
+mutImpact_kd.ceres <- BCCL_kd.ceres[rownames(BCCL_kd.ceres) %in% rownames(mutImpact_r),] # create matrix containing CERES scores of genes which are mutated once at minimum
+colnames(mutImpact_kd.ceres) <- tPatients_ID 
 
-finalData <- lapply(seq_along(driver_mut), function(a) {
+testData <- lapply(seq_along(driver_mut), function(a) {
   driverMutPicker <- driver_mut[a] #pick a driver mutation
-  outputData <- sapply(1:nrow(mutImpact_r), function(b) {
-    row_picker <- mutImpact_r[b,]
+  driverMutData <- mutImpact_kd.ceres[driverMutPicker,] #get ceres scores of driver mutation
+  
+  outputData <- sapply(1:nrow(mutImpact_kd.ceres), function(b) {
+    refGeneData <- mutImpact_kd.ceres[b,] #get ceres scores of reference gene (potential SST)
     
-    #Extract the reference
-    refData <- mutImpact_r[which(rownames(mutImpact_r) == driverMutPicker),] #pick the data for the reference driver Mutation
-    
-    #Make a wilcoxon test --> make an unpaired test: https://stats.stackexchange.com/questions/93734/paired-or-unpaired-wilcoxon-test
-    out <- wilcox.test(as.vector(refData[complete.cases(refData)]), as.vector(row_picker[complete.cases(row_picker)]))
-    return(out$p.value)
+    if (rownames(refGeneData) != driverMutPicker) {
+      out <- wilcox.test(as.numeric(driverMutData), as.numeric(refGeneData), paired = TRUE)$p.value #get p-value of wilcoxon signed-rank test
+      out <- as.data.frame(out, rownames(mutImpact_r)[b]) 
+      return(out)
+    }
   })
-  names(outputData) <- rownames(mutImpact_r)
-  return(outputData)
+  test = do.call(rbind, outputData)
+  rownames(test) <- rownames(mutImpact_r)[which(rownames(mutImpact_r) != driverMutPicker)]
+  return(test)
 })
-names(finalData) <- driver_mut
+names(testData) <- driver_mut
 
-#Reformat the data
-finalData <- lapply(seq_along(finalData), function(a) {
-  out <- as.data.frame(finalData[[a]])
-  return(out)
-})
+lapply(testData, function(a) head(a)) #look at the data
 
-#Use the RDS_lists to create the matrix
-rownames2col <- function(inDF, RowName = ".rownames") {
-  temp <- data.frame(rownames(inDF), inDF, row.names = NULL)
-  names(temp)[1] <- RowName
-  temp
-}
 
-#Put all the sublists to a nice dataframe
-finalFrame <- Reduce(function(finalData, y) merge(finalData, y, by = ".rownames", all = TRUE), lapply(finalData, rownames2col))
-rownames(finalFrame) <- finalFrame[,1]
-finalFrame <- finalFrame[,2:ncol(finalFrame)]
-colnames(finalFrame) <- driver_mut
-head(finalFrame)
-```
-
-#get an overview over SST status
-```{r}
-#generate matrix containing all non-SSTs
-non_potSSTs <- BCCL_kd.ceres[-which(rownames(BCCL_kd.ceres) == rownames(mutImpact_r)),]
-
-#add information on SST status in BCCL_kd.ceres matrix
-BCCL_kd.ceres_an$SST_status <- sapply(1:nrow(BCCL_kd.ceres_an), function(c) {
-  if (rownames(BCCL_kd.ceres_an)[c] %in% rownames(mutImpact_r)) {
-    BCCL_kd.ceres_an[c, 2] = "pot SST"
-  } else {
-    BCCL_kd.ceres_an[c, 2] = "no SST"
-  }
-})
-BCCL_kd.ceres_an <- BCCL_kd.ceres_an[c("mutation", "SST_status", tPatients_ID)]#reorder columns
 ```
 
 #look for real SSTs based on Wilcoxon test data
 ```{r}
-#visualize distribution of p-vlaues for each DV
-par(mfrow =c(1,4))
-plot(finalFrame$ERBB2, type = "p", pch = 19, xlab = "gene Index", ylab = "mean p-value Wilcoxon Test" )
-plot(finalFrame$MYCBP, type = "p", pch = 19, xlab = "gene Index", ylab = "mean p-value Wilcoxon Test" )
-plot(finalFrame$PARP10, type = "p", pch = 19, xlab = "gene Index", ylab = "mean p-value Wilcoxon Test" )
-plot(finalFrame$PIK3CA, type = "p", pch = 19, xlab = "gene Index", ylab = "mean p-value Wilcoxon Test" )
-
 #get summary of distribution
-summary(finalFrame$ERBB2)
-summary(finalFrame$MYCBP)
-summary(finalFrame$PARP10)
-summary(finalFrame$PIK3CA)
+summary(testData$ERBB2)
+summary(testData$MYCBP)
+summary(testData$PARP10)
+summary(testData$PIK3CA)
 
-#select eight most promising SST candidates based on highest p-values - libraries needed: dplyr, tibble (included in "tidyverse") -> I will try and find a simpler version for this code.. I am pretty sure you can handle this with an apply command
-SST_cand_ERBB2 <- finalFrame %>% select("ERBB2") %>% rownames_to_column() %>% filter(ERBB2 > quantile(ERBB2, probs = 0.999)) %>% column_to_rownames()
-SST_cand_MYCBP <- finalFrame %>% select("MYCBP") %>% rownames_to_column() %>% filter(MYCBP > quantile(MYCBP, probs = 0.999)) %>% column_to_rownames()
-SST_cand_PARP10 <- finalFrame %>% select("PARP10") %>% rownames_to_column() %>% filter(!is.na(PARP10)) %>% filter(PARP10 > quantile(PARP10, probs = 0.999)) %>% column_to_rownames() #removal of NA required 
-SST_cand_PIK3CA <- finalFrame %>% select("PIK3CA") %>% rownames_to_column() %>% filter(PIK3CA > quantile(PIK3CA, probs = 0.999)) %>% column_to_rownames()
+#select 15 most promising SST candidates based on highest p-values - libraries needed: dplyr, tibble (included in "tidyverse")
+
+SST_cand_ERBB2 <- as.data.frame(testData$ERBB2, col.names = names(testData$ERBB2)) #create new data frame containing testData for ERBB2
+SST_cand_MYCBP <- as.data.frame(testData$MYCBP, col.names = names(testData$MYCBP))
+SST_cand_PARP10 <- as.data.frame(testData$PARP10, col.names = names(testData$PARP10))
+SST_cand_PIK3CA <- as.data.frame(testData$PIK3CA, col.names = names(testData$PIK3CA))
+
+names(SST_cand_ERBB2) = "ERBB2" #rename column
+names(SST_cand_MYCBP) = "MYCBP"
+names(SST_cand_PARP10) = "PARP10"
+names(SST_cand_ERBB2) = "PIK3CA"
+
+SST_cand_ERBB2 <- SST_cand_ERBB2 %>%rownames_to_column() %>% top_n(15) %>% column_to_rownames() #select 15 genes with highest p-value
+SST_cand_MYCBP <- SST_cand_MYCBP %>% rownames_to_column() %>% top_n(15) %>% column_to_rownames()
+SST_cand_PARP10 <- SST_cand_PARP10 %>% rownames_to_column() %>% top_n(15) %>% column_to_rownames()
+SST_cand_PIK3CA <- SST_cand_PIK3CA %>% rownames_to_column() %>% top_n(15) %>% column_to_rownames()
 ```
+
+
