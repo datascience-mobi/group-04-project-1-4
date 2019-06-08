@@ -158,9 +158,19 @@ ggplot(data = optimalKprocessedData, aes(x=OptimalK, y=WSS))+
                   axis.title.x = element_blank(),
                   strip.text.y = element_text(angle = 0))
 
+# comparison of optimal k means to alternative method  
 
-# k means clustering with optimal cluster number=3
-km_CERES= kmeans(x = BCCL_kd.ceres_3, centers = 3, nstart = 10)
+km_CERES= kmeans(x = BCCL_kd.ceres_3, centers = 2, nstart = 10)
+table(km_CERES$cluster)
+wss = sapply(2:10, function(k) {
+    kmeans(x = BCCL_kd.ceres_3, centers = k)$tot.withinss
+})
+plot(2:10, wss, type = "b", pch = 19, xlab = "Number of clusters K", ylab = "Total within-clusters sum of squares") 
+
+#comparison of both methods ==> conclusion optimal cluster number k=4 
+
+# k means clustering with optimal cluster number = 4
+km_CERES= kmeans(x = BCCL_kd.ceres_3, centers = 4, nstart = 10)
 table(km_CERES$cluster)
 fviz_cluster(km_CERES, data=BCCL_kd.ceres_3, labelsize = 6) # plotting clusters
 
