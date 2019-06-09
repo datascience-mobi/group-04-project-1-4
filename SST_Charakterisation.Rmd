@@ -1,0 +1,55 @@
+---
+title: "SST Characterisation"
+author: "Salome"
+date: "8 6 2019"
+output: html_document
+---
+
+```{r}
+SST_ERBB2 <- SST_cand_ERBB2
+SST_MYCBP <- SST_cand_MYCBP
+SST_PARP10 <- SST_cand_PARP10
+SST_PIK3CA <- SST_cand_PIK3CA
+
+#loops comparing rownames of each candidate dataframe and data_clus_3e- labelling if
+
+SST_PARP10["SST Cluster Check"] <- sapply(1:nrow(SST_cand_PARP10), function(a){
+  if (rownames(SST_cand_PARP10) %in% rownames(data_clus_3e)) {
+      SST_PARRP10[a,1] ="SST PARP10"
+  }else{
+     SST_PARRP10[a,1] = "No SST"
+  }
+})
+
+SST_ERBB2["SST Cluster Check"] <- sapply(1:nrow(SST_cand_ERBB2), function(a){
+  if (rownames(SST_cand_ERBB2) %in% rownames(data_clus_3e)) {
+      SST_ERBB2[a,1] ="SST ERBB2"
+  }else{
+     SST_PARRP10[a,1] = "No SST"
+  }
+})
+
+SST_MYCBP["SST Cluster Check"] <- sapply(1:nrow(SST_cand_MYCBP), function(a){
+  if (rownames(SST_cand_MYCBP) %in% rownames(data_clus_3e)) {
+      SST_MYCBP[a,1] ="SST MYCBp"
+  }else{
+     SST_MYCBP[a,1] = "No SST"
+  }
+})
+
+SST_PIK3CA["SST Cluster Check"] <- sapply(1:nrow(SST_cand_PIK3CA), function(a){
+  if (rownames(SST_cand_PIK3CA) %in% rownames(data_clus_3e)) {
+      SST_PIK3CA[a,1] ="SST PIK3CA"
+  }else{
+     SST_PIK3CA[a,1] = "No SST"
+  }
+})
+
+
+# next step combine all genes with p values in one data frame
+# compare if second site targets found for more than one driver mutation 
+
+SSTs <- SSTs = do.call("rbind", list(SST_ERBB2, SST_MYCBP, SST_PARP10, SST_PIK3CA))
+# problem not all of same length at the moment 
+```
+
