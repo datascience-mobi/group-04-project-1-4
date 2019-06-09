@@ -103,7 +103,6 @@ for (j in 1:ncol(pre_mutImpact)){
 }
 
 # selecting only genes mutated at least once and with Ceres >= 0
-
 mutImpact_c = mutImpact[rowSums(is.na(mutImpact)) != ncol(mutImpact),]# remove all genes withall NA values
 rownamesmutImpc = rownames(mutImpact_c)
 mutImpact_c = cbind(rownamesmutImpc, mutImpact_c[,2:ncol(mutImpact_c)]) # insert new column with row names
@@ -187,9 +186,6 @@ data_cluster = km_CERES$cluster
 rownames(data_cluster) = rownames(BCCL_kd.ceres_3)
 data_clus_3 = BCCL_kd.ceres_3[data_cluster == 3,] #dataframe with all 1148 genes in same cluster as driver mutations 
 
-barplot(data_clus_3[,"rowMeans(BCCL_kd.ceres_3)"], main="Gene cluster 3", xlab="CERES scores") 
-
-
 #LABELING DRIVER MUTATIONS 
 # CCND mutation not present in BCCL_kd.ceres_3 matrix but ERBB2, ERBB2IP, MYCBP, PARP10 and PIK3CA found. ERBB2IP however not in same cluster as other driver mutations 
 
@@ -262,6 +258,7 @@ Expression_boxplot = ggplot(Expression_driver_mut, aes(x = variable, y = value))
 Expression_boxplot
 ```
 ```
+
 
 #PCA using BCCL_kd.ceres_3
 ```{r PCA BCCL_kd.ceres_3}

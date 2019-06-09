@@ -6,12 +6,12 @@ output: html_document
 ---
 
 ```{r}
-SST_ERBB2 <- SST_cand_ERBB2
+SST_ERBB2 <- SST_cand_ERBB2 #creating new dataframes
 SST_MYCBP <- SST_cand_MYCBP
 SST_PARP10 <- SST_cand_PARP10
 SST_PIK3CA <- SST_cand_PIK3CA
 
-#loops comparing rownames of each candidate dataframe and data_clus_3e- labelling if
+#labelling of SST candidates with SST or No SST depending on if in driver cluster 3 or not
 
 SST_PARP10["SST Cluster Check"] <- sapply(1:nrow(SST_cand_PARP10), function(a){
   if (rownames(SST_cand_PARP10) %in% rownames(data_clus_3e)) {
@@ -49,9 +49,7 @@ SST_PIK3CA["SST Cluster Check"] <- sapply(1:nrow(SST_cand_PIK3CA), function(a){
 })
 SST_PIK3CA <- SST_PIK3CA %>% rename(p_values= PIK3CA)
 
-# next step combine all genes with p values in one data frame
-# compare if second site targets found for more than one driver mutation 
-
+#All approved SSTs in one dataframe with driver mutation label and p-value
 SSTs <-  do.call("rbind", list(SST_ERBB2, SST_MYCBP, SST_PARP10, SST_PIK3CA)) 
 SSTs <- SSTs[order(rownames(SSTs)),] # reorder in alphabetical order 
 
