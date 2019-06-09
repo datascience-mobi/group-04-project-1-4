@@ -322,10 +322,10 @@ SST_cand_PIK3CA <- as.data.frame(testData$PIK3CA, col.names = names(testData$PIK
 names(SST_cand_ERBB2) = "ERBB2" #rename column
 names(SST_cand_MYCBP) = "MYCBP"
 names(SST_cand_PARP10) = "PARP10"
-names(SST_cand_ERBB2) = "PIK3CA"
+names(SST_cand_PIK3CA) = "PIK3CA"
 
-SST_cand_ERBB2 <- SST_cand_ERBB2 %>%rownames_to_column() %>% top_n(15) %>% column_to_rownames() #select 15 genes with highest p-value
-SST_cand_MYCBP <- SST_cand_MYCBP %>% rownames_to_column() %>% top_n(15) %>% column_to_rownames()
-SST_cand_PARP10 <- SST_cand_PARP10 %>% rownames_to_column() %>% top_n(15) %>% column_to_rownames()
-SST_cand_PIK3CA <- SST_cand_PIK3CA %>% rownames_to_column() %>% top_n(15) %>% column_to_rownames()
+SST_cand_ERBB2 <- SST_cand_ERBB2 %>%rownames_to_column() %>% top_n(15, ERBB2) %>% column_to_rownames() #select 15 genes with highest p-value
+SST_cand_MYCBP <- SST_cand_MYCBP %>% rownames_to_column() %>% top_n(15, MYCBP) %>% column_to_rownames()
+SST_cand_PARP10 <- SST_cand_PARP10 %>% rownames_to_column() %>% top_n(15, PARP10) %>% column_to_rownames()
+SST_cand_PIK3CA <- SST_cand_PIK3CA %>% rownames_to_column() %>% top_n(15, PIK3CA) %>% column_to_rownames()
 ```
