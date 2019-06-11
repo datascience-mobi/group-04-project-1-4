@@ -37,35 +37,78 @@ LinResdf1 <- subset(LinResdf0, colname == drivmutCL)
     1. Form a vector including the SST rownames
     2. Integrate the CERES scores for the mutations for the linear regression.
     
-```{r}
+
 #UNDER CONSTRUCTION: Need help to automate this function for all 4 datasets
 
+Requiered dataset: "SSTs" # collected names of SST candidates including label of driver mutation
+
+#I did not find a automated approach yet, so doing it caveman-style
+  1. Create a dataframe, consisting of 28 col, nSTTs rows
+  2. select driver mutation as our dependent variable
+  3. obtain column 1 with the driver mutation and other containing CERES values for SSTs
+  
+```{r}
 driver_mut <- c("ERBB2","MYCBP", "PARP10", "PIK3CA") #Input driver mutations
 SST_candidatesdf1 <- c(rownames(SST_cand_ERBB2))
 SST_candidatesdf2 <- c(rownames(SST_cand_MYCBP))
 SST_candidatesdf3 <- c(rownames(SST_cand_PARP10))
 SST_candidatesdf4 <- c(rownames(SST_cand_PIK3CA)) # collect all names of SST candidates
 
+# for ERBB2
+LinRes_ERBB2 <- BCCL_kd.ceres[SST_candidatesdf1,] 
+LinRes_ERBB2 <- t(LinRes_ERBB2)
+Driver_ERBB2 <- BCCL_kd.ceres[c("ERBB2"), ]
+Driver_ERBB2 <- t(Driver_ERBB2)
+LinRes_ERBB2 <- cbind(Driver_ERBB2, LinRes_ERBB2)
 
-LinResdf1 <- BCCL_kd.ceres[SST_candidatesdf1,] #create a dataframe, consisting 28 col, nSTTs rows
-LinResdf1 <- t(LinResdf1)
-Driverdf1 <- BCCL_kd.ceres[c("ERBB2"), ] # select driver mutation as our dependent variable
-Driverdf1 <- t(Driverdf0)
+#for MYCBP
+LinRes_MYCBP <- BCCL_kd.ceres[SST_candidatesdf2,]
+LinRes_MYCBP <- t(LinRes_MYCBP)
+Driver_MYCBP <- BCCL_kd.ceres[c("MYCBP"), ]
+Driver_MYCBP <- t(Driver_MYCBP)
+LinRes_MYCBP <- cbind(Driver_MYCBP, LinRes_MYCBP)
 
-LinResdf1 <- cbind(Driverdf0, LinResdf1) #now we have column 1 with the driver mutation and other containing CERES values for SSTs
+#for PARP10
+LinRes_PARP10 <- BCCL_kd.ceres[SST_candidatesdf3,]
+LinRes_PARP10 <- t(LinRes_PARP10)
+Driver_PARP10 <- BCCL_kd.ceres[c("PARP10"), ]
+Driver_PARP10 <- t(Driver_PARP10)
+LinRes_PARP10 <- cbind(Driver_MYCBP, LinRes_PARP10)
+
+#for PIK3CA
+LinRes_PIK3CA <- BCCL_kd.ceres[SST_candidatesdf4,]
+LinRes_PIK3CA <- t(LinRes_PIK3CA)
+Driver_PIK3CA <- BCCL_kd.ceres[c("PIK3CA"), ]
+LinRes_PIK3CA <- t(LinRes_PIK3CA)
+LinRes_PIK3CA <- cbind(LinRes_PIK3CA, LinRes_PIK3CA)
 ```
 
-
 #Step 2: Data Preperation
+
 To test the resulting Linear Regression model, we will split the datset into 75:25 training:test data.
   1. We check normal distribution by a qq-Plot
   2. Split the dataset into 75:25 training:test data
 ```{r}
-qqnorm(LinResdf1, main = "QQ-Plot Driver Mutation 1 (ERBB2)")
-qqline(LinResdf1) # check if normality is approximated
+create_qqplot <- function(x){
+                        qqnorm(x, main = "x")
+                        qqline(x)} #introducing a function creating qq-plots, check if normality is approximated
 
-trainingRowIndex <- LinResdf1[c(1:0.75*nrow(LinResdf1)), c(1:18)] # define model training data;28*0.75 = 21
-testData  <- LinResdf1[c((0.75*nrow(LinResdf1)+1):nrow(LinResdf1)), c(1:18) ]  # define test training data 
+create_qqplot(LinRes_ERBB2)
+create_qqplot(LinRes_MYCBP)
+create_qqplot(LinRes_PARP10)
+create_qqplot(LinRes_PIK3CA) #perform qqplot creation
+
+data_split <- function(x){
+                        trainingData <- x[c(1:0.75*nrow(x)), c(1:ncol(x))] # define model training data
+                        testData  <- x[c((0.75*nrow(x)+1):nrow(x)), c(1:ncol(x)) ]# define test training data 
+} # introducing a function splitting the data into 75:25 training:test data
+  # still not working
+
+data_split(LinRes_ERBB2)
+data_split(LinRes_MYCBP)
+data_split(LinRes_PARP10)
+data_split(LinRes_PIK3CA) #perform data split 75:25 for all datasets
+
 ```
 
 #Step 3: The regression model of training data
@@ -75,7 +118,12 @@ testData  <- LinResdf1[c((0.75*nrow(LinResdf1)+1):nrow(LinResdf1)), c(1:18) ]  #
   2. Receive intercept and complete function
   3. Evaluate model by summary()-Function
 ```{r}
-LinResdf1.df <- as.data.frame(LinResdf1)
+LinRes_ERBB2 <- as.data.frame(LinRes_ERBB2)
+LinRes_MYCBP <- as.data.frame(LinRes_MYCBP)
+LinRes_PARP10 <- as.data.frame(LinRes_PARP10)
+LinRes_PIK3CA <- as.data.frame(LinRes_PIK3CA) #safe as data frame, otherwise no error reported
+
+---------------------------------------------------------------------------------------------
 testData <- as.data.frame(testData) #to run the code this format-change is required, otherwise: error reported
 model1 <- lm(ERBB2 ~ BCL9L + C10orf95 + CREBBP + FAM83C + FBN3 + HEATR2 + KIAA1524 + KLHL40 + MPP3 + MYL9 + NCR2 + NLRP13 + POTEH + RNF181 + STXBP1, data = LinResdf0.df)
 summary(model1)
