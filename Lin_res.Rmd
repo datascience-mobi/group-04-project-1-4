@@ -14,7 +14,7 @@ for this we need a data frame for every drivermutation, consisting of ceres scor
 rownames -> SSTs
 colnames -> BCCL harvesting this driver mutation ( we can discuss this :))
 
-
+#Elias´idea
 ```{r}
 SSTs <- c(rownames(finalFrame)) #could be any list of SSTs
 LinResdf0 <- BCCL_kd.ceres[SSTs,] #df, consisting 28 col, nSTTs rows
@@ -23,32 +23,101 @@ LinResdf1 <- subset(LinResdf0, colname == drivmutCL)
 
 
 ```
-## Idea suggestions for Regression model task
+-----------------------------------------------------------------------------------
 
-Generally, it was recommended to split the dataset in training:test data (e.g. 80:20) to design a model.
+## Objective
 
-##Training data
-Designs linear regression
-# Step 1: Quick overview
-  + Scatter plot; checks if relation is linear and additive
-  + boxplot; detection of strong outliers (I don´t really expect this, but could still be done)
-  + density plot; checks if response variable is close to normal distribution (maybe useful for F-test?)
-  
-# Step 2: Design and linear regression
-  + with ln() function; optional insertion of 95% CI
-  
-# Step 3: evaluate model
-  + Is hypothesis supported? (-> estimate, std. error, p-value)
-  + Check model fit
-    + Residuals should me symm. dist. around 0 (bell shape, use histogram [ggplot2])
-    + multiple R squares, should be close to 1 on 0-1 range
-    + F-statistics: use p-value to interprete signaficiance for model to fit data
+  + For the regression model, we want to predict the CERES score of the driver mutation (dependent variable) based on the CERES score of the SST candidates (independent variables).
+  + A multilinear regression will be designed:
+
+## Step 1: Building the LR-Datamatrices
+# Load data
+
+  + We now obtained potential SSTs for the four driver mutation. To form a base for the Multilinear regression, we 
+    1. Form a vector including the SST rownames
+    2. Integrate the CERES scores for the mutations for the linear regression.
     
-If these factors are verified:
+```{r}
+#UNDER CONSTRUCTION: Need help to automate this function for all 4 datasets
 
-## Prediction with test data
-  + run model with test data, then calculate prediction accuracy and error rates
+driver_mut <- c("ERBB2","MYCBP", "PARP10", "PIK3CA") #Input driver mutations
+SST_candidatesdf1 <- c(rownames(SST_cand_ERBB2))
+SST_candidatesdf2 <- c(rownames(SST_cand_MYCBP))
+SST_candidatesdf3 <- c(rownames(SST_cand_PARP10))
+SST_candidatesdf4 <- c(rownames(SST_cand_PIK3CA)) # collect all names of SST candidates
+
+
+LinResdf1 <- BCCL_kd.ceres[SST_candidatesdf1,] #create a dataframe, consisting 28 col, nSTTs rows
+LinResdf1 <- t(LinResdf1)
+Driverdf1 <- BCCL_kd.ceres[c("ERBB2"), ] # select driver mutation as our dependent variable
+Driverdf1 <- t(Driverdf0)
+
+LinResdf1 <- cbind(Driverdf0, LinResdf1) #now we have column 1 with the driver mutation and other containing CERES values for SSTs
+```
+
+
+#Step 2: Data Preperation
+To test the resulting Linear Regression model, we will split the datset into 75:25 training:test data.
+  1. We check normal distribution by a qq-Plot
+  2. Split the dataset into 75:25 training:test data
+```{r}
+qqnorm(LinResdf1, main = "QQ-Plot Driver Mutation 1 (ERBB2)")
+qqline(LinResdf1) # check if normality is approximated
+
+trainingRowIndex <- LinResdf1[c(1:0.75*nrow(LinResdf1)), c(1:18)] # define model training data;28*0.75 = 21
+testData  <- LinResdf1[c((0.75*nrow(LinResdf1)+1):nrow(LinResdf1)), c(1:18) ]  # define test training data 
+```
+
+#Step 3: The regression model of training data
+
+  1. Define the function, generally described as:
+    + y = a + b1x1 + b2x2 + (...) + bnxn
+  2. Receive intercept and complete function
+  3. Evaluate model by summary()-Function
+```{r}
+LinResdf1.df <- as.data.frame(LinResdf1)
+testData <- as.data.frame(testData) #to run the code this format-change is required, otherwise: error reported
+model1 <- lm(ERBB2 ~ BCL9L + C10orf95 + CREBBP + FAM83C + FBN3 + HEATR2 + KIAA1524 + KLHL40 + MPP3 + MYL9 + NCR2 + NLRP13 + POTEH + RNF181 + STXBP1, data = LinResdf0.df)
+summary(model1)
+```
+Now, we take a look at
+  + F-Statistic look if those are significant, meaning that judges on multiple coefficients taken together at the same time, rather than doing a t test for all individual variables.
+    + H0: The fit of intercept only model and the current model is same. i.e. Additional variables do not provide value taken together
+    + H1: The fit of intercept only model is significantly less compared to our current model. i.e. Additional variables do make the model significantly better.
+```{r}
+#UNDER CONSTRUCTION: Function printing results of F-test as "H0 or H1 accepted"
+qf(.95, df1=15, df2=12) 
+summary(model1)$coefficient
+coeffdf1 <- as.data.frame(summary(model1)$coefficient)
+
+distPred <- predict(lmMod, testData)
+confint(model1)
+```
+
+# Step 4: Run with test data
+Now, we run the test data to obtain actual predictions
+For further evaluation of model fit, we will
+  + calculate Correlation Coefficient. We use the Spearman correlation.
+  + Create a density plot to check if predicted and actual values overlap
   
+```{r}
+model1_Pred <- predict(model1, testData)
+summary (model1)
+
+actuals_preds1 <- data.frame(cbind(actuals=testData, predicteds=model1_Pred)) #build dataframa for easier calculation of correlation coeff.
+View(actuals_preds1)
+
+cor(actuals_preds[1:7, 1:18], actuals_preds[1:7, 19], method = c("spearman")) #calculate spearman corr. coeff. between observed and predicted values - I feel like I made a mistake in construction (Pls help)
+corrmodel1 <- as.matrix(cor(actuals_preds[1:7, 1:18], actuals_preds[1:7, 19], method = c("spearman"))) # format correlation as matrix to seogn a heatmap for further use
+
+res <- cor(actuals_preds)
+
+install.packages("corrplot")
+library(corrplot)
+corrplot(res, type = "upper", order = "hclust", 
+         tl.col = "black", tl.srt = 45) # visualize correlation 
+
+-----------------------------------------------------------------------------------  
 ## Ideas collected from:
 [linked phrase](https://www.dataquest.io/blog/statistical-learning-for-predictive-modeling-r/)
 [linked phrase](http://r-statistics.co/Linear-Regression.html#Predicting%20Linear%20Models)
