@@ -13,12 +13,16 @@ We want to predict Ceres scores of our drivermutations ("ERBB2","MYCBP", "PARP10
 for this we need a data frame for every drivermutation, consisting of ceres scores from our SSTs. 
 rownames -> SSTs
 colnames -> BCCL harvesting this driver mutation ( we can discuss this :))
+colnames -> BCCL containing this driver mutation ( we can discuss this :))
 
 
 ```{r}
 SSTs <- c(rownames(finalFrame)) #could be any list of SSTs
 LinResdf0 <- BCCL_kd.ceres[SSTs,] #df, consisting 28 col, nSTTs rows
 # something like that: drivmutCL <- c(BCCL_Mutation["Hugosymbol"" == "ERBB2" ])
+SSTs <- c(SST_cand_ERBB2[,0]) #could be any list of SSTs
+LinResdf0 <- subset(BCCL_kd.ceres, BCCL_kd.ceres[,0] == SSTs) #df, consisting 28 col, nSTTs rows
+# stillsearching for command :)drivmutCL <- c(BCCL_Mutation["Hugosymbol"" == "ERBB2" ])
 LinResdf1 <- subset(LinResdf0, colname == drivmutCL)
 
 
