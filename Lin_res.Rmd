@@ -90,8 +90,9 @@ To test the resulting Linear Regression model, we will split the datset into 75:
   2. Split the dataset into 75:25 training:test data
 ```{r}
 create_qqplot <- function(x){
-                        qqnorm(x, main = "x")
-                        qqline(x)} #introducing a function creating qq-plots, check if normality is approximated
+                        qqnorm(x, main = deparse(substitute(x)))
+                        qqline(x)} 
+#introducing a function creating qq-plots, check if normality is approximated; the "deparse(substitute(x))" assigns the correesponding dataset name to the qq-plot.
 
 create_qqplot(LinRes_ERBB2)
 create_qqplot(LinRes_MYCBP)
