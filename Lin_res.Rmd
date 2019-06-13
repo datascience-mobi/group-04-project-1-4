@@ -83,6 +83,20 @@ LinRes_PIK3CA <- t(LinRes_PIK3CA)
 LinRes_PIK3CA <- cbind(LinRes_PIK3CA, LinRes_PIK3CA)
 ```
 
+#generate matrices containing CERES scores of DV and corresponding SSTs
+```{r}
+#reformat BCCL CERES matrix
+BCCL_kd.ceres_df <- as.data.frame(t(BCCL_kd.ceres))
+rownames(BCCL_kd.ceres_df) <- tPatients_ID
+colnames(BCCL_kd.ceres_df) <- rownames(BCCL_kd.ceres)
+
+#generate a dataframe containing data for each DV
+linRegData_ERBB2 <- BCCL_kd.ceres_df %>% select("ERBB2", rownames(SST_cand_ERBB2))
+linRegData_MYCBP <- BCCL_kd.ceres_df %>% select("MYCBP", rownames(SST_cand_MYCBP))
+linRegData_PARP10 <- BCCL_kd.ceres_df %>% select("PARP10", rownames(SST_cand_PARP10))
+linRegData_PIK3CA <- BCCL_kd.ceres_df %>% select("PIK3CA", rownames(SST_cand_PIK3CA))
+```
+
 #Step 2: Data Preperation
 
 To test the resulting Linear Regression model, we will split the datset into 75:25 training:test data.
