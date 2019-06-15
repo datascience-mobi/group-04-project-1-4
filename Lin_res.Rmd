@@ -114,9 +114,13 @@ create_qqplot(LinRes_PARP10)
 create_qqplot(LinRes_PIK3CA) #perform qqplot creation
 
 data_split <- function(x){
-                        trainingData <- x[c(1:0.75*nrow(x)), c(1:ncol(x))] # define model training data
-                        testData  <- x[c((0.75*nrow(x)+1):nrow(x)), c(1:ncol(x)) ]# define test training data 
-} # introducing a function splitting the data into 75:25 training:test data
+                        trainingData <- x[1:0.75*nrow(x), 1:ncol(x)] 
+                        testData  <- x[(0.75*nrow(x)+1):nrow(x), 1:ncol(x) ]
+                        trainingData <- as.data.frame(trainingdata)
+                        testData  <- as.data.frame(testData)
+                        return(trainingData)
+                        return(testData)
+}  #define model training and test data by a function
   # still not working
 
 data_split(LinRes_ERBB2)
@@ -138,10 +142,16 @@ LinRes_MYCBP <- as.data.frame(LinRes_MYCBP)
 LinRes_PARP10 <- as.data.frame(LinRes_PARP10)
 LinRes_PIK3CA <- as.data.frame(LinRes_PIK3CA) #safe as data frame, otherwise no error reported
 
----------------------------------------------------------------------------------------------
-testData <- as.data.frame(testData) #to run the code this format-change is required, otherwise: error reported
-model1 <- lm(ERBB2 ~ BCL9L + C10orf95 + CREBBP + FAM83C + FBN3 + HEATR2 + KIAA1524 + KLHL40 + MPP3 + MYL9 + NCR2 + NLRP13 + POTEH + RNF181 + STXBP1, data = LinResdf0.df)
-summary(model1)
+create_MLR <- function(x){
+                      y <- x[,1]
+                      model <- lm(y ~ ., data = x ) #The "."-identifier contains all variables not yet mentioned in the formula (2:ncol(x)) in our case. This makes modelling much easier.
+                      summary(model)
+} #Creates a multilinear regression, using the first column (DV) as y-variable.
+
+create_MLR(LinRes_ERBB2)
+create_MLR(LinRes_MYCBP)
+create_MLR(LinRes_PARP10)
+create_MLR(LinRes_PIK3CA)
 ```
 Now, we take a look at
   + F-Statistic look if those are significant, meaning that judges on multiple coefficients taken together at the same time, rather than doing a t test for all individual variables.
