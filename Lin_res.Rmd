@@ -152,22 +152,25 @@ create_MLR(LinRes_ERBB2)
 create_MLR(LinRes_MYCBP)
 create_MLR(LinRes_PARP10)
 create_MLR(LinRes_PIK3CA)
+
+# CURRENT ISSUE: x Variables include Driver; thus R squared and F Test not ready for interpretation
 ```
-Now, we take a look at
-  + F-Statistic look if those are significant, meaning that judges on multiple coefficients taken together at the same time, rather than doing a t test for all individual variables.
-    + H0: The fit of intercept only model and the current model is same. i.e. Additional variables do not provide value taken together
-    + H1: The fit of intercept only model is significantly less compared to our current model. i.e. Additional variables do make the model significantly better.
+
+# Step 4: Model evaluation
+  1. F-Statistic judging simultaneously on multiple coefficients taken together, rather than doing a t test for all individual variables:
+    + select 0.05 as significance value
+    + H0: The fit of intercept only model and the current model is same, meaning that the additional variables do not provide value taken together
+    + H1: The fit of intercept only model is significantly less compared to our current model, meaning that additional variables do improve the model significantly.
+    + if H1 = true, we can be confident to have a good R-squared value
+  2. It is recommended to do a residual (scatter) plot, to check the type of residual distribution
+  
 ```{r}
-#UNDER CONSTRUCTION: Function printing results of F-test as "H0 or H1 accepted"
-qf(.95, df1=15, df2=12) 
-summary(model1)$coefficient
-coeffdf1 <- as.data.frame(summary(model1)$coefficient)
-
-distPred <- predict(lmMod, testData)
-confint(model1)
+residual.plot(Expected, Residuals, sigma, main = deparse(substitute(Expected)), 
+  col.pts = "blue", col.ctr = "red", col.sgm = "black", cex = 0.5, 
+  gray.scale = FALSE, xlab = "Predicted", ylab = "Residuals") #something like this
 ```
 
-# Step 4: Run with test data
+# Step 5: Run with test data
 Now, we run the test data to obtain actual predictions
 For further evaluation of model fit, we will
   + calculate Correlation Coefficient. We use the Spearman correlation.
