@@ -1,6 +1,6 @@
 ---
 title: "kmeans -> Dmut"
-author: "Elias Benjamin Farr"
+author: "Salome Steinke"
 date: "17 Mai 2019"
 output: html_document
 ---
