@@ -112,7 +112,49 @@ create_qqplot(LinRes_ERBB2)
 create_qqplot(LinRes_MYCBP)
 create_qqplot(LinRes_PARP10)
 create_qqplot(LinRes_PIK3CA) #perform qqplot creation
+```
 
+## Define a big function doing datasplit, Model training and testing all in one
+To run the Multilinear Regression, it is advised to create a long function which
+  1. Splits the dataset in 75:25 training:test data
+    + Previous installation of the "caTools" package is necessary
+  2. Conducts Training of Regression model with training data
+    + predict Driver mutation CERES (y; dep.variable) from SST CERES scores (x1 ... xn; indep.variables)
+  3. Runs Test Data on model for performance evaluation
+  4. Calculates Spearman correlation to further asess model performance
+    + Visualizes by barplot
+```{r}
+install.packages("caTools")
+library(caTools) #necessary packages
+
+MultiLinReg <- function(x){
+                          DependentVariable <- colnames(x[1]) #The dependent variable is always the driver mutation
+                          split = sample.split(x["DependentVariable"], SplitRatio = 0.75) #split the dataset into 3/4 Training and 1/4 Testing dataset
+                          training_set = subset(x, split == TRUE)
+                          test_set = subset(x, split == FALSE)
+                          
+                          regressor = lm(formula = DependentVariable ~ ., data=training_set)
+                          #predict CERES of Driver Mutation based on all (=.) the input variables (SSTs)
+                          
+                          y_predict = predict(regressor, newdata = test_set) #predict the Driver mut. CERES score based on the test data
+                          test_set$Prediction = y_predict #adding predictions to the dataset
+                          test_set #Now you can compare your Predictions (last column) with the real values of the startups (2nd last column)
+                          
+                          cordf <- cor.test(test_set$DependentVariable, test_set$Prediction, method = spearman) #to judge model performance, calculate Spearman corr. between predicted and observed values
+                          barplot(cordf) #create a barplot for correlation visualization and further evaluation
+}
+
+MLR_files <- c("linRegData_ERBB2", "linRegData_MYCBP", "linRegData_PARP10", "linRegData_PIK3CA")
+lapply(MLR_files, MultiLinReg)
+
+# CURRENT ISSUE: "Error in terms.formula(formula, data = data) : '.' erscheint in der Formel und 'data' Argument ist ungültig"
+```
+
+
+
+----------------------------------------------------------------------------------------------
+# Older Notes we could keep for a while
+```{r}
 data_split <- function(x){
                         trainingData <- x[1:0.75*nrow(x), 1:ncol(x)] 
                         testData  <- x[(0.75*nrow(x)+1):nrow(x), 1:ncol(x) ]
@@ -129,7 +171,6 @@ data_split(LinRes_PARP10)
 data_split(LinRes_PIK3CA) #perform data split 75:25 for all datasets
 
 ```
-
 #Step 3: The regression model of training data
 
   1. Define the function, generally described as:
@@ -170,30 +211,7 @@ residual.plot(Expected, Residuals, sigma, main = deparse(substitute(Expected)),
   gray.scale = FALSE, xlab = "Predicted", ylab = "Residuals") #something like this
 ```
 
-# Step 5: Run with test data
-Now, we run the test data to obtain actual predictions
-For further evaluation of model fit, we will
-  + calculate Correlation Coefficient. We use the Spearman correlation.
-  + Create a density plot to check if predicted and actual values overlap
-  
-```{r}
-model1_Pred <- predict(model1, testData)
-summary (model1)
-
-actuals_preds1 <- data.frame(cbind(actuals=testData, predicteds=model1_Pred)) #build dataframa for easier calculation of correlation coeff.
-View(actuals_preds1)
-
-cor(actuals_preds[1:7, 1:18], actuals_preds[1:7, 19], method = c("spearman")) #calculate spearman corr. coeff. between observed and predicted values - I feel like I made a mistake in construction (Pls help)
-corrmodel1 <- as.matrix(cor(actuals_preds[1:7, 1:18], actuals_preds[1:7, 19], method = c("spearman"))) # format correlation as matrix to seogn a heatmap for further use
-
-res <- cor(actuals_preds)
-
-install.packages("corrplot")
-library(corrplot)
-corrplot(res, type = "upper", order = "hclust", 
-         tl.col = "black", tl.srt = 45) # visualize correlation 
-
------------------------------------------------------------------------------------  
+----------------  
 ## Ideas collected from:
 [linked phrase](https://www.dataquest.io/blog/statistical-learning-for-predictive-modeling-r/)
 [linked phrase](http://r-statistics.co/Linear-Regression.html#Predicting%20Linear%20Models)
