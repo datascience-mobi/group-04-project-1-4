@@ -176,8 +176,6 @@ testData <- lapply(seq_along(driver_mut), function(a) {
 names(testData) <- driver_mut
 
 lapply(testData, function(a) head(a)) #look at the data
-
-
 ```
 
 #look for real SSTs based on Wilcoxon test data
