@@ -1,0 +1,203 @@
+---
+title: "Identification of SSTs_report"
+author: "Lisa Marie Milchsack"
+date: "10 Juni 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#data clean up
+```{r}
+#load data
+allDepMapData = readRDS("C:/Users/lisa-/Desktop/Studium/4. FS/Bioinfo/DepMap19Q1_allData.RDS")
+
+#finding all breast cancer cell lines
+BCCL_Numbers <- which(allDepMapData$annotation[4]== "Breast Cancer")
+BCCL_Annotation <- subset(allDepMapData$annotation, Primary.Disease == "Breast Cancer")
+#see what we got
+#summary(BCCL_Annotation)
+# copy expression matrix to new dataframes
+df1 <- allDepMapData$expression
+df2 <- allDepMapData$copynumber
+df3 <- allDepMapData$kd.ceres
+df4 <- allDepMapData$kd.prob
+#change column names to numbers for easier handling
+names(df1) <- c(1:544)
+names(df2) <- c(1:544)
+names(df3) <- c(1:544)
+names(df4) <- c(1:544)
+#extract BCCL as dataframe
+BCCL_Expression <- as.data.frame( df1[, c(BCCL_Numbers)])
+BCCl_Copynumber <- as.data.frame( df2[, c(BCCL_Numbers)])
+BCCL_kd.ceres <- as.data.frame( df3[, c(BCCL_Numbers)])
+BCCL_kd.prob <- as.data.frame( df4[, c(BCCL_Numbers)])
+dim(BCCL_Expression)
+dim(BCCl_Copynumber)
+dim(BCCL_kd.ceres)
+dim(BCCL_kd.prob)
+#reorder rows alphabetically
+BCCL_Expression <- BCCL_Expression[order(rownames(BCCL_Expression)), ]
+BCCl_Copynumber <- BCCl_Copynumber[order(rownames(BCCl_Copynumber)), ]
+BCCL_kd.ceres <- BCCL_kd.ceres[order(rownames(BCCL_kd.ceres)), ]
+BCCL_kd.prob <- BCCL_kd.prob[order(rownames(BCCL_kd.prob)), ]
+#subset Mutation matrix in BCCL
+BCCL_Mutation <- allDepMapData$mutation[c(BCCL_Numbers)]
+```
+
+```{r} 
+Patients_ID <- BCCL_Annotation[1] #get patients ID from annotation matrix
+tPatients_ID <- t(Patients_ID) #transpose Patients_ID because it was a column and we want to insert it as row
+rownameskdc <- rownames(BCCL_kd.ceres) # save old rownames
+existingDF <- BCCL_kd.ceres  # define variables for BCCL_kd.ceres
+r <- 1
+newrow <- tPatients_ID
+#defining a function we can use more often to insert rows
+insertRow <- function(existingDF, newrow, r) { 
+    existingDF[seq(r+1,nrow(existingDF)+1),] <- existingDF[seq(r,nrow(existingDF)),]
+    existingDF[r,] <- newrow
+    existingDF
+}
+BCCL_kd.ceres_ID <- insertRow(existingDF, newrow, r)
+rownames(BCCL_kd.ceres_ID) <- c("Deep_ID", rownameskdc) # change rownames back 
+BCCL_kd.ceres_ID[1:2, ]
+#do the same with other 3 dataframes
+rownamesex <- rownames(BCCL_Expression) #save rownames
+existingDF <- BCCL_Expression  # define variables for BCCL_Erpression
+r <- 1
+newrow <- tPatients_ID
+BCCL_Expression_ID <- insertRow(existingDF, newrow, r)
+rownames(BCCL_Expression_ID) <- c("Deep_ID", rownamesex)
+rownamescn <- rownames(BCCl_Copynumber) #save rownames
+existingDF <- BCCl_Copynumber  # define variables for BCCL_Copynumber
+r <- 1
+newrow <- tPatients_ID
+BCCl_Copynumber_ID <- insertRow(existingDF, newrow, r)
+rownames(BCCl_Copynumber_ID) <- c("Deep_ID", rownamescn)
+rownameskdp <- rownames(BCCL_kd.prob) #save rownames
+existingDF <- BCCL_kd.prob  # define variables for BCCL_kd.prob
+r <- 1
+newrow <- tPatients_ID
+BCCL_kd.prob_ID <- insertRow(existingDF, newrow, r)
+rownames(BCCL_kd.prob_ID) <- c("Deep_ID", rownameskdp)
+```
+
+
+# Identification of second-site targets
+
+## Generation of the mutImpact matrix
+
+In order to gain an overview over the effects on viability of each mutation present in one cell line the mutImpact matrix was generated.
+
+Therefore, the BCCL_kd.ceres matrix containing CERES scores for all genes in breast cancer cell lines was used as a template and the cell line IDs were added as column names creating a pre_mutImpact matrix. An empty matrix was generated comprising 17634 rows and 28 columns matching the number of genes per cell line and the number of breast cancer cell lines, respectively. 
+
+Subsequently, CERES scores of genes which were not mutated in a given cell line were replaced with "NA" by implementing an if statement. This statement included the enquiry whether the gene ID is present in the list of mutated genes of a considered cell line as and in case the condition was met the CERES score was maintained. If "FALSE" was returned the CERES score of the gene was replaced with "NA" for the considered cell line.
+
+```{r, warning=FALSE}
+#Generate pre_mutImpact matrix containing all CERES values and with IDs as colnames
+pre_mutImpact <- BCCL_kd.ceres
+colnames(pre_mutImpact)<-tPatients_ID
+
+#generate empty mutImpact matrix
+mutImpact <- matrix(, nrow = 17634, ncol = 28)
+colnames(mutImpact)<-colnames(pre_mutImpact)
+rownames(mutImpact)<-rownames(pre_mutImpact)
+
+#fill mutImpact matrix with values
+for (j in 1:ncol(pre_mutImpact)){
+  lineID <- colnames(pre_mutImpact)[j] #select a column-name = cell line
+  for (i in 1:nrow(pre_mutImpact)){
+    GOI <- rownames(pre_mutImpact)[i] #select a gene
+    if (GOI %in% BCCL_Mutation[[lineID]]$Hugo_Symbol){
+      mutImpact[i, j] <- pre_mutImpact[i, j]
+    } else {
+      mutImpact[i, j] <- NA
+    }#replace CERES value with NA in case the gene is not mutated
+  }
+}
+
+#have a look at the mutImpact matrtix
+head(mutImpact)
+```
+
+## Spotting genetic interactions: the Wilcoxon test
+
+Genetic interactions of driver mutations with other genes were examined based on a Wilcoxon signed rank test. As SSTs are expected to interact synergistcally with the corresponding driver mutation in promoting cell viability similar CERES scores are suggested to infer the presence of gene interactions. Thus, hihg p-values are anticipated for such cooperating gene pairs when performing the Wilcoxon signed rank test. The Wilcoxon signed rank test was chosed rather than a t-test due to non-normal distribution of the data and the requirement of a paired test to compare the data of two genes per cell line. Asuming that the ranks of the CERES scores of the driver mutation and their SSTs are equal SST candidates were chosen by the means of the highst p-values (accepting the H0 hypothesis).
+
+For the purpose of conducting the Wilcoxon test the data from which the CERES scores for the test are taken was prepared. Therefore, a vector containg the identified driver mutations was generated. Furthermore, a reduced mutImpact matrix `mutImpact_r` was created from `mutImpact`which only includ genes which are mutated and do not have `NA`values only. Based on `mutImpact_r`the `BCCL_kd.ceres` matrix was reduced resutling in the `mutImpact_kd.ceres` matrix containing the CERES scores of all genes in all cell lines if the gene is mutated in one cell line at minimum. 
+
+```{r}
+#preparation of the data
+driver_mut <- c("ERBB2","MYCBP", "PARP10", "PIK3CA") #enter driver mutations
+mutImpact_r <- mutImpact[rowSums(is.na(mutImpact)) != ncol(mutImpact), ] #_r=reduced: get rid of all the ONLY NA rows (this will save computation)
+mutImpact_kd.ceres <- BCCL_kd.ceres[rownames(BCCL_kd.ceres) %in% rownames(mutImpact_r),] # create matrix containing CERES scores of genes which are mutated once at minimum
+colnames(mutImpact_kd.ceres) <- tPatients_ID
+```
+
+A Wilcoxon signed rank test was performed for every driver mutation with all other mutated genes and the data was stored in a list comprising one data frame with the obtained p-values for each driver mutation. 
+
+Thereupon, a loop was installed generating the output data frame for each driver mutation. At first the driver mutation to be examined was selected and the corresponding CERES values retrieved from `mutImpact_kd.ceres` being saved in the temporary variable `driverMutData`. Consequently, a reference gene was chosen and the CERES scores of the reference gene was stored in another temporary vector `refGeneData`. In case the selected reference gene was not the driver mutation itself the Wilcoxon test was performed. The p-value of each gene pair was saved in the data frame of the considered driver mutation.
+
+```{r}
+#performance of the Wilcoxon test
+testData <- lapply(seq_along(driver_mut), function(a) {
+  driverMutPicker <- driver_mut[a] #pick a driver mutation
+  driverMutData <- mutImpact_kd.ceres[driverMutPicker,] #get CERES scores of driver mutation
+  
+  outputData <- sapply(1:nrow(mutImpact_kd.ceres), function(b) {
+    refGeneData <- mutImpact_kd.ceres[b,] #get CERES scores of reference gene (potential SST)
+    
+    if (rownames(refGeneData) != driverMutPicker) {
+      out <- wilcox.test(as.numeric(driverMutData), as.numeric(refGeneData), paired = TRUE)$p.value #get p-value of wilcoxon signed-rank test
+      out <- as.data.frame(out, rownames(mutImpact_r)[b]) 
+      return(out)
+    }
+  })
+  test = do.call(rbind, outputData)
+  rownames(test) <- rownames(mutImpact_r)[which(rownames(mutImpact_r) != driverMutPicker)]
+  return(test)
+})
+names(testData) <- driver_mut
+
+lapply(testData, function(a) head(a)) #look at the data
+```
+
+As the null hypothesis claims that the CEREs scores of the driver mutation and the reference gene is are equal, low p-values indicate that there is no relation between the CERES scores of the driver mutation and the reference gene whereas high p-values may allude to genetic interaction of the driver mutation with an SST.
+The obtained p-values were distributed as shown below. Most strinkingly, the first quantile was set at a p-value of 0.0 for each driver mutation indicating that there are many genes with CERES scores which are not relatable to the CERES scores of the driver mutations. However, the maximum p-value of each test constituted 1.0 suggesting that there are also genes with similar CERES scores as the driver mutations which are supposed to be the SSTs. 
+
+```{r}
+#get summary of distribution
+summary(testData$ERBB2)
+summary(testData$MYCBP)
+summary(testData$PARP10)
+summary(testData$PIK3CA)
+```
+
+Based on the results of the Wilcoxon test potential SSTs were chosen by means of the highest p-values. Thus, seperate `SST_cand_X` data frames were generated for each driver mutation using the `testData`data frames. Subsequently, those data frames were filtered selecting the reference genes which were found to have the most similar CERES scores as the driver mutation indicated by high p-values. In this course, the rownames of the data frames had to be transferred to an extra column before selection and transferred back afterwards as otherwise the rownames would have been lost during the filtering process.
+
+```{r}
+#select 15 most promising SST candidates based on highest p-values - libraries needed: dplyr, tibble (included in "tidyverse")
+
+SST_cand_ERBB2 <- as.data.frame(testData$ERBB2, col.names = names(testData$ERBB2)) #create new data frame containing testData for ERBB2
+SST_cand_MYCBP <- as.data.frame(testData$MYCBP, col.names = names(testData$MYCBP))
+SST_cand_PARP10 <- as.data.frame(testData$PARP10, col.names = names(testData$PARP10))
+SST_cand_PIK3CA <- as.data.frame(testData$PIK3CA, col.names = names(testData$PIK3CA))
+
+names(SST_cand_ERBB2) = "ERBB2" #rename column
+names(SST_cand_MYCBP) = "MYCBP"
+names(SST_cand_PARP10) = "PARP10"
+names(SST_cand_PIK3CA) = "PIK3CA"
+
+SST_cand_ERBB2 <- SST_cand_ERBB2 %>%rownames_to_column() %>% top_n(15, ERBB2) %>% column_to_rownames() #select 15 genes with highest p-value
+SST_cand_MYCBP <- SST_cand_MYCBP %>% rownames_to_column() %>% top_n(15, MYCBP) %>% column_to_rownames()
+SST_cand_PARP10 <- SST_cand_PARP10 %>% rownames_to_column() %>% top_n(15, PARP10) %>% column_to_rownames()
+SST_cand_PIK3CA <- SST_cand_PIK3CA %>% rownames_to_column() %>% top_n(15, PIK3CA) %>% column_to_rownames()
+
+#have a look at the SST candidates
+view(SST_cand_ERBB2)
+view(SST_cand_MYCBP)
+view(SST_cand_PARP10)
+view(SST_cand_PIK3CA)
+```
