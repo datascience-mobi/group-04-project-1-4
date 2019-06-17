@@ -2,7 +2,10 @@
 title: "Identification of SSTs_report"
 author: "Lisa Marie Milchsack"
 date: "10 Juni 2019"
-output: html_document
+output:
+  word_document: default
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -124,7 +127,7 @@ head(mutImpact)
 
 ## Spotting genetic interactions: the Wilcoxon test
 
-Genetic interactions of driver mutations with other genes were examined based on a Wilcoxon signed rank test. As SSTs are expected to interact synergistcally with the corresponding driver mutation in promoting cell viability similar CERES scores are suggested to infer the presence of gene interactions. Thus, hihg p-values are anticipated for such cooperating gene pairs when performing the Wilcoxon signed rank test. The Wilcoxon signed rank test was chosed rather than a t-test due to non-normal distribution of the data and the requirement of a paired test to compare the data of two genes per cell line. Asuming that the ranks of the CERES scores of the driver mutation and their SSTs are equal SST candidates were chosen by the means of the highst p-values (accepting the H0 hypothesis).
+Genetic interactions of driver mutations with other genes were examined based on a Wilcoxon signed rank test. As SSTs are expected to interact synergistcally with the corresponding driver mutation in promoting cell viability similar CERES scores are suggested to infer the presence of gene interactions. Thus, high p-values are anticipated for such cooperating gene pairs when performing the Wilcoxon signed rank test. The Wilcoxon signed rank test was chosed rather than a t-test due to non-normal distribution of the data and the requirement of a paired test to compare the data of two genes per cell line. Asuming that the ranks of the CERES scores of the driver mutation and their SSTs are equal SST candidates were chosen by the means of the highst p-values (accepting the H0 hypothesis).
 
 For the purpose of conducting the Wilcoxon test the data from which the CERES scores for the test are taken was prepared. Therefore, a vector containg the identified driver mutations was generated. Furthermore, a reduced mutImpact matrix `mutImpact_r` was created from `mutImpact`which only includ genes which are mutated and do not have `NA`values only. Based on `mutImpact_r`the `BCCL_kd.ceres` matrix was reduced resutling in the `mutImpact_kd.ceres` matrix containing the CERES scores of all genes in all cell lines if the gene is mutated in one cell line at minimum. 
 
