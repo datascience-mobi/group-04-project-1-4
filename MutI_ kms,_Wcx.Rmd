@@ -329,3 +329,19 @@ SST_cand_MYCBP <- SST_cand_MYCBP %>% rownames_to_column() %>% top_n(15, MYCBP) %
 SST_cand_PARP10 <- SST_cand_PARP10 %>% rownames_to_column() %>% top_n(15, PARP10) %>% column_to_rownames()
 SST_cand_PIK3CA <- SST_cand_PIK3CA %>% rownames_to_column() %>% top_n(15, PIK3CA) %>% column_to_rownames()
 ```
+
+SST characterization - type of mutation
+```{r}
+SST_cand_ERBB2$mutType <- sapply(seq_along(rownames(SST_cand_ERBB2)), function(a) {
+  SSTPicker <- rownames(SST_cand_ERBB2)[a]
+  
+  mutTypeData <- c()
+  for (i in 1:28) {
+    if (SSTPicker %in% BCCL_Mutation[[i]]$Hugo_Symbol) {
+      out <- BCCL_Mutation[[i]]$Variant_Classification[a] 
+      mutTypeData <- c(mutTypeData, out)
+    }
+  }
+  SST_cand_ERBB2[a, 2] <- paste(mutTypeData, collapse = ", ")
+})
+```
