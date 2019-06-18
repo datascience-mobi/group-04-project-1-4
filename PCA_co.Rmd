@@ -75,7 +75,11 @@ BCCL_kd.prob_ID <- insertRow(existingDF, newrow, r)
 rownames(BCCL_kd.prob_ID) <- c("Deep_ID", rownameskdp)
 ```
 
-#kmeans with CERES scores
+# Identification of driver mutations using k means clustering of CERES scores 
+
+In order to verify our chosen driver mutations from literature, k means clustering was performed.
+
+
 ```{r kmeans ceres}
 #loading required packages
 install.packages("tidyverse")
@@ -101,7 +105,11 @@ for (j in 1:ncol(pre_mutImpact)){
     }#replace CERES value with NA in case the gene is not mutated
   }
 }
+````
 
+K means clustering was performed with all genes mutated at least once out of all 28 cell line samples and whose CERES score is equal to or lower than zero. For this, all genes with only NA values, hence not one mutation in any cell sample, were removed. A new dataframe `BCCL_kd.ceres_2`was generated containing all 28 CERES scores for each gene, with gene names in the first column. Gene names in the first column of the data frame `BCCL_kd.ceres_2`were compared to the rownames of `mutImpact_c` to generate the BCCL_kd.ceres_3 dataframe containing CERES scores for all breast cell cancer lines for all genes mutated at least once. Subsequently, the mean CERES score for each gene was computed using the rowmeans function and saved in the last column. For this, the column `rownameskdc2`had to be removed. Finally, all genes with CERES scores > 0 were deleted. The final BCCL_kd.ceres_3 dataframe now contains 4934 genes mutated at least once in the 28 breast cancer cell lines and with CERES scores equal to or below 0. 
+
+```{r}
 # selecting only genes mutated at least once and with Ceres >= 0
 mutImpact_c = mutImpact[rowSums(is.na(mutImpact)) != ncol(mutImpact),]# remove all genes withall NA values
 rownamesmutImpc = rownames(mutImpact_c)
@@ -113,9 +121,13 @@ BCCL_kd.ceres_3 = BCCL_kd.ceres_2[BCCL_kd.ceres_2[,"rownameskdc2"] %in%  mutImpa
 BCCL_kd.ceres_3 = BCCL_kd.ceres_3[,-c(1)]
 BCCL_kd.ceres_3 = cbind(BCCL_kd.ceres_3, rowMeans(BCCL_kd.ceres_3)) #calculate rowmeans 
 BCCL_kd.ceres_3 = BCCL_kd.ceres_3[rowMeans(BCCL_kd.ceres_3)<= 0,] # deletion of genes with CERES > 0
+```
 
+Before conducting k means clustering the column containing average CERES scores for each gene was removed (new dataframe `BCCL_kd.ceresKS`) and the optimal number of k clusters identified. For each column the data values were scaled  
+
+```{r}
 #determining optimal cluster number k
-BCCL_kd.ceresKS = BCCL_kd.ceres_3[,-c(28)] # remove CERES average column
+BCCL_kd.ceresKS = BCCL_kd.ceres_3[,-c(28)] # remove CERES average column for further processing
 
 CERES_Optimal_K <- function(BCCL_kd.ceresKS, specifier) {
   output <- lapply(1:ncol(BCCL_kd.ceresKS), function(a){
@@ -156,7 +168,9 @@ ggplot(data = optimalKprocessedData, aes(x=OptimalK, y=WSS))+
                   legend.title= element_blank(),
                   axis.title.x = element_blank(),
                   strip.text.y = element_text(angle = 0))
+```
 
+```{r}
 # comparison of optimal k means to alternative method  
 
 km_CERES= kmeans(x = BCCL_kd.ceres_3, centers = 2, nstart = 10)
@@ -167,24 +181,36 @@ wss = sapply(2:10, function(k) {
 plot(2:10, wss, type = "b", pch = 19, xlab = "Number of clusters K", ylab = "Total within-clusters sum of squares") 
 
 #comparison of both methods ==> conclusion optimal cluster number k=4 
-# k means clustering with optimal cluster number = 4
+```
 
+Having identified the optimal cluster number k to be 4, k means clustering of the data in BCCL_kd.ceres_3 was performed with 10 iterations. The following cluster plot was generated (Insert cluster plot).
+```{r}
 km_CERES= kmeans(x = BCCL_kd.ceres_3, centers = 4, nstart = 10)
 table(km_CERES$cluster)
 fviz_cluster(km_CERES, data=BCCL_kd.ceres_3, labelsize = 6) # plotting clusters
+```
 
+In order to verify our selection of driver mutations from literature, the cluster number of each driver mutation was identified. All selected driver mutations from literature,"ERBB2", "ERBB2IP", "MYCBP", "PARP10", "PIK3CA" and "CCND" were localized in cluster 3, hence with similar CERES scores, with the exception of "CCND" and "ERBBIP". While "CCND" was removed in the filtering process and no longer found in`BCCL_kd.ceres_3`, "ERBB2IP" was found in cluster 2. These two mutations were thus excluded from further analysis. 
+
+Therefore selected driver mutations used in further analysis were "ERBB2", "MYCBP", "PARP10" and "PIK3CA". 
+
+``` {r}
 km_CERES$cluster["ERBB2"]
 km_CERES$cluster["ERBB2IP"]
 km_CERES$cluster["MYCBP"]
 km_CERES$cluster["PARP10"]
 km_CERES$cluster["PIK3CA"] 
+```
 
-# all driver mutations in cluster 2 when centers = 2
-# all driver mutations but ERBB2IP in cluster 3 when centers = 4 => hence ERBB2IP eliminate
+Since our approach defined SSTs as genes expected to interact synergistcally with the corresponding driver mutation in promoting cell viability, similar CERES scores were expected. Thus all potential SSTs candidates were expected to be found also in the same cluster as selected driver mutations, hence in cluster 3. A dataframe `data_clus_3`was subsequently generated to contain all 1148 genes colocalized with driver mutations in cluster 3. 
 
+```{r}
 data_cluster = km_CERES$cluster
 rownames(data_cluster) = rownames(BCCL_kd.ceres_3)
 data_clus_3 = BCCL_kd.ceres_3[data_cluster == 3,] #dataframe with all 1148 genes in same cluster as driver mutations 
+```
+
+```{r}
 
 #LABELING DRIVER MUTATIONS 
 # CCND mutation not present in BCCL_kd.ceres_3 matrix but ERBB2, ERBB2IP, MYCBP, PARP10 and PIK3CA found. ERBB2IP however not in same cluster as other driver mutations 
