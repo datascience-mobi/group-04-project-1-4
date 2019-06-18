@@ -141,7 +141,7 @@ MultiLinReg <- function(x){
                           test_set #Now you can compare your Predictions (last column) with the real values of the startups (2nd last column)
                           
                           cordf <- cor.test(test_set$DependentVariable, test_set$Prediction, method = spearman) #to judge model performance, calculate Spearman corr. between predicted and observed values
-                          barplot(cordf) #create a barplot for correlation visualization and further evaluation
+                          barplot(cordf, main = deparse(substitute(x))) #create a barplot for correlation visualization and further evaluation
 }
 
 MLR_files <- c("linRegData_ERBB2", "linRegData_MYCBP", "linRegData_PARP10", "linRegData_PIK3CA")
