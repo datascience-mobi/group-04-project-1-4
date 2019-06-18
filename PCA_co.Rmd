@@ -2,12 +2,14 @@
 title: "kmeans -> Dmut"
 author: "Salome Steinke"
 date: "17 Mai 2019"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 #Loading Data
 ```{r Load.Data}
-allDepMapData = readRDS("path/to/your/directory/DepMap19Q1_allData.RDS")
+allDepMapData = readRDS("C:\Users\Salome\Documents\4.FS\Bioinfo")
 BCCL_Numbers = which(allDepMapData$annotation[4]== "Breast Cancer") 
 BCCL_Annotation = subset(allDepMapData$annotation, Primary.Disease == "Breast Cancer")
 #see what we got

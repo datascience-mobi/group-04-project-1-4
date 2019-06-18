@@ -2,7 +2,9 @@
 title: "SST Characterisation Report"
 author: "Salome"
 date: "8 6 2019"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ## Verification of SST candidates by assigned k means cluster number 
