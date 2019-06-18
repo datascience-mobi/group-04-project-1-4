@@ -2,14 +2,21 @@
 title: "Identification of SSTs_report"
 author: "Lisa Marie Milchsack"
 date: "10 Juni 2019"
-output: html_document
+output:
+  word_document: default
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
-
-#data clean up
+# Abstract
+# Introduction
+Breast Cancer is the most praevalent tumor disease in women and the most dangerous in blabla...
+# Main
+## Data clean up
+To gain an overview of general data distribution we first had to extract the breast cancer data from the larger dataset containing all kinds of tumor diseases. After loading the data we therefore identified 28 cell lines harvesting breast cancer.
 ```{r}
 #load data
 allDepMapData = readRDS("C:/Users/lisa-/Desktop/Studium/4. FS/Bioinfo/DepMap19Q1_allData.RDS")
@@ -17,7 +24,9 @@ allDepMapData = readRDS("C:/Users/lisa-/Desktop/Studium/4. FS/Bioinfo/DepMap19Q1
 #finding all breast cancer cell lines
 BCCL_Numbers <- which(allDepMapData$annotation[4]== "Breast Cancer")
 BCCL_Annotation <- subset(allDepMapData$annotation, Primary.Disease == "Breast Cancer")
-#see what we got
+```
+From these cell lines we got expression values, copynumbers, and knockdown scores in cell viability and probability of cell survival as described in the introduction. To make data more clear, we constructed dataframes for every *sort of data* and ordered the genes alphabetically. 
+```{r}
 #summary(BCCL_Annotation)
 # copy expression matrix to new dataframes
 df1 <- allDepMapData$expression
@@ -46,48 +55,20 @@ BCCL_kd.prob <- BCCL_kd.prob[order(rownames(BCCL_kd.prob)), ]
 #subset Mutation matrix in BCCL
 BCCL_Mutation <- allDepMapData$mutation[c(BCCL_Numbers)]
 ```
-
-```{r} 
-Patients_ID <- BCCL_Annotation[1] #get patients ID from annotation matrix
-tPatients_ID <- t(Patients_ID) #transpose Patients_ID because it was a column and we want to insert it as row
-rownameskdc <- rownames(BCCL_kd.ceres) # save old rownames
-existingDF <- BCCL_kd.ceres  # define variables for BCCL_kd.ceres
-r <- 1
-newrow <- tPatients_ID
-#defining a function we can use more often to insert rows
-insertRow <- function(existingDF, newrow, r) { 
-    existingDF[seq(r+1,nrow(existingDF)+1),] <- existingDF[seq(r,nrow(existingDF)),]
-    existingDF[r,] <- newrow
-    existingDF
-}
-BCCL_kd.ceres_ID <- insertRow(existingDF, newrow, r)
-rownames(BCCL_kd.ceres_ID) <- c("Deep_ID", rownameskdc) # change rownames back 
-BCCL_kd.ceres_ID[1:2, ]
-#do the same with other 3 dataframes
-rownamesex <- rownames(BCCL_Expression) #save rownames
-existingDF <- BCCL_Expression  # define variables for BCCL_Erpression
-r <- 1
-newrow <- tPatients_ID
-BCCL_Expression_ID <- insertRow(existingDF, newrow, r)
-rownames(BCCL_Expression_ID) <- c("Deep_ID", rownamesex)
-rownamescn <- rownames(BCCl_Copynumber) #save rownames
-existingDF <- BCCl_Copynumber  # define variables for BCCL_Copynumber
-r <- 1
-newrow <- tPatients_ID
-BCCl_Copynumber_ID <- insertRow(existingDF, newrow, r)
-rownames(BCCl_Copynumber_ID) <- c("Deep_ID", rownamescn)
-rownameskdp <- rownames(BCCL_kd.prob) #save rownames
-existingDF <- BCCL_kd.prob  # define variables for BCCL_kd.prob
-r <- 1
-newrow <- tPatients_ID
-BCCL_kd.prob_ID <- insertRow(existingDF, newrow, r)
-rownames(BCCL_kd.prob_ID) <- c("Deep_ID", rownameskdp)
+As next step we made some experiments, to get a feeling for data distribution. 
+We made a heatmap of expression values, compared single genes for knockdown and copynumber scores and found relatively equally distibuted expression values and CERES Scores. We also tried to gain a first look on driver mutations, known from literature.
+*muss noch schön gemacht werden :)*
+```{r echo=TRUE}
+tBCCL_Expression <- t(BCCL_Expression)
+boxplot(tBCCL_Expression[, c("MYC", "PTEN", "TP53", "PIK3CA", "GATA3", "BRCA1", "BRCA2", "RB1", "GANAB", "PRKCSH", "RNF43")], xlab = "Suggested driver mutations", ylab ="Transcripts per million")
 ```
+We already discarded some of this genes, mostly because they are known as tumor suppressor genes. In our approach we looked for targets, which show similar characteristics in cell viability after a knockdown. A knockdown of a tumor supressor gene, even if it is mutated, will rarely have a negative effect on cell viability. This makes genes associated with tumor supressor genes useless for an inhibitory drug and therefore useless for our analysis. 
 
+## Picking of driver mutations through clustering
 
-# Identification of second-site targets
+## Identification of second-site targets
 
-## Generation of the mutImpact matrix
+### Generation of the mutImpact matrix
 
 In order to gain an overview over the effects on viability of each mutation present in one cell line the mutImpact matrix was generated.
 
@@ -122,9 +103,9 @@ for (j in 1:ncol(pre_mutImpact)){
 head(mutImpact)
 ```
 
-## Spotting genetic interactions: the Wilcoxon test
+### Spotting genetic interactions: the Wilcoxon test
 
-Genetic interactions of driver mutations with other genes were examined based on a Wilcoxon signed rank test. As SSTs are expected to interact synergistcally with the corresponding driver mutation in promoting cell viability similar CERES scores are suggested to infer the presence of gene interactions. Thus, hihg p-values are anticipated for such cooperating gene pairs when performing the Wilcoxon signed rank test. The Wilcoxon signed rank test was chosed rather than a t-test due to non-normal distribution of the data and the requirement of a paired test to compare the data of two genes per cell line. Asuming that the ranks of the CERES scores of the driver mutation and their SSTs are equal SST candidates were chosen by the means of the highst p-values (accepting the H0 hypothesis).
+Genetic interactions of driver mutations with other genes were examined based on a Wilcoxon signed rank test. As SSTs are expected to interact synergistcally with the corresponding driver mutation in promoting cell viability similar CERES scores are suggested to infer the presence of gene interactions. Thus, high p-values are anticipated for such cooperating gene pairs when performing the Wilcoxon signed rank test. The Wilcoxon signed rank test was chosed rather than a t-test due to non-normal distribution of the data and the requirement of a paired test to compare the data of two genes per cell line. Asuming that the ranks of the CERES scores of the driver mutation and their SSTs are equal SST candidates were chosen by the means of the highst p-values (accepting the H0 hypothesis).
 
 For the purpose of conducting the Wilcoxon test the data from which the CERES scores for the test are taken was prepared. Therefore, a vector containg the identified driver mutations was generated. Furthermore, a reduced mutImpact matrix `mutImpact_r` was created from `mutImpact`which only includ genes which are mutated and do not have `NA`values only. Based on `mutImpact_r`the `BCCL_kd.ceres` matrix was reduced resutling in the `mutImpact_kd.ceres` matrix containing the CERES scores of all genes in all cell lines if the gene is mutated in one cell line at minimum. 
 
@@ -201,3 +182,4 @@ view(SST_cand_MYCBP)
 view(SST_cand_PARP10)
 view(SST_cand_PIK3CA)
 ```
+## Regression analysis to predict ceres scores of driver mutation
