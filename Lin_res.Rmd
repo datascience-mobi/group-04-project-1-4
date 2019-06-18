@@ -102,10 +102,18 @@ linRegData_PIK3CA <- BCCL_kd.ceres_df %>% select("PIK3CA", rownames(SST_cand_PIK
 To get a first look at the dataset for the Regression model, we create qq-plots to verify that the data is approx. normal distributed.
 
 ```{r}
+LinRes_ERBB2 <- as.data.frame(LinRes_ERBB2)
+LinRes_MYCBP <- as.data.frame(LinRes_MYCBP)
+LinRes_PARP10 <- as.data.frame(LinRes_PARP10)
+LinRes_PIK3CA <- as.data.frame(LinRes_PIK3CA)
+
 create_qqplot <- function(x){
                         qqnorm(x, main = deparse(substitute(x)))
                         qqline(x)} 
 #introducing a function creating qq-plots, check if normality is approximated; the "deparse(substitute(x))" assigns the correesponding dataset name to the qq-plot.
+
+df.list.qqplot <- list(LinRes_ERBB2,LinRes_MYCBP, LinRes_PARP10, LinRes_PIK3CA)
+lapply(df.list.qqplot, create_qqplot) #tried this, returned Issue as in line 127
 
 create_qqplot(LinRes_ERBB2)
 create_qqplot(LinRes_MYCBP)
@@ -151,8 +159,8 @@ MultiLinReg <- function(x){
                           barplot(cordf, main = deparse(substitute(x))) #create a barplot for correlation visualization and further evaluation
 }
 
-MLR_files <- c("linRegData_ERBB2", "linRegData_MYCBP", "linRegData_PARP10", "linRegData_PIK3CA")
-lapply(MLR_files, MultiLinReg)
+df.list.MLR <- list(linRegData_ERBB2, linRegData_MYCBP, linRegData_PARP10, linRegData_PIK3CA)
+lapply(df.list.MLR, MultiLinReg)
 
 # CURRENT ISSUE: "Error in terms.formula(formula, data = data) : '.' erscheint in der Formel und 'data' Argument ist ung?ltig"
 ```
