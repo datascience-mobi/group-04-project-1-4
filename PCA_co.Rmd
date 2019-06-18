@@ -170,6 +170,7 @@ ggplot(data = optimalKprocessedData, aes(x=OptimalK, y=WSS))+
                   strip.text.y = element_text(angle = 0))
 ```
 
+*Insert Text about comparison to alternative Wss* 
 ```{r}
 # comparison of optimal k means to alternative method  
 
@@ -183,7 +184,8 @@ plot(2:10, wss, type = "b", pch = 19, xlab = "Number of clusters K", ylab = "Tot
 #comparison of both methods ==> conclusion optimal cluster number k=4 
 ```
 
-Having identified the optimal cluster number k to be 4, k means clustering of the data in BCCL_kd.ceres_3 was performed with 10 iterations. The following cluster plot was generated (Insert cluster plot).
+Having identified the optimal cluster number k to be 4, k means clustering of the data in BCCL_kd.ceres_3 was performed with 10 iterations. The following cluster plot was generated *(Insert cluster plot)*.
+
 ```{r}
 km_CERES= kmeans(x = BCCL_kd.ceres_3, centers = 4, nstart = 10)
 table(km_CERES$cluster)
@@ -210,11 +212,10 @@ rownames(data_cluster) = rownames(BCCL_kd.ceres_3)
 data_clus_3 = BCCL_kd.ceres_3[data_cluster == 3,] #dataframe with all 1148 genes in same cluster as driver mutations 
 ```
 
+A further dataframe `data_clus_3e` was subsequently generated labelling the four driver mutations in a separate column, by implementing an "IF" loop. If the rowname of `data_clus_3e`was found in a previously created vector containing driver mutations names, it was labelled as "driver mutation".Otherwise genes were labelled as "no driver mutation".
+
 ```{r}
-
 #LABELING DRIVER MUTATIONS 
-# CCND mutation not present in BCCL_kd.ceres_3 matrix but ERBB2, ERBB2IP, MYCBP, PARP10 and PIK3CA found. ERBB2IP however not in same cluster as other driver mutations 
-
 drivermut =  c("ERBB2","MYCBP", "PARP10", "PIK3CA") # create vector with driver mutation names
 data_clus_3e = data_clus_3
 data_clus_3e["Driver mutation"] <- sapply(1:nrow(data_clus_3), function(j){
@@ -226,15 +227,15 @@ data_clus_3e["Driver mutation"] <- sapply(1:nrow(data_clus_3), function(j){
   }) # labeling driver mutations with "driver mutation" in data_clus_3e 
 ```
 
-# Data visualisation of 4 driver mutations 
+# Data visualisation of CERES and TPM values of the 4 selected driver mutations 
+
+CERES scores and expression as TPM values for the selected 4 driver mutations were visualised as box and whisker plots. Following the generation of the `GOI_X` dataframe containing either CERES or TPM values for the four mutations, the data was reshaped to contain two columns. One "variable" with the names of driver mutations, the other "value" with the corresponding CERES or TPM value. The ggplot function, part of the ggplot2 package, was used to plot the following box an whisker plots. 
+
 ```{data visualisation}
 install.packages("reshape")
 install.packages("wesanderson")
 library("reshape")
 library("wesanderson")
-
-#barplot for fun 
-barplot(data_clus_3[,"rowMeans(BCCL_kd.ceres_3)"], main="Gene cluster 3", xlab="CERES scores") 
 
 # CERES_boxplot
 GOI= BCCL_kd.ceres[c("ERBB2","MYCBP", "PARP10", "PIK3CA"),]
@@ -283,110 +284,5 @@ Expression_boxplot = ggplot(Expression_driver_mut, aes(x = variable, y = value))
                   strip.text.y = element_text(angle = 0))
 Expression_boxplot
 ```
-```
 
-
-#PCA using BCCL_kd.ceres_3
-```{r PCA BCCL_kd.ceres_3}
-install.packages("ggfortify")
-library(ggfortify)
-
-tBCCL_kd.ceres = t(BCCL_kd.ceres_3[,-c(28)]) # transformation of BCCL_kd.ceres_3 matrix
-CERES.pca = prcomp(tBCCL_kd.ceres, center = T, scale = T, rank = 2)  
-summary(CERES.pca)
-
-plot(CERES.pca, type = "l")  # Identify PCs with most variabilit SS
-autoplot(CERES.pca, label = TRUE, label.size = 3) # need to add colour based on whether driver mutation or not
-
-CERES.pca.loadings = CERES.pca$rotation # loadings PC1 and PC2
-Sor.CERES.pca.load= -CERES.pca.loadings [order(CERES.pca.loadings[,1]),] #managed to order PC1 column according to size (PC2 not yet)
-Sor.CERES.pca.load[1:200,] # first 200 genes do not contain driver mutations 
-```
-
-
-
-
-
-
-
-
-#Alternativ Code 
-
-#kmeans for Expression data test
-```{r kmeans}
-BCCL_Expression_rmv = BCCL_Expression[rowSums(BCCL_Expression != 0) > 0, ]
-BCCL_Expression_rmv_s = scale(BCCL_Expression)
-km= kmeans(x = BCCL_Expression_rmv_s, centers = 2, nstart = 10)
-table(km$cluster)
-wss = sapply(2:10, function(k) {
-    kmeans(x = BCCL_Expression_rmv_s, centers = k)$tot.withinss
-})
-plot(2:10, wss, type = "b", pch = 19, xlab = "Number of clusters K", ylab = "Total within-clusters sum of squares") # optimal number 4 clusters
-
-km = kmeans(x = BCCL_Expression_rmv_s, centers = 4, nstart = 10)
-table(km$cluster)
-
-fviz_cluster(km, data=BCCL_Expression_rmv_s)
-
-#trying to determine optimal cluster number with silhouette method- not yet functional 
-
-s <- sapply(2:10, function(k) {
-  kmeans(x=BCCL_Expression_rmv_s, centers = k);
-  D = dist(BCCL_Expression_rmv_s);
-  si = silhouette(km$cluster, D);
-  si_sum = (summary(si, FUN = mean))
-})
-```
-
-
-```{r code}
-BCCL_kd.ceres_3 = BCCL_kd.ceres_2[BCCL_kd.ceres_2[,"rownameskdc2"] %in% mutImpact_c[,"rownamesmutImpc"],] # reduce BCCL_kd.ceres_2 matrix to genes mutated at least once
-```
-#Alternative second try to label mutations
-```{r}
-BCCL_kd.ceres_an <- BCCL_kd.ceres #generate new data frame
-colnames(BCCL_kd.ceres_an) <- rownames(BCCL_kd.ceres)
-
-#generate new column containing information on mutation status
-BCCL_kd.ceres_an$mutation <- sapply(1:nrow(BCCL_kd.ceres), function(j){
-     if(rownames(BCCL_kd.ceres_an)[j] %in% rownames(mutImpact_c)){
-         BCCL_kd.ceres_an[j,1] = "mutation"
-     } else {
-         BCCL_kd.ceres_an[j,1] = "no mutation"
-     }
-  })
-BCCL_kd.ceres_an <- BCCL_kd.ceres_an[c("mutation", tPatients_ID)]#reorder columns 
-```
-
-
-#Expression PCA
-``` {r PCA}
-install.packages("ggfortify")
-library(ggfortify)
-
-tBCCL_Expression = t(BCCL_Expression)
-Expression.pca = prcomp(tBCCL_Expression, center = T, scale = F, rank = 2)  # scaling not possible due to zeros # rank = 2 since only interested in first 2 PCA components 
-summary(Expression.pca)
-
-plot(Expression.pca, type = "l")  # First 2 components = most of data  variability using Elbow-method 
-autoplot(Expression.pca, label = TRUE, label.size = 3) # need to add colour based on whether driver mutation or not
-
-Expression.pca.loadings = Expression.pca$rotation # laodings PC1 and PC2
-Sor.Expr.pca.load= -Expression.pca.loadings [order(Expression.pca.loadings[,1], Expression.pca.loadings[,2]),] #managed to order PC1 column according to size (PC2 not yet)
-Sor.Expr.pca.load[1:200,] # first 200 genes do not contain driver mutations - perhaps assign rank
-
-```
-
-#Same process for CERES scores
-```{r PCA Ceres}
-tBCCL_kd.ceres = t(BCCL_kd.ceres)
-Ceres.pca = prcomp(tBCCL_kd.ceres, center = T, scale = T, rank = 2)  
-summary(Ceres.pca)
-
-plot(Ceres.pca, type = "l")  # First 2 components = most of data  variability using Elbow-method 
-autoplot(Ceres.pca, label = TRUE, label.size = 3) # need to add colour based on whether driver mutation or not
-
-Ceres.pca.loadings = Ceres.pca$rotation # loadings PC1 and PC2
-Sor.Ceres.pca.load= -Ceres.pca.loadings [order(Ceres.pca.loadings[,1]),] #managed to order PC1 column according to size (PC2 not yet)
-Sor.Ceres.pca.load[1:200,] # first 200 genes do not contain driver mutations - perhaps assign rank
-```
+*Analysis of box and whisker plots required*
