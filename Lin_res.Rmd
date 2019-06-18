@@ -17,7 +17,7 @@ for this we need a data frame for every drivermutation, consisting of ceres scor
 rownames -> SSTs
 colnames -> BCCL harvesting this driver mutation ( we can discuss this :))
 
-#Elias´idea
+#Elias?idea
 ```{r}
 SSTs <- c(rownames(finalFrame)) #could be any list of SSTs
 LinResdf0 <- BCCL_kd.ceres[SSTs,] #df, consisting 28 col, nSTTs rows
@@ -111,6 +111,14 @@ create_qqplot(LinRes_ERBB2)
 create_qqplot(LinRes_MYCBP)
 create_qqplot(LinRes_PARP10)
 create_qqplot(LinRes_PIK3CA) #perform qqplot creation
+
+create_qqplot(linRegData_ERBB2)
+create_qqplot(linRegData_MYCBP)
+create_qqplot(linRegData_PARP10)
+create_qqplot(linRegData_PIK3CA)
+#ISSUE: "Error in xy.coords(x, y, xlabel, ylabel, log) : 'x' and 'y' lengths differ", obwohl beide DatensÃ¤tze gleich sind
+View(LinRes_ERBB2)
+View(linRegData_ERBB2)
 ```
 
 ## Step 3: Multilinear Regression: Data Preperation, Model Training /Testing / Evaluation
@@ -146,7 +154,7 @@ MultiLinReg <- function(x){
 MLR_files <- c("linRegData_ERBB2", "linRegData_MYCBP", "linRegData_PARP10", "linRegData_PIK3CA")
 lapply(MLR_files, MultiLinReg)
 
-# CURRENT ISSUE: "Error in terms.formula(formula, data = data) : '.' erscheint in der Formel und 'data' Argument ist ungültig"
+# CURRENT ISSUE: "Error in terms.formula(formula, data = data) : '.' erscheint in der Formel und 'data' Argument ist ung?ltig"
 ```
 
 
