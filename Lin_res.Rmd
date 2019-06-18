@@ -2,14 +2,17 @@
 title: "Linear regression"
 author: "Elias Benjamin Farr"
 date: "17 Mai 2019"
-output: html_document
+output:
+  word_document: default
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-We want to predict Ceres scores of our drivermutations ("ERBB2","MYCBP", "PARP10", "PIK3CA") based on data we got from second site targets wright ?
+We want to predict Ceres scores of our drivermutations ("ERBB2","MYCBP", "PARP10", "PIK3CA") based on data we got from second site targets right ?
 for this we need a data frame for every drivermutation, consisting of ceres scores from our SSTs. 
 rownames -> SSTs
 colnames -> BCCL harvesting this driver mutation ( we can discuss this :))
@@ -24,24 +27,14 @@ LinResdf1 <- subset(LinResdf0, colname == drivmutCL)
 
 ```
 -----------------------------------------------------------------------------------
-
+### Multilinear Regression
 ## Objective
 
   + For the regression model, we want to predict the CERES score of the driver mutation (dependent variable) based on the CERES score of the SST candidates (independent variables).
   + A multilinear regression will be designed:
 
-## Step 1: Building the LR-Datamatrices
 # Load data
-
-  + We now obtained potential SSTs for the four driver mutation. To form a base for the Multilinear regression, we 
-    1. Form a vector including the SST rownames
-    2. Integrate the CERES scores for the mutations for the linear regression.
     
-
-#UNDER CONSTRUCTION: Need help to automate this function for all 4 datasets
-
-Requiered dataset: "SSTs" # collected names of SST candidates including label of driver mutation
-
 #I did not find a automated approach yet, so doing it caveman-style
   1. Create a dataframe, consisting of 28 col, nSTTs rows
   2. select driver mutation as our dependent variable
@@ -83,7 +76,14 @@ LinRes_PIK3CA <- t(LinRes_PIK3CA)
 LinRes_PIK3CA <- cbind(LinRes_PIK3CA, LinRes_PIK3CA)
 ```
 
-#generate matrices containing CERES scores of DV and corresponding SSTs
+## Step 1: Building the LR-Datamatrices
+#Generate matrices containing CERES scores of DV and corresponding SSTs
+
++ We now obtained potential SSTs for the four driver mutation. To form a base for the Multilinear regression, we 
+    1. reform the BCCL CERES matrix
+      + By transponing and format change, we obtain a matrix with colnames = Gene names and rownames = Cell line indices (equal to tPatients_ID)
+    2. Collect the relevant the CERES scores for the mutations for the linear regression.
+      + All columns with the corresponding names of the driver mutation plus SST genes will be collected and copied into a new dataframe
 ```{r}
 #reformat BCCL CERES matrix
 BCCL_kd.ceres_df <- as.data.frame(t(BCCL_kd.ceres))
@@ -97,11 +97,10 @@ linRegData_PARP10 <- BCCL_kd.ceres_df %>% select("PARP10", rownames(SST_cand_PAR
 linRegData_PIK3CA <- BCCL_kd.ceres_df %>% select("PIK3CA", rownames(SST_cand_PIK3CA))
 ```
 
-#Step 2: Data Preperation
+#Step 2: Check of distribution
 
-To test the resulting Linear Regression model, we will split the datset into 75:25 training:test data.
-  1. We check normal distribution by a qq-Plot
-  2. Split the dataset into 75:25 training:test data
+To get a first look at the dataset for the Regression model, we create qq-plots to verify that the data is approx. normal distributed.
+
 ```{r}
 create_qqplot <- function(x){
                         qqnorm(x, main = deparse(substitute(x)))
@@ -114,7 +113,7 @@ create_qqplot(LinRes_PARP10)
 create_qqplot(LinRes_PIK3CA) #perform qqplot creation
 ```
 
-## Define a big function doing datasplit, Model training and testing all in one
+## Step 3: Multilinear Regression: Data Preperation, Model Training /Testing / Evaluation
 To run the Multilinear Regression, it is advised to create a long function which
   1. Splits the dataset in 75:25 training:test data
     + Previous installation of the "caTools" package is necessary
