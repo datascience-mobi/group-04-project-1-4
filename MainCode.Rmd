@@ -118,6 +118,7 @@ for (j in 1:ncol(pre_mutImpact)){
   }
 }
 ```
+
 #generation of Input Matrix
 ```{r Input Matrix}
 mutImpact_c = mutImpact[rowSums(is.na(mutImpact)) != ncol(mutImpact),]# remove all genes with all NA values
@@ -131,7 +132,70 @@ BCCL_kd.ceres_3 = BCCL_kd.ceres_3[,-c(1)]
 BCCL_kd.ceres_3 = cbind(BCCL_kd.ceres_3, rowMeans(BCCL_kd.ceres_3)) #calculate rowmeans 
 BCCL_kd.ceres_3 = BCCL_kd.ceres_3[rowMeans(BCCL_kd.ceres_3)<= 0,] # deletion of genes with CERES > 0
 
+```{r}
+#determining optimal cluster number k
+BCCL_kd.ceresKS = BCCL_kd.ceres_3[,-c(28)] # remove CERES average column for further processing
+
+CERES_Optimal_K <- function(BCCL_kd.ceresKS, specifier) {
+  output <- lapply(1:ncol(BCCL_kd.ceresKS), function(a){
+   df <- scale(BCCL_kd.ceresKS[,a]) # pick one column of input data and scale 
+   wss <-(nrow(df-1))*sum(apply(df,2,var)) #compute wss
+   for (i in 2:15){ # for k between 2 and 15
+     set.seed(1234)
+     wss[i] <- sum(kmeans(df, centers = i)$withinss)} 
+   return(wss)
+  })
+names (output) <- colnames(BCCL_kd.ceresKS) # rename the output 
+return(output)
+}
+
+BCCL_kd.ceres_optKS <- CERES_Optimal_K(BCCL_kd.ceresKS, "CERES Optimal Clusters k") 
+
+# plotting wss function 
+optimalKprocessedData <- lapply(seq_along(BCCL_kd.ceres_optKS), function(a){
+  dtPicker <- as.data.frame(BCCL_kd.ceres_optKS[[a]]) # one vector picked and formatted into dataframe
+  dtPicker$Cell_Sample <- names(BCCL_kd.ceres_optKS)[a] #sample added as label
+  dtPicker$OptimalK <- 1:nrow(dtPicker) 
+  return(dtPicker)
+})
+
+optimalKprocessedData <- as.data.frame(rbindlist(optimalKprocessedData)) # output into dataframe
+colnames(optimalKprocessedData) <- c("WSS", "Sample", "OptimalK")
+
+# using ggplot to plot output 
+ggplot(data = optimalKprocessedData, aes(x=OptimalK, y=WSS))+
+  geom_line(aes(color=Cell_Sample))+
+  title = ("Optimal number of clusters k") +
+  xlab("Number of clusters")+
+  ylab("WSS")+
+  theme_minimal() +
+           theme(legend.position ='bottom',
+                  plot.title = element_text(hjust = 0.5),
+                  axis.text.x = element_text(angle = 0, vjust = 0, hjust=0.5),
+                  legend.title= element_blank(),
+                  axis.title.x = element_blank(),
+                  strip.text.y = element_text(angle = 0))
+
+# comparison of optimal k means to alternative method  
+km_CERES= kmeans(x = BCCL_kd.ceres_3, centers = 2, nstart = 10)
+table(km_CERES$cluster)
+wss = sapply(2:10, function(k) {
+    kmeans(x = BCCL_kd.ceres_3, centers = k)$tot.withinss
+})
+plot(2:10, wss, type = "b", pch = 19, xlab = "Number of clusters K", ylab = "Total within-clusters sum of squares") 
+
+#comparison of both methods ==> conclusion optimal cluster number k=4
+
 km_CERES= kmeans(x = BCCL_kd.ceres_3, centers = 4, nstart = 10)
+table(km_CERES$cluster)
+fviz_cluster(km_CERES, data=BCCL_kd.ceres_3, labelsize = 6) # plotting clusters
+
+km_CERES$cluster["ERBB2"]
+km_CERES$cluster["ERBB2IP"]
+km_CERES$cluster["MYCBP"]
+km_CERES$cluster["PARP10"]
+km_CERES$cluster["PIK3CA"] 
+
 data_cluster = km_CERES$cluster
 rownames(data_cluster) = rownames(BCCL_kd.ceres_3)
 data_clus_3 = BCCL_kd.ceres_3[data_cluster == 3,] # without driver mutation label 
@@ -148,6 +212,60 @@ data_clus_3e["Driver mutation"] <- sapply(1:nrow(data_clus_3), function(j){
 
 ```
 
+# Data visualisation 4 driver mutations 
+```{r}
+install.packages("reshape")
+install.packages("wesanderson")
+library("reshape")
+library("wesanderson")
+
+# CERES_boxplot
+GOI= BCCL_kd.ceres[c("ERBB2","MYCBP", "PARP10", "PIK3CA"),]
+CERES_driver_mut= melt(GOI)
+CERES_driver_mut$variable=rep(c("ERBB2","MYCBP", "PARP10", "PIK3CA"), ncol(GOI))
+
+CERES_boxplot = ggplot(CERES_driver_mut, aes(x = variable, y = value)) +
+       geom_boxplot(aes(fill=variable), outlier.alpha = 0.7,
+                     outlier.colour = "red", outlier.shape = 20, outlier.size = 2) +
+        labs(title = 'CERES scores of selected driver mutations', x = 'Selected driver   mutations', y = 'CERES scores') +
+            theme_minimal() +
+            geom_jitter(width = 0.2) +
+  CERES_boxplot = ggplot(CERES_driver_mut, aes(x = variable, y = value)) +
+       geom_boxplot(aes(fill=variable), outlier.alpha = 0.7,
+                     outlier.colour = "grey", outlier.shape = 20, outlier.size = 2) +
+        labs(title = 'CERES scores of selected driver mutations', x = 'Selected driver   mutations', y = 'CERES scores') +
+            theme_minimal() +
+            geom_jitter(width = 0.2) +
+            scale_fill_manual(values=wes_palette(n=4, name="Royal2")) +
+            theme(legend.position ='none',
+                  plot.title = element_text(hjust = 0.4),
+                  axis.text.x = element_text(angle = 0, vjust = 0, hjust=0.5),
+                  legend.title= element_blank(),
+                  axis.title.x = element_blank(),
+                  strip.text.y = element_text(angle = 0))
+CERES_boxplot
+
+#Expression_boxplot
+
+GOI_Exp= BCCL_Expression[c("ERBB2","MYCBP", "PARP10", "PIK3CA"),]
+Expression_driver_mut= melt(GOI_Exp)
+Expression_driver_mut$variable=rep(c("ERBB2","MYCBP", "PARP10", "PIK3CA"), ncol(GOI_Exp))
+
+Expression_boxplot = ggplot(Expression_driver_mut, aes(x = variable, y = value)) +
+       geom_boxplot(aes(fill=variable), outlier.alpha = 0.7,
+                     outlier.colour = "grey", outlier.shape = 20, outlier.size = 2) +
+        labs(title = 'Transcripts per million (TPM) of selected driver mutations', x = 'Selected driver mutations', y = 'Transcripts per million (TPM)') +
+            theme_minimal() +
+            geom_jitter(width = 0.2) +
+            scale_fill_manual(values=wes_palette(n=4, name="Royal2")) +
+            theme(legend.position ='none',
+                  plot.title = element_text(hjust = 0.4),
+                  axis.text.x = element_text(angle = 0, vjust = 0, hjust=0.5),
+                  legend.title= element_blank(),
+                  axis.title.x = element_blank(),
+                  strip.text.y = element_text(angle = 0))
+Expression_boxplot
+```
 
 #find potential SSTs: Wilcoxon test
 ```{r}
@@ -203,6 +321,64 @@ SST_cand_MYCBP <- SST_cand_MYCBP %>% rownames_to_column() %>% top_n(15, MYCBP) %
 SST_cand_PARP10 <- SST_cand_PARP10 %>% rownames_to_column() %>% top_n(15, PARP10) %>% column_to_rownames()
 SST_cand_PIK3CA <- SST_cand_PIK3CA %>% rownames_to_column() %>% top_n(15, PIK3CA) %>% column_to_rownames()
 ```
+
+# Verification of SST candidates by assigned k means cluster number 
+```{r}
+SST_ERBB2 <- SST_cand_ERBB2 #creating new dataframes
+SST_MYCBP <- SST_cand_MYCBP
+SST_PARP10 <- SST_cand_PARP10
+SST_PIK3CA <- SST_cand_PIK3CA
+
+#labelling of SST candidates with "SST" or "No SST" depending on if in k means cluster 3 or not
+
+#PARP10 candidates
+SST_PARP10["SST Cluster Check"] <- sapply(1:nrow(SST_cand_PARP10), function(a){
+  if (rownames(SST_cand_PARP10) %in% rownames(data_clus_3e)) {
+      SST_PARP10[a,1] ="SST PARP10"
+  }else{
+     SST_PARP10[a,1] = "No SST"
+  }
+})
+SST_PARP10 <- SST_PARP10 %>% rename(p_values=PARP10)
+
+#ERBB2 candidates
+SST_ERBB2["SST Cluster Check"] <- sapply(1:nrow(SST_cand_ERBB2), function(a){
+  if (rownames(SST_cand_ERBB2) %in% rownames(data_clus_3e)) {
+      SST_ERBB2[a,1] ="SST ERBB2"
+  }else{
+     SST_PARP10[a,1] = "No SST"
+  }
+})
+SST_ERBB2 <- SST_ERBB2 %>% rename(p_values= ERBB2)
+
+#MYCBP candidates
+SST_MYCBP["SST Cluster Check"] <- sapply(1:nrow(SST_cand_MYCBP), function(a){
+  if (rownames(SST_cand_MYCBP) %in% rownames(data_clus_3e)) {
+      SST_MYCBP[a,1] ="SST MYCBP"
+  }else{
+     SST_MYCBP[a,1] = "No SST"
+  }
+})
+SST_MYCBP <- SST_MYCBP %>% rename(p_values= MYCBP)
+
+#PIK3CA candidates
+SST_PIK3CA["SST Cluster Check"] <- sapply(1:nrow(SST_cand_PIK3CA), function(a){
+  if (rownames(SST_cand_PIK3CA) %in% rownames(data_clus_3e)) {
+      SST_PIK3CA[a,1] ="SST PIK3CA"
+  }else{
+     SST_PIK3CA[a,1] = "No SST"
+  }
+})
+SST_PIK3CA <- SST_PIK3CA %>% rename(p_values= PIK3CA)
+
+#All approved SSTs in one dataframe with driver mutation label and p-value
+SSTs <-  do.call("rbind", list(SST_ERBB2, SST_MYCBP, SST_PARP10, SST_PIK3CA)) 
+SSTs <- SSTs[order(rownames(SSTs)),] # reorder in alphabetical order 
+
+#no SSTs the same for different driver mutations 
+```
+
+
 SST characterization - type of mutation
 ```{r}
 SST_cand_ERBB2$mutType <- sapply(seq_along(rownames(SST_cand_ERBB2)), function(a) {
