@@ -305,20 +305,14 @@ summary(testData$PIK3CA)
 
 #select 15 most promising SST candidates based on highest p-values - libraries needed: dplyr, tibble (included in "tidyverse")
 
-SST_cand_ERBB2 <- as.data.frame(testData$ERBB2, col.names = names(testData$ERBB2)) #create new data frame containing testData for ERBB2
-SST_cand_MYCBP <- as.data.frame(testData$MYCBP, col.names = names(testData$MYCBP))
-SST_cand_PARP10 <- as.data.frame(testData$PARP10, col.names = names(testData$PARP10))
-SST_cand_PIK3CA <- as.data.frame(testData$PIK3CA, col.names = names(testData$PIK3CA))
-
-names(SST_cand_ERBB2) = "ERBB2" #rename column
-names(SST_cand_MYCBP) = "MYCBP"
-names(SST_cand_PARP10) = "PARP10"
-names(SST_cand_PIK3CA) = "PIK3CA"
-
-SST_cand_ERBB2 <- SST_cand_ERBB2 %>%rownames_to_column() %>% top_n(15, ERBB2) %>% column_to_rownames() #select 15 genes with highest p-value
-SST_cand_MYCBP <- SST_cand_MYCBP %>% rownames_to_column() %>% top_n(15, MYCBP) %>% column_to_rownames()
-SST_cand_PARP10 <- SST_cand_PARP10 %>% rownames_to_column() %>% top_n(15, PARP10) %>% column_to_rownames()
-SST_cand_PIK3CA <- SST_cand_PIK3CA %>% rownames_to_column() %>% top_n(15, PIK3CA) %>% column_to_rownames()
+SST_Data <- lapply(seq_along(testData), function(a) {
+  data <- as.data.frame(testData[[a]], col.names = names(testData[[a]])) #create new data frame containing testData for each SST
+  colnames(data) = driver_mut[a] #rename columns
+  data <- data %>%rownames_to_column() %>% top_n(15, data[,1]) %>% column_to_rownames() #select 15 genes with highest p-value
+  return(data)
+})
+names(SST_Data) <- driver_mut
+lapply(SST_Data, function(a) print(a)) #have a look at the SSTs
 ```
 
 # Verification of SST candidates by assigned k means cluster number 
@@ -378,19 +372,23 @@ SSTs <- SSTs[order(rownames(SSTs)),] # reorder in alphabetical order
 ```
 
 
-SST characterization - type of mutation
+#SST characterization - type of mutation
 ```{r}
-SST_cand_ERBB2$mutType <- sapply(seq_along(rownames(SST_cand_ERBB2)), function(a) {
-  SSTPicker <- rownames(SST_cand_ERBB2)[a]
-  
-  mutTypeData <- c()
-  for (i in 1:28) {
-    if (SSTPicker %in% BCCL_Mutation[[i]]$Hugo_Symbol) {
-      out <- BCCL_Mutation[[i]]$Variant_Classification[a] 
-      mutTypeData <- c(mutTypeData, out)
+SST_Data <- lapply(seq_along(SST_Data), function(a) {
+  dvPicker <- SST_Data[[a]]
+  dvPicker$mutType <- sapply(seq_along(rownames(dvPicker)), function(b) {
+    SSTPicker <- rownames(dvPicker)[b]
+    mutTypeData <- c()
+    for (i in 1:ncol(BCCL_kd.ceres)) { 
+      if (SSTPicker %in% BCCL_Mutation[[i]]$Hugo_Symbol) {
+        out <- BCCL_Mutation[[i]]$Variant_Classification[a] 
+        mutTypeData <- c(mutTypeData, out)
+      }
     }
-  }
-  SST_cand_ERBB2[a, 2] <- paste(mutTypeData, collapse = ", ")
+    dvPicker[b, 2] <- paste(mutTypeData, collapse = ", ")
+  })
+  return(dvPicker)
 })
+names(SST_Data) <- driver_mut
 ```
 
