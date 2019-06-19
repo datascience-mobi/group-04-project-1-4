@@ -16,10 +16,14 @@ library("ggplot2")
 install.packages("tidyverse")
 install.packages("factoextra")
 install.packages("data.table")
+install.packages("wesanderson")
+install.packages("reshape")
 library(tidyverse)
 library(cluster)
 library(factoextra)
 library(data.table)
+library("reshape")
+library("wesanderson")
 ```
 
 #data clean up
@@ -214,11 +218,6 @@ data_clus_3e["Driver mutation"] <- sapply(1:nrow(data_clus_3), function(j){
 
 # Data visualisation of CERES and TMP values of 4 driver mutations 
 ```{r}
-install.packages("reshape")
-install.packages("wesanderson")
-library("reshape")
-library("wesanderson")
-
 # CERES_boxplot
 GOI= BCCL_kd.ceres[c("ERBB2","MYCBP", "PARP10", "PIK3CA"),]
 CERES_driver_mut= melt(GOI)
