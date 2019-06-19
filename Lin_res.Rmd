@@ -11,13 +11,15 @@ output:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+### Multilinear Regression
+## Objective
 
-We want to predict Ceres scores of our drivermutations ("ERBB2","MYCBP", "PARP10", "PIK3CA") based on data we got from second site targets right ?
-for this we need a data frame for every drivermutation, consisting of ceres scores from our SSTs. 
-rownames -> SSTs
-colnames -> BCCL harvesting this driver mutation ( we can discuss this :))
+  + For the regression model, we want to predict the CERES score of the driver mutation (dependent variable) based on the CERES score of the SST candidates (independent variables).
+  + A multilinear regression will be designed:
+  
+--------------------------------------------------------------------------------------------
 
-#Elias?idea
+#### Elias Idea (keep)
 ```{r}
 SSTs <- c(rownames(finalFrame)) #could be any list of SSTs
 LinResdf0 <- BCCL_kd.ceres[SSTs,] #df, consisting 28 col, nSTTs rows
@@ -26,56 +28,7 @@ LinResdf1 <- subset(LinResdf0, colname == drivmutCL)
 
 
 ```
------------------------------------------------------------------------------------
-### Multilinear Regression
-## Objective
-
-  + For the regression model, we want to predict the CERES score of the driver mutation (dependent variable) based on the CERES score of the SST candidates (independent variables).
-  + A multilinear regression will be designed:
-
-# Load data
-    
-#I did not find a automated approach yet, so doing it caveman-style
-  1. Create a dataframe, consisting of 28 col, nSTTs rows
-  2. select driver mutation as our dependent variable
-  3. obtain column 1 with the driver mutation and other containing CERES values for SSTs
-  
-```{r}
-driver_mut <- c("ERBB2","MYCBP", "PARP10", "PIK3CA") #Input driver mutations
-SST_candidatesdf1 <- c(rownames(SST_cand_ERBB2))
-SST_candidatesdf2 <- c(rownames(SST_cand_MYCBP))
-SST_candidatesdf3 <- c(rownames(SST_cand_PARP10))
-SST_candidatesdf4 <- c(rownames(SST_cand_PIK3CA)) # collect all names of SST candidates
-
-# for ERBB2
-LinRes_ERBB2 <- BCCL_kd.ceres[SST_candidatesdf1,] 
-LinRes_ERBB2 <- t(LinRes_ERBB2)
-Driver_ERBB2 <- BCCL_kd.ceres[c("ERBB2"), ]
-Driver_ERBB2 <- t(Driver_ERBB2)
-LinRes_ERBB2 <- cbind(Driver_ERBB2, LinRes_ERBB2)
-
-#for MYCBP
-LinRes_MYCBP <- BCCL_kd.ceres[SST_candidatesdf2,]
-LinRes_MYCBP <- t(LinRes_MYCBP)
-Driver_MYCBP <- BCCL_kd.ceres[c("MYCBP"), ]
-Driver_MYCBP <- t(Driver_MYCBP)
-LinRes_MYCBP <- cbind(Driver_MYCBP, LinRes_MYCBP)
-
-#for PARP10
-LinRes_PARP10 <- BCCL_kd.ceres[SST_candidatesdf3,]
-LinRes_PARP10 <- t(LinRes_PARP10)
-Driver_PARP10 <- BCCL_kd.ceres[c("PARP10"), ]
-Driver_PARP10 <- t(Driver_PARP10)
-LinRes_PARP10 <- cbind(Driver_MYCBP, LinRes_PARP10)
-
-#for PIK3CA
-LinRes_PIK3CA <- BCCL_kd.ceres[SST_candidatesdf4,]
-LinRes_PIK3CA <- t(LinRes_PIK3CA)
-Driver_PIK3CA <- BCCL_kd.ceres[c("PIK3CA"), ]
-LinRes_PIK3CA <- t(LinRes_PIK3CA)
-LinRes_PIK3CA <- cbind(LinRes_PIK3CA, LinRes_PIK3CA)
-```
-
+### Lisas Idea (keep)
 ## Step 1: Building the LR-Datamatrices
 #Generate matrices containing CERES scores of DV and corresponding SSTs
 
@@ -96,39 +49,74 @@ linRegData_MYCBP <- BCCL_kd.ceres_df %>% select("MYCBP", rownames(SST_cand_MYCBP
 linRegData_PARP10 <- BCCL_kd.ceres_df %>% select("PARP10", rownames(SST_cand_PARP10))
 linRegData_PIK3CA <- BCCL_kd.ceres_df %>% select("PIK3CA", rownames(SST_cand_PIK3CA))
 ```
-
-#Step 2: Check of distribution
-
-To get a first look at the dataset for the Regression model, we create qq-plots to verify that the data is approx. normal distributed.
-
+---------------------------------------------------------------------------------------------
+# Step 1: Load data
+  1. Save driver mutation names in column
+  2. COllect CERES scores of SSTs per driver mutation in data frame list
+  
 ```{r}
-LinRes_ERBB2 <- as.data.frame(LinRes_ERBB2)
-LinRes_MYCBP <- as.data.frame(LinRes_MYCBP)
-LinRes_PARP10 <- as.data.frame(LinRes_PARP10)
-LinRes_PIK3CA <- as.data.frame(LinRes_PIK3CA)
+driver_mut <- c("ERBB2","MYCBP", "PARP10", "PIK3CA") #Input driver mutations
 
-create_qqplot <- function(x){
-                        qqnorm(x, main = deparse(substitute(x)))
-                        qqline(x)} 
-#introducing a function creating qq-plots, check if normality is approximated; the "deparse(substitute(x))" assigns the correesponding dataset name to the qq-plot.
-
-df.list.qqplot <- list(LinRes_ERBB2,LinRes_MYCBP, LinRes_PARP10, LinRes_PIK3CA)
-lapply(df.list.qqplot, create_qqplot) #tried this, returned Issue as in line 127
-
-create_qqplot(LinRes_ERBB2)
-create_qqplot(LinRes_MYCBP)
-create_qqplot(LinRes_PARP10)
-create_qqplot(LinRes_PIK3CA) #perform qqplot creation
-
-create_qqplot(linRegData_ERBB2)
-create_qqplot(linRegData_MYCBP)
-create_qqplot(linRegData_PARP10)
-create_qqplot(linRegData_PIK3CA)
-#ISSUE: "Error in xy.coords(x, y, xlabel, ylabel, log) : 'x' and 'y' lengths differ", obwohl beide Datensätze gleich sind
-View(LinRes_ERBB2)
-View(linRegData_ERBB2)
+data_ls <- list(SST_cand_ERBB2, SST_cand_MYCBP, SST_cand_PARP10, SST_cand_PIK3CA)
+names_ls <- c("ERBB2", "MYCCBP", "PARP10", "PIK3CA")
 ```
 
+# Step 2: Construct datasets for Regression
+  + Returns dataframe list will SST names as columns and cell lines as rows, data consisting of CERES scores
+```{r}
+mlr <- function(input_data, names, muts) {
+  output <- lapply(seq_along(input_data), function(x){
+    candidatas <- c(rownames(input_data[[x]]))
+    dataPicker <- t(BCCL_kd.ceres[candidatas,])
+    driverPicker <- t(BCCL_kd.ceres[muts[x], ])
+    outData <- as.data.frame(cbind(dataPicker, driverPicker))
+    return(outData)
+  })
+  names(output) <- names
+  return(output)
+}
+
+test <- mlr(data_ls, names_ls, driver_mut)
+lapply(test, head)
+```
+
+#Step 3: qqplot
+  + Check Normality with a qqPlot
+```{r}
+lapply(seq_along(test), function(x) ggplot(test[[x]], aes(sample=test[[x]][,ncol(test[[x]])]))+stat_qq()) #aes: aesthetic mapping
+#why only one (confusion)
+```
+
+#Step 4: 
+To run the Multilinear Regression, it is advised to create a long function which
+  1. Splits the dataset in 75:25 training:test data
+    + Previous installation of the "caTools" package is necessary
+  2. Conducts Training of Regression model with training data
+    + predict Driver mutation CERES (y; dep.variable) from SST CERES scores (x1 ... xn; indep.variables)
+  3. Runs Test Data on model for performance evaluation
+  4. Calculates Spearman correlation to further asess model performance
+```{r}
+input_data <- test
+lapply(seq_along(input_data), function(x) {
+  set.seed(123) #initialize the random numbers #WHY
+  data <- input_data[[x]] #get the data
+  colnames(data)[length(colnames(data))] <- "Predictor"
+  
+  split = sample.split(data[,ncol(data)], SplitRatio = 0.75) #split the dataset into 3/4 Training and 1/4 Testing dataset
+  training_set = subset(data, split == TRUE) #use the labels to get the training data
+  test_set = subset(data, split == FALSE)
+
+  regressor = lm(formula = Predictor ~ ., 
+                 data = training_set)  #predict CERES of Driver Mutation based on all (=.) the input variables (SSTs)
+  
+  y_pred = predict(regressor, newdata = test_set) #predict the Driver mut. CERES score based on the test data
+  test_set$Prediction = y_pred #adding predictions to the dataset
+  corVal <- cor.test(test_set$Predictor , test_set$Prediction, method = "spearman")#to judge model performance, calculate Spearman corr. between predicted and observed values
+  return(corVal)
+})
+```
+
+--------------------------------------------------------------------------------------------
 ## Step 3: Multilinear Regression: Data Preperation, Model Training /Testing / Evaluation
 To run the Multilinear Regression, it is advised to create a long function which
   1. Splits the dataset in 75:25 training:test data
@@ -163,67 +151,6 @@ df.list.MLR <- list(linRegData_ERBB2, linRegData_MYCBP, linRegData_PARP10, linRe
 lapply(df.list.MLR, MultiLinReg)
 
 # CURRENT ISSUE: "Error in terms.formula(formula, data = data) : '.' erscheint in der Formel und 'data' Argument ist ung?ltig"
-```
-
-
-
-----------------------------------------------------------------------------------------------
-# Older Notes we could keep for a while
-```{r}
-data_split <- function(x){
-                        trainingData <- x[1:0.75*nrow(x), 1:ncol(x)] 
-                        testData  <- x[(0.75*nrow(x)+1):nrow(x), 1:ncol(x) ]
-                        trainingData <- as.data.frame(trainingdata)
-                        testData  <- as.data.frame(testData)
-                        return(trainingData)
-                        return(testData)
-}  #define model training and test data by a function
-  # still not working
-
-data_split(LinRes_ERBB2)
-data_split(LinRes_MYCBP)
-data_split(LinRes_PARP10)
-data_split(LinRes_PIK3CA) #perform data split 75:25 for all datasets
-
-```
-#Step 3: The regression model of training data
-
-  1. Define the function, generally described as:
-    + y = a + b1x1 + b2x2 + (...) + bnxn
-  2. Receive intercept and complete function
-  3. Evaluate model by summary()-Function
-```{r}
-LinRes_ERBB2 <- as.data.frame(LinRes_ERBB2)
-LinRes_MYCBP <- as.data.frame(LinRes_MYCBP)
-LinRes_PARP10 <- as.data.frame(LinRes_PARP10)
-LinRes_PIK3CA <- as.data.frame(LinRes_PIK3CA) #safe as data frame, otherwise no error reported
-
-create_MLR <- function(x){
-                      y <- x[,1]
-                      model <- lm(y ~ ., data = x ) #The "."-identifier contains all variables not yet mentioned in the formula (2:ncol(x)) in our case. This makes modelling much easier.
-                      summary(model)
-} #Creates a multilinear regression, using the first column (DV) as y-variable.
-
-create_MLR(LinRes_ERBB2)
-create_MLR(LinRes_MYCBP)
-create_MLR(LinRes_PARP10)
-create_MLR(LinRes_PIK3CA)
-
-# CURRENT ISSUE: x Variables include Driver; thus R squared and F Test not ready for interpretation
-```
-
-# Step 4: Model evaluation
-  1. F-Statistic judging simultaneously on multiple coefficients taken together, rather than doing a t test for all individual variables:
-    + select 0.05 as significance value
-    + H0: The fit of intercept only model and the current model is same, meaning that the additional variables do not provide value taken together
-    + H1: The fit of intercept only model is significantly less compared to our current model, meaning that additional variables do improve the model significantly.
-    + if H1 = true, we can be confident to have a good R-squared value
-  2. It is recommended to do a residual (scatter) plot, to check the type of residual distribution
-  
-```{r}
-residual.plot(Expected, Residuals, sigma, main = deparse(substitute(Expected)), 
-  col.pts = "blue", col.ctr = "red", col.sgm = "black", cex = 0.5, 
-  gray.scale = FALSE, xlab = "Predicted", ylab = "Residuals") #something like this
 ```
 
 ----------------  
