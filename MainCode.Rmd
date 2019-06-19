@@ -131,9 +131,10 @@ BCCL_kd.ceres_3 = BCCL_kd.ceres_2[BCCL_kd.ceres_2[,"rownameskdc2"] %in%  mutImpa
 BCCL_kd.ceres_3 = BCCL_kd.ceres_3[,-c(1)]
 BCCL_kd.ceres_3 = cbind(BCCL_kd.ceres_3, rowMeans(BCCL_kd.ceres_3)) #calculate rowmeans 
 BCCL_kd.ceres_3 = BCCL_kd.ceres_3[rowMeans(BCCL_kd.ceres_3)<= 0,] # deletion of genes with CERES > 0
+```
 
-```{r}
 #determining optimal cluster number k
+```{r}
 BCCL_kd.ceresKS = BCCL_kd.ceres_3[,-c(28)] # remove CERES average column for further processing
 
 CERES_Optimal_K <- function(BCCL_kd.ceresKS, specifier) {
@@ -209,10 +210,9 @@ data_clus_3e["Driver mutation"] <- sapply(1:nrow(data_clus_3), function(j){
          data_clus_3e[j,1] = "no driver mutation"
      }
   }) # labeling driver mutations with "driver mutation" in data_clus_3e 
-
 ```
 
-# Data visualisation 4 driver mutations 
+# Data visualisation of CERES and TMP values of 4 driver mutations 
 ```{r}
 install.packages("reshape")
 install.packages("wesanderson")
