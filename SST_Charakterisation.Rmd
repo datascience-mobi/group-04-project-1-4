@@ -12,6 +12,21 @@ output:
 After selection of the SST candidates stored in `SST_cand_x`,loops were installed to verify the coexistance of SST candidates and driver mutations in the same k means cluster. An assignment to the same cluster would confirm a possible cooperation of gene pairs due to similar CERES scores. For this, new dataframes were created  before a separate loop was installed for each driver mutation. By comparing each rowname of the `SST_cand_X` dataframes to all possible  `data_clus_3e` rownames, a coexistance of genes in the 3rd k means cluster was identified, leading to the labelling of `SST X`  in a new separate column. Otherwise no match lead to the `No SST`entry. In order to combine all four dataframes with the `rbind`command the first columns were all renamed to "p_values". FInally all confirmed SSTs were ordered alphabetically, with no gene identified twice for a different driver mutation. 
 
 ```{r}
+
+processingfunction <- function(inputData, dtPicker, mutPicker) {
+  inputData["SST Cluster Check"] <- sapply(1:nrow(dtPicker), function(a) {
+    if (rownames(dtPicker) %in% rownames(data_clus_3e)) {
+      inputData[a,1] <- paste0("SST", " ", mutPicker)
+    } else {
+      inputData[a,1] <- "No SST"  
+    }
+  })
+  return(inputData)
+}
+SST_PARP10 <- processingfunction(SST_PARP10, SST_cand_PARP10, "PARP10")
+
+
+
 SST_ERBB2 <- SST_cand_ERBB2 #creating new dataframes
 SST_MYCBP <- SST_cand_MYCBP
 SST_PARP10 <- SST_cand_PARP10
