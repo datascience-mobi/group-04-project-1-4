@@ -16,18 +16,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
   + For the regression model, we want to predict the CERES score of the driver mutation (dependent variable) based on the CERES score of the SST candidates (independent variables).
   + A multilinear regression will be designed:
-  
---------------------------------------------------------------------------------------------
 
-#### Elias Idea (keep)
-```{r}
-SSTs <- c(rownames(finalFrame)) #could be any list of SSTs
-LinResdf0 <- BCCL_kd.ceres[SSTs,] #df, consisting 28 col, nSTTs rows
-# something like that: drivmutCL <- c(BCCL_Mutation["Hugosymbol"" == "ERBB2" ])
-LinResdf1 <- subset(LinResdf0, colname == drivmutCL)
-
-
-```
 ### Lisas Idea (keep)
 ## Step 1: Building the LR-Datamatrices
 #Generate matrices containing CERES scores of DV and corresponding SSTs
@@ -98,7 +87,7 @@ To run the Multilinear Regression, it is advised to create a long function which
 ```{r}
 input_data <- test
 lapply(seq_along(input_data), function(x) {
-  set.seed(123) #initialize the random numbers #WHY
+  set.seed(123) #initialize the random numbers, better reproducable
   data <- input_data[[x]] #get the data
   colnames(data)[length(colnames(data))] <- "Predictor"
   
@@ -153,6 +142,65 @@ lapply(df.list.MLR, MultiLinReg)
 # CURRENT ISSUE: "Error in terms.formula(formula, data = data) : '.' erscheint in der Formel und 'data' Argument ist ung?ltig"
 ```
 
+## Interpretation of Spearman correlation coefficient
+
+# Revision: Meaning of the correlation coefficient rho
+  + the rank-correlation coefficient can take values from +1 to -1
+    + rho ~ 1: perfect positive association of ranks
+    + rho ~ 0: no association of ranks
+    + rho ~ -1: perfect negative association of ranks
+
+# Revision: Adding a statistical parameter
+  + To further interprete the p-value, we construct a H0 / H1 hypothesis:
+    + H0: There is no association between the predicted and observed variable.
+    + H1: There is an association between the predicted and observed variable.
+  + Most importantly, it is not possible to assess the strength of the correlation based on the p-value. It rather judges the statistical test than the resulting value.
+    + as a standard, set the significance level to 0.05
+
+# Objective
+ + We will the compare this values for the different models
+    + Best model design is achieved for a rho close to 1.
+
+# Results
+We obtained
+  + For ERBB2-model:
+    + p-value = 0.6583
+    + rho: 0.2571429
+    
+  + For MYCBP-model:
+    + p-value = 1 #hell
+    + rho: -0.02857143 #thank u, next
+    
+  + For PARP10-model:
+    + p-value = 0.2972
+    + rho: -0.5428571
+    
+  + For PIK3CA-model:
+    + p-value = 1 #hell
+    + rho: 0.02857143
+
+# Discussion
+
+  + ERBB2-model:
+    + Shows the highest rho value of all four models, but ~ 0.26 is still rather weak positive relationship
+    + The p-value leads to acceptance of H0.
+    
+  + MYCBP-model:
+    + The rho value does not lead to any correlation
+    + A p-value of 1 is no good for any kind of statistical work
+    
+  + PARP10-model:
+    + The rho value of ~ -0.54 is a moderate negative relationship.
+    + The p-value leads to acceptance of H0.
+    
+  + PIK3CA-model:
+    + The rho value does not lead to any correlation
+    + A p-value of 1 is no good for any kind of statistical work
+
++ All in all, all multilinear regression models failed to deliver a p-value of significant relevance. Thus, they should not be used for further predictions.
++ The models for MYCBP and PIK3CA did not show any correlation.
++ The PARP10 model resulted in a moderate negative relationship, which is not of relevance for our objective.
++ The ERBB2 model did not deliver a significant p-value, but indeed contains at least a weak positive correlation.
 ----------------  
 ## Ideas collected from:
 [linked phrase](https://www.dataquest.io/blog/statistical-learning-for-predictive-modeling-r/)
