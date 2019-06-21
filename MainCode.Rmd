@@ -18,12 +18,14 @@ install.packages("factoextra")
 install.packages("data.table")
 install.packages("wesanderson")
 install.packages("reshape")
+install.packages("caTools")
 library(tidyverse)
 library(cluster)
 library(factoextra)
 library(data.table)
 library("reshape")
 library("wesanderson")
+library(caTools)
 ```
 
 #data clean up
@@ -224,12 +226,6 @@ CERES_driver_mut= melt(GOI)
 CERES_driver_mut$variable=rep(c("ERBB2","MYCBP", "PARP10", "PIK3CA"), ncol(GOI))
 
 CERES_boxplot = ggplot(CERES_driver_mut, aes(x = variable, y = value)) +
-       geom_boxplot(aes(fill=variable), outlier.alpha = 0.7,
-                     outlier.colour = "red", outlier.shape = 20, outlier.size = 2) +
-        labs(title = 'CERES scores of selected driver mutations', x = 'Selected driver   mutations', y = 'CERES scores') +
-            theme_minimal() +
-            geom_jitter(width = 0.2) +
-  CERES_boxplot = ggplot(CERES_driver_mut, aes(x = variable, y = value)) +
        geom_boxplot(aes(fill=variable), outlier.alpha = 0.7,
                      outlier.colour = "grey", outlier.shape = 20, outlier.size = 2) +
         labs(title = 'CERES scores of selected driver mutations', x = 'Selected driver   mutations', y = 'CERES scores') +

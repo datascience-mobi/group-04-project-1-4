@@ -4,12 +4,30 @@ author: "Salome Steinke"
 date: "17 Mai 2019"
 output:
   pdf_document: default
+  word_document: default
   html_document: default
 ---
 
+``` { r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+``` 
+#Installing packages
+```{r}
+install.packages("reshape")
+install.packages("wesanderson")
+install.packages("tidyverse")
+install.packages("factoextra")
+library(tidyverse)
+library(cluster)
+library(factoextra)
+library("reshape")
+library("wesanderson")
+```
+
+
 #Loading Data
 ```{r Load.Data}
-allDepMapData = readRDS("C:\Users\Salome\Documents\4.FS\Bioinfo")
+allDepMapData = readRDS("C:\\Users\Salome\Documents\4.FS\Bioinfo")
 BCCL_Numbers = which(allDepMapData$annotation[4]== "Breast Cancer") 
 BCCL_Annotation = subset(allDepMapData$annotation, Primary.Disease == "Breast Cancer")
 #see what we got
@@ -79,16 +97,9 @@ rownames(BCCL_kd.prob_ID) <- c("Deep_ID", rownameskdp)
 
 # Identification of driver mutations using k means clustering of CERES scores 
 
-In order to verify our chosen driver mutations from literature, k means clustering was performed.
-
+In order to verify our selection of driver mutations from literature research, k means clustering of CERES scores was performed.
 
 ```{r kmeans ceres}
-#loading required packages
-install.packages("tidyverse")
-install.packages("factoextra")
-library(tidyverse)
-library(cluster)
-library(factoextra)
 
 #Loading mutImpact matrix
 pre_mutImpact <- BCCL_kd.ceres
@@ -124,7 +135,7 @@ BCCL_kd.ceres_3 = BCCL_kd.ceres_2[BCCL_kd.ceres_2[,"rownameskdc2"] %in%  mutImpa
 BCCL_kd.ceres_3 = cbind(BCCL_kd.ceres_3, rowMeans(BCCL_kd.ceres_3))[rowMeans(cbind(BCCL_kd.ceres_3, rowMeans(BCCL_kd.ceres_3)))<= 0,] # deletion of genes with CERES > 0
 ```
 
-Before conducting k means clustering the column containing average CERES scores for each gene was removed (new dataframe `BCCL_kd.ceresKS`) and the optimal number of k clusters identified. For each column the data values were scaled  
+In preparation of k means clustering, the column containing average CERES scores for each gene was removed (new dataframe `BCCL_kd.ceresKS`) and the optimal number of k clusters identified. For each column the data values were scaled and the within sum squares computed. For cluster numbers between 2 und 15 
 
 ```{r}
 #determining optimal cluster number k
@@ -144,6 +155,10 @@ return(output)
 }
 
 BCCL_kd.ceres_optKS <- CERES_Optimal_K(BCCL_kd.ceresKS, "CERES Optimal Clusters k") 
+```
+
+
+```{r}
 
 # plotting wss function 
 optimalKprocessedData <- lapply(seq_along(BCCL_kd.ceres_optKS), function(a){
@@ -185,7 +200,7 @@ plot(2:10, wss, type = "b", pch = 19, xlab = "Number of clusters K", ylab = "Tot
 #comparison of both methods ==> conclusion optimal cluster number k=4 
 ```
 
-Having identified the optimal cluster number k to be 4, k means clustering of the data in BCCL_kd.ceres_3 was performed with 10 iterations. The following cluster plot was generated *(Insert cluster plot)*.
+Having identified the optimal cluster number k to be 4, k means clustering of the data in BCCL_kd.ceres_3 was performed with 10 iterations. The following cluster plot was generated.
 
 ```{r}
 km_CERES= kmeans(x = BCCL_kd.ceres_3, centers = 4, nstart = 10)
@@ -193,19 +208,17 @@ table(km_CERES$cluster)
 fviz_cluster(km_CERES, data=BCCL_kd.ceres_3, labelsize = 6) # plotting clusters
 ```
 
-In order to verify our selection of driver mutations from literature, the cluster number of each driver mutation was identified. All selected driver mutations from literature,"ERBB2", "ERBB2IP", "MYCBP", "PARP10", "PIK3CA" and "CCND" were localized in cluster 3, hence with similar CERES scores, with the exception of "CCND" and "ERBBIP". While "CCND" was removed in the filtering process and no longer found in`BCCL_kd.ceres_3`, "ERBB2IP" was found in cluster 2. These two mutations were thus excluded from further analysis. 
-
-Therefore selected driver mutations used in further analysis were "ERBB2", "MYCBP", "PARP10" and "PIK3CA". 
+In order to verify our selection of driver mutations from literature, the cluster number of each driver mutation was identified. All selected driver mutations from literature,"ERBB2", "MYCBP", "PARP10" and "PIK3CA" were colocalized in cluster 3, hence with similar CERES scores, with the exception of "CCND" and "ERBBIP". While "CCND" was removed in the filtering process and no longer found in`BCCL_kd.ceres_3`, "ERBB2IP" was found in cluster 2. For these reasons the mentioned two mutations were excluded from further analysis, to leave only "ERBB2", "MYCBP", "PARP10" and "PIK3CA" as selected driver mutations for further analysis. 
 
 ``` {r}
-km_CERES$cluster["ERBB2"]
+km_CERES$cluster["ERBB2"] #obtaining cluster number for each driver mutation from literature 
 km_CERES$cluster["ERBB2IP"]
 km_CERES$cluster["MYCBP"]
 km_CERES$cluster["PARP10"]
 km_CERES$cluster["PIK3CA"] 
 ```
 
-Since our approach defined SSTs as genes expected to interact synergistcally with the corresponding driver mutation in promoting cell viability, similar CERES scores were expected. Thus all potential SSTs candidates were expected to be found also in the same cluster as selected driver mutations, hence in cluster 3. A dataframe `data_clus_3`was subsequently generated to contain all 1148 genes colocalized with driver mutations in cluster 3. 
+Since our approach defined SSTs as genes expected to interact synergistcally with the corresponding driver mutation in promoting cell viability, similar CERES scores were expected. Thus all potential SSTs candidates were expected to also be found in cluster 3. A dataframe `data_clus_3`was subsequently generated to contain all 1148 genes colocalized with driver mutations in cluster 3. 
 
 ```{r}
 data_cluster = km_CERES$cluster
@@ -213,10 +226,10 @@ rownames(data_cluster) = rownames(BCCL_kd.ceres_3)
 data_clus_3 = BCCL_kd.ceres_3[data_cluster == 3,] #dataframe with all 1148 genes in same cluster as driver mutations 
 ```
 
-A further dataframe `data_clus_3e` was subsequently generated labelling the four driver mutations in a separate column, by implementing an "IF" loop. If the rowname of `data_clus_3e`was found in a previously created vector containing driver mutations names, it was labelled as "driver mutation".Otherwise genes were labelled as "no driver mutation".
+A further dataframe `data_clus_3e` was subsequently generated labelling the four driver mutations in a separate column, by implementing an "IF" loop. If the rowname of `data_clus_3e`was found in a previously created vector containing driver mutations names (`drivermut`), it was labelled as "driver mutation".Otherwise genes were labelled as "no driver mutation".
 
-```{r}
-#LABELING DRIVER MUTATIONS 
+```{r Labeling driver mutations}
+
 drivermut =  c("ERBB2","MYCBP", "PARP10", "PIK3CA") # create vector with driver mutation names
 
 data_clus_3e = data_clus_3
@@ -229,15 +242,11 @@ data_clus_3e["Driver mutation"] <- sapply(1:nrow(data_clus_3), function(j){
   }) # labeling driver mutations with "driver mutation" in data_clus_3e 
 ```
 
-# Data visualisation of CERES and TPM values of the 4 selected driver mutations 
+# Data visualisation of CERES and TPM values for the four selected driver mutations 
 
-CERES scores and expression as TPM values for the selected 4 driver mutations were visualised as box and whisker plots. Following the generation of the `GOI_X` dataframe containing either CERES or TPM values for the four mutations, the data was reshaped to contain two columns. One "variable" with the names of driver mutations, the other "value" with the corresponding CERES or TPM value. The ggplot function, part of the ggplot2 package, was used to plot the following box an whisker plots. 
+CERES scores and expression as TPM values for the selected 4 driver mutations were visualised as box and whisker plots. Following the generation of the `GOI_X` dataframe containing either CERES or TPM values for the four mutations, the data was reshaped to contain two columns. One column being "variable" with the names of driver mutations, the other "value" with the corresponding CERES or TPM value. The ggplot function, part of the ggplot2 package, was used to plot the following box an whisker plots. 
 
-```{data visualisation}
-install.packages("reshape")
-install.packages("wesanderson")
-library("reshape")
-library("wesanderson")
+```{r data visualisation, fig.align = center, fig.cap= Box and Whisker plots for CERES and TPM values}
 
 # CERES_boxplot
 GOI= BCCL_kd.ceres[c("ERBB2","MYCBP", "PARP10", "PIK3CA"),]
@@ -245,12 +254,6 @@ CERES_driver_mut= melt(GOI)
 CERES_driver_mut$variable=rep(c("ERBB2","MYCBP", "PARP10", "PIK3CA"), ncol(GOI))
 
 CERES_boxplot = ggplot(CERES_driver_mut, aes(x = variable, y = value)) +
-       geom_boxplot(aes(fill=variable), outlier.alpha = 0.7,
-                     outlier.colour = "red", outlier.shape = 20, outlier.size = 2) +
-        labs(title = 'CERES scores of selected driver mutations', x = 'Selected driver   mutations', y = 'CERES scores') +
-            theme_minimal() +
-            geom_jitter(width = 0.2) +
-  CERES_boxplot = ggplot(CERES_driver_mut, aes(x = variable, y = value)) +
        geom_boxplot(aes(fill=variable), outlier.alpha = 0.7,
                      outlier.colour = "grey", outlier.shape = 20, outlier.size = 2) +
         labs(title = 'CERES scores of selected driver mutations', x = 'Selected driver   mutations', y = 'CERES scores') +
