@@ -71,9 +71,13 @@ lapply(test, head)
 
 #Step 3: qqplot
   + Check Normality with a qqPlot
+    + Using the aes-function of the ggplt package for _aesthetic_ plots.
 ```{r}
-lapply(seq_along(test), function(x) ggplot(test[[x]], aes(sample=test[[x]][,ncol(test[[x]])]))+stat_qq()) #aes: aesthetic mapping
-#why only one (confusion)
+create_qqplot <- function(a){  
+  p <- ggplot(test[[a]], aes(sample=test[[a]][,ncol(test[[a]])])) + stat_qq()+ stat_qq_line()
+   p + labs(title = "QQ-Plot", subtitle = "Check if data is approx. normally distributed")
+}
+lapply(seq_along(test), create_qqplot)
 ```
 
 #Step 4: 
@@ -86,9 +90,9 @@ To run the Multilinear Regression, it is advised to create a long function which
   4. Calculates Spearman correlation to further asess model performance
 ```{r}
 input_data <- test
-lapply(seq_along(input_data), function(x) {
+lapply(seq_along(input_data), function(a) {
   set.seed(123) #initialize the random numbers, better reproducable
-  data <- input_data[[x]] #get the data
+  data <- input_data[[a]] #get the data
   colnames(data)[length(colnames(data))] <- "Predictor"
   
   split = sample.split(data[,ncol(data)], SplitRatio = 0.75) #split the dataset into 3/4 Training and 1/4 Testing dataset
@@ -102,6 +106,7 @@ lapply(seq_along(input_data), function(x) {
   test_set$Prediction = y_pred #adding predictions to the dataset
   corVal <- cor.test(test_set$Predictor , test_set$Prediction, method = "spearman")#to judge model performance, calculate Spearman corr. between predicted and observed values
   return(corVal)
+  barplot(corVal, main = deparse(substitute(x)))
 })
 ```
 
@@ -119,22 +124,26 @@ To run the Multilinear Regression, it is advised to create a long function which
 install.packages("caTools")
 library(caTools) #necessary packages
 
-MultiLinReg <- function(x){
-                          DependentVariable <- colnames(x[1]) #The dependent variable is always the driver mutation
-                          split = sample.split(x["DependentVariable"], SplitRatio = 0.75) #split the dataset into 3/4 Training and 1/4 Testing dataset
+
+  
+lapply(seq_along(input_data), function(a) {
+                          set.seed(123) #initialize the random numbers, urgently advised to improve reproducability
+                           colnames(data)[length(colnames(data))] <- "Predictor" #The predictors are the SSTs
+                          split = sample.split(data[,ncol(data)], SplitRatio = 0.75) #split the dataset into 3/4 Training and 1/4 Testing dataset
                           training_set = subset(x, split == TRUE)
                           test_set = subset(x, split == FALSE)
                           
-                          regressor = lm(formula = DependentVariable ~ ., data=training_set)
+                          regressor = lm(formula = Predictor ~ ., data=training_set)
                           #predict CERES of Driver Mutation based on all (=.) the input variables (SSTs)
                           
                           y_predict = predict(regressor, newdata = test_set) #predict the Driver mut. CERES score based on the test data
                           test_set$Prediction = y_predict #adding predictions to the dataset
                           test_set #Now you can compare your Predictions (last column) with the real values of the startups (2nd last column)
                           
-                          cordf <- cor.test(test_set$DependentVariable, test_set$Prediction, method = spearman) #to judge model performance, calculate Spearman corr. between predicted and observed values
-                          barplot(cordf, main = deparse(substitute(x))) #create a barplot for correlation visualization and further evaluation
-}
+                          corVal <- cor.test(test_set$Predictor, test_set$Prediction, method = spearman) #to judge model performance, calculate Spearman corr. between predicted and observed values
+                          return(corVal) # return p-value plus Corr. coeff. for discussion
+                          barplot(corVal, main = deparse(substitute(x))) #create a barplot for correlation visualization and further evaluation
+})
 
 df.list.MLR <- list(linRegData_ERBB2, linRegData_MYCBP, linRegData_PARP10, linRegData_PIK3CA)
 lapply(df.list.MLR, MultiLinReg)
@@ -168,22 +177,22 @@ We obtained
     + rho: 0.2571429
     
   + For MYCBP-model:
-    + p-value = 1 #hell
-    + rho: -0.02857143 #thank u, next
+    + _p-value = 1_
+    + _rho: -0.02857143_
     
   + For PARP10-model:
     + p-value = 0.2972
     + rho: -0.5428571
     
   + For PIK3CA-model:
-    + p-value = 1 #hell
-    + rho: 0.02857143
+    + _p-value = 1_ 
+    + _rho: 0.02857143_
 
 # Discussion
 
   + ERBB2-model:
     + Shows the highest rho value of all four models, but ~ 0.26 is still rather weak positive relationship
-    + The p-value leads to acceptance of H0.
+    + The p-value leads to __acceptance of H0__.
     
   + MYCBP-model:
     + The rho value does not lead to any correlation
@@ -197,7 +206,7 @@ We obtained
     + The rho value does not lead to any correlation
     + A p-value of 1 is no good for any kind of statistical work
 
-+ All in all, all multilinear regression models failed to deliver a p-value of significant relevance. Thus, they should not be used for further predictions.
++ __All in all, all multilinear regression models failed to deliver a p-value of significant relevance. Thus, they should not be used for further predictions.__
 + The models for MYCBP and PIK3CA did not show any correlation.
 + The PARP10 model resulted in a moderate negative relationship, which is not of relevance for our objective.
 + The ERBB2 model did not deliver a significant p-value, but indeed contains at least a weak positive correlation.
