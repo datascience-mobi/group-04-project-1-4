@@ -27,7 +27,7 @@ SST_PARP10["SST Cluster Check"] <- sapply(1:nrow(SST_cand_PARP10), function(a){
      SST_PARP10[a,1] = "No SST"
   }
 })
-SST_PARP10 <- SST_PARP10 %>% rename(p_values=PARP10)
+SST_PARP10 <- SST_PARP10 %>% rename(p_values = PARP10)
 
 #ERBB2 candidates
 SST_ERBB2["SST Cluster Check"] <- sapply(1:nrow(SST_cand_ERBB2), function(a){

@@ -24,7 +24,7 @@ library(cluster)
 library(factoextra)
 library("reshape")
 library("wesanderson")
-library(ddata.table)
+library(data.table)
 ```
 
 # Abstract
@@ -118,7 +118,7 @@ head(mutImpact)
 
 ### Identification of driver mutations using k means clustering of CERES scores 
 
-In order to verify our selection of driver mutations from literature research, k means clustering of CERES scores was performed.
+In order to verify our selection of driver mutations from literature research, k means clustering of CERES scores was performed. Suitable driver mutations were expected to be found in the same cluster based on scaled CERES scores.
 
 ```{r kmeans ceres}
 
@@ -141,7 +141,7 @@ for (j in 1:ncol(pre_mutImpact)){
 }
 ```
 
-K means clustering was performed with all genes mutated at least once out of all 28 cell line samples and whose CERES score is equal to or lower than zero. For this, all genes with only NA values, hence not one mutation in any cell sample, were removed. A new dataframe `BCCL_kd.ceres_2`was generated containing all 28 CERES scores for each gene, with gene names in the first column. Gene names in the first column of the data frame `BCCL_kd.ceres_2`were compared to the rownames of `mutImpact_c` to generate the BCCL_kd.ceres_3 dataframe containing CERES scores for all breast cell cancer lines for all genes mutated at least once. Subsequently, the mean CERES score for each gene was computed using the rowmeans function and saved in the last column. For this, the column `rownameskdc2`had to be removed. Finally, all genes with CERES scores > 0 were deleted. The final BCCL_kd.ceres_3 dataframe now contains 4934 genes mutated at least once in the 28 breast cancer cell lines and with CERES scores equal to or below 0. 
+K means clustering was performed with all genes mutated at least once out of all 28 cell line samples and whose CERES score was equal to or lower than zero. For this, all genes with only NA values, hence not one mutation in any cell sample, were removed. A new dataframe `BCCL_kd.ceres_2`was generated containing all 28 CERES scores for each gene, with gene names in the first column. Gene names in the first column of the data frame `BCCL_kd.ceres_2`were compared to the rownames of `mutImpact_c` to generate the BCCL_kd.ceres_3 dataframe containing CERES scores for all breast cell cancer lines for all genes mutated at least once. Subsequently, the mean CERES score for each gene was computed using the rowmeans function and saved in the last column. For this, the column `rownameskdc2`had to be removed. Finally, all genes with CERES scores > 0 were deleted. The final BCCL_kd.ceres_3 dataframe now contains 4934 genes mutated at least once in the 28 breast cancer cell lines and with CERES scores equal to or below 0. 
 
 ```{r}
 # selecting only genes mutated at least once and with Ceres >= 0
@@ -154,9 +154,10 @@ rownameskdc2 = rownames(BCCL_kd.ceres)
 BCCL_kd.ceres_2 = cbind(rownameskdc2, BCCL_kd.ceres[,2:ncol(BCCL_kd.ceres)]) # insert new column with row names
 BCCL_kd.ceres_3 = BCCL_kd.ceres_2[BCCL_kd.ceres_2[,"rownameskdc2"] %in%  mutImpact_c[,"rownamesmutImpc"],][,-c(1)]
 BCCL_kd.ceres_3 = cbind(BCCL_kd.ceres_3, rowMeans(BCCL_kd.ceres_3))[rowMeans(cbind(BCCL_kd.ceres_3, rowMeans(BCCL_kd.ceres_3)))<= 0,] # deletion of genes with CERES > 0
+dim(BCCL_kd.ceres_3)
 ```
 
-In preparation of k means clustering, the column containing average CERES scores for each gene was removed (new dataframe `BCCL_kd.ceresKS`) and the optimal number of k clusters identified. For each column, so cell samples, of the dataframe the data values were scaled. For cluster numbers between 2 und 15 the within sum of squares for each cell sample was calculated and stored as a seperate dataframe. *need to add comment on why set.seed and sum(kmeans)*
+In preparation of k means clustering, the column containing average CERES scores for each gene was removed (new dataframe `BCCL_kd.ceresKS`) and the optimal number of k clusters identified. For each column, so cell samples, of the dataframe the data values were scaled. For cluster numbers between 2 und 15 the within sum of squares for each cell sample was calculated and stored as a seperate dataframe. To ensure that the same result is obtained each time the code is run the set.seed(1234) function was used.  
 
 ```{r}
 #determining optimal cluster number k
@@ -168,7 +169,8 @@ CERES_Optimal_K <- function(BCCL_kd.ceresKS, specifier) {
    wss <-(nrow(df-1))*sum(apply(df,2,var)) #compute wss
    for (i in 2:15){ # for k between 2 and 15
      set.seed(1234)
-     wss[i] <- sum(kmeans(df, centers = i)$withinss)} 
+     wss[i] <- sum(kmeans(df, centers = i)$withinss)
+     } 
    return(wss)
   })
 names (output) <- colnames(BCCL_kd.ceresKS) # rename the output 
@@ -191,7 +193,7 @@ optimalKprocessedData <- lapply(seq_along(BCCL_kd.ceres_optKS), function(a){
 })
 
 optimalKprocessedData <- as.data.frame(rbindlist(optimalKprocessedData)) # output into dataframe
-colnames(optimalKprocessedData) <- c("WSS", "Sample", "OptimalK")
+colnames(optimalKprocessedData) <- c("WSS", "Cell_Sample", "OptimalK")
 
 # using ggplot to plot output 
 ggplot(data = optimalKprocessedData, aes(x=OptimalK, y=WSS)) +
@@ -212,7 +214,7 @@ From this plot it is evident that the optimal cluster number, when applying the 
 
 km_CERES= kmeans(x = BCCL_kd.ceres_3, centers = 2, nstart = 10)
 table(km_CERES$cluster)
-wss = sapply(2:10, function(k) {
+wss = sapply(2:15, function(k) {
     kmeans(x = BCCL_kd.ceres_3, centers = k)$tot.withinss
 })
 plot(2:15, wss, type = "b", pch = 19, xlab = "Number of clusters K", ylab = "Total within-clusters sum of squares") 
