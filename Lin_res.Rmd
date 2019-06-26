@@ -30,10 +30,13 @@ rownames(BCCL_kd.ceres_df) <- tPatients_ID
 colnames(BCCL_kd.ceres_df) <- rownames(BCCL_kd.ceres)
 
 #generate a dataframe containing data for each DV
-linRegData_ERBB2 <- BCCL_kd.ceres_df %>% select("ERBB2", rownames(SST_cand_ERBB2))
-linRegData_MYCBP <- BCCL_kd.ceres_df %>% select("MYCBP", rownames(SST_cand_MYCBP))
-linRegData_PARP10 <- BCCL_kd.ceres_df %>% select("PARP10", rownames(SST_cand_PARP10))
-linRegData_PIK3CA <- BCCL_kd.ceres_df %>% select("PIK3CA", rownames(SST_cand_PIK3CA))
+linRegData_ERBB2 <- BCCL_kd.ceres_df %>% select(rownames(SST_cand_ERBB2), "ERBB2")
+linRegData_MYCBP <- BCCL_kd.ceres_df %>% select(rownames(SST_cand_MYCBP), "MYCBP")
+linRegData_PARP10 <- BCCL_kd.ceres_df %>% select(rownames(SST_cand_PARP10), "PARP10")
+linRegData_PIK3CA <- BCCL_kd.ceres_df %>% select(rownames(SST_cand_PIK3CA), "PIK3CA")
+
+data_regression <- list(linRegData_ERBB2, linRegData_MYCBP, linRegData_PARP10, linRegData_PIK3CA)
+head(data_regression)
 ```
 ---------------------------------------------------------------------------------------------
 # Step 1: Load data
@@ -44,26 +47,29 @@ linRegData_PIK3CA <- BCCL_kd.ceres_df %>% select("PIK3CA", rownames(SST_cand_PIK
 driver_mut <- c("ERBB2","MYCBP", "PARP10", "PIK3CA") #Input driver mutations
 
 data_ls <- list(SST_cand_ERBB2, SST_cand_MYCBP, SST_cand_PARP10, SST_cand_PIK3CA)
-names_ls <- c("ERBB2", "MYCCBP", "PARP10", "PIK3CA")
+names_ls <- c("ERBB2", "MYCCBP", "PARP10", "PIK3CA") #Input driver mutation names
 ```
 
 # Step 2: Construct datasets for Regression
-  + Returns dataframe list will SST names as columns and cell lines as rows, data consisting of CERES scores
+  + Multilinear regression, we 
+    1. reform the BCCL CERES matrix
+      + By transponing and format change, we obtain a matrix with colnames = Gene names and rownames = Cell line indices (equal to tPatients_ID)
+    2. Collect the relevant the CERES scores for the mutations for the linear regression.
+      + All columns with the corresponding names of the SST genes plus the driver mutation will be collected and copied into a new dataframe
 ```{r}
-mlr <- function(input_data, names, muts) {
-  output <- lapply(seq_along(input_data), function(x){
-    candidatas <- c(rownames(input_data[[x]]))
-    dataPicker <- t(BCCL_kd.ceres[candidatas,])
-    driverPicker <- t(BCCL_kd.ceres[muts[x], ])
-    outData <- as.data.frame(cbind(dataPicker, driverPicker))
-    return(outData)
-  })
-  names(output) <- names
-  return(output)
-}
+#reformat BCCL CERES matrix
+BCCL_kd.ceres_df <- as.data.frame(t(BCCL_kd.ceres))
+rownames(BCCL_kd.ceres_df) <- tPatients_ID
+colnames(BCCL_kd.ceres_df) <- rownames(BCCL_kd.ceres)
 
-test <- mlr(data_ls, names_ls, driver_mut)
-lapply(test, head)
+#generate a dataframe containing data for each DV
+linRegData_ERBB2 <- BCCL_kd.ceres_df %>% select(rownames(SST_cand_ERBB2), "ERBB2")
+linRegData_MYCBP <- BCCL_kd.ceres_df %>% select(rownames(SST_cand_MYCBP), "MYCBP")
+linRegData_PARP10 <- BCCL_kd.ceres_df %>% select(rownames(SST_cand_PARP10), "PARP10")
+linRegData_PIK3CA <- BCCL_kd.ceres_df %>% select(rownames(SST_cand_PIK3CA), "PIK3CA")
+
+data_regression <- list(linRegData_ERBB2, linRegData_MYCBP, linRegData_PARP10, linRegData_PIK3CA)
+head(data_regression)
 ```
 
 #Step 3: qqplot
@@ -86,7 +92,8 @@ To run the Multilinear Regression, it is advised to create a long function which
   3. Runs Test Data on model for performance evaluation
   4. Calculates Spearman correlation to further asess model performance
 ```{r}
-input_data <- test
+input_data <- data_regression
+
 lapply(seq_along(input_data), function(a) {
   set.seed(123) #initialize the random numbers, better reproducable
   data <- input_data[[a]] #get the data
