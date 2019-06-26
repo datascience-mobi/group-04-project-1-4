@@ -14,48 +14,14 @@ knitr::opts_chunk$set(echo = TRUE)
   + For the regression model, we want to predict the CERES score of the driver mutation (dependent variable) based on the CERES score of the SST candidates (independent variables).
   + A multilinear regression will be designed:
 
-### Lisas Idea (keep)
-## Step 1: Building the LR-Datamatrices
-#Generate matrices containing CERES scores of DV and corresponding SSTs
 
-+ We now obtained potential SSTs for the four driver mutation. To form a base for the Multilinear regression, we 
-    1. reform the BCCL CERES matrix
-      + By transponing and format change, we obtain a matrix with colnames = Gene names and rownames = Cell line indices (equal to tPatients_ID)
-    2. Collect the relevant the CERES scores for the mutations for the linear regression.
-      + All columns with the corresponding names of the driver mutation plus SST genes will be collected and copied into a new dataframe
-```{r}
-#reformat BCCL CERES matrix
-BCCL_kd.ceres_df <- as.data.frame(t(BCCL_kd.ceres))
-rownames(BCCL_kd.ceres_df) <- tPatients_ID
-colnames(BCCL_kd.ceres_df) <- rownames(BCCL_kd.ceres)
-
-#generate a dataframe containing data for each DV
-linRegData_ERBB2 <- BCCL_kd.ceres_df %>% select(rownames(SST_cand_ERBB2), "ERBB2")
-linRegData_MYCBP <- BCCL_kd.ceres_df %>% select(rownames(SST_cand_MYCBP), "MYCBP")
-linRegData_PARP10 <- BCCL_kd.ceres_df %>% select(rownames(SST_cand_PARP10), "PARP10")
-linRegData_PIK3CA <- BCCL_kd.ceres_df %>% select(rownames(SST_cand_PIK3CA), "PIK3CA")
-
-data_regression <- list(linRegData_ERBB2, linRegData_MYCBP, linRegData_PARP10, linRegData_PIK3CA)
-head(data_regression)
-```
----------------------------------------------------------------------------------------------
-# Step 1: Load data
-  1. Save driver mutation names in column
-  2. COllect CERES scores of SSTs per driver mutation in data frame list
-  
-```{r}
-driver_mut <- c("ERBB2","MYCBP", "PARP10", "PIK3CA") #Input driver mutations
-
-data_ls <- list(SST_cand_ERBB2, SST_cand_MYCBP, SST_cand_PARP10, SST_cand_PIK3CA)
-names_ls <- c("ERBB2", "MYCCBP", "PARP10", "PIK3CA") #Input driver mutation names
-```
-
-# Step 2: Construct datasets for Regression
+# Step 1: Construct datasets for Regression
   + Multilinear regression, we 
     1. reform the BCCL CERES matrix
       + By transponing and format change, we obtain a matrix with colnames = Gene names and rownames = Cell line indices (equal to tPatients_ID)
     2. Collect the relevant the CERES scores for the mutations for the linear regression.
       + All columns with the corresponding names of the SST genes plus the driver mutation will be collected and copied into a new dataframe
+      
 ```{r}
 #reformat BCCL CERES matrix
 BCCL_kd.ceres_df <- as.data.frame(t(BCCL_kd.ceres))
@@ -72,9 +38,10 @@ data_regression <- list(linRegData_ERBB2, linRegData_MYCBP, linRegData_PARP10, l
 head(data_regression)
 ```
 
-#Step 3: qqplot
+#Step 2: qqplot
   + Check Normality with a qqPlot
     + Using the aes-function of the ggplt package for _aesthetic_ plots.
+    
 ```{r}
 create_qqplot <- function(a){  
   p <- ggplot(test[[a]], aes(sample=test[[a]][,ncol(test[[a]])])) + stat_qq()+ stat_qq_line()
@@ -83,7 +50,7 @@ create_qqplot <- function(a){
 lapply(seq_along(test), create_qqplot)
 ```
 
-#Step 4: 
+#Step 3: Multilinear Regression: Data split, Model calculation, Return correlation data for evaluation
 To run the Multilinear Regression, it is advised to create a long function which
   1. Splits the dataset in 75:25 training:test data
     + Previous installation of the "caTools" package is necessary
@@ -91,6 +58,7 @@ To run the Multilinear Regression, it is advised to create a long function which
     + predict Driver mutation CERES (y; dep.variable) from SST CERES scores (x1 ... xn; indep.variables)
   3. Runs Test Data on model for performance evaluation
   4. Calculates Spearman correlation to further asess model performance
+  
 ```{r}
 input_data <- data_regression
 
@@ -110,7 +78,6 @@ lapply(seq_along(input_data), function(a) {
   test_set$Prediction = y_pred #adding predictions to the dataset
   corVal <- cor.test(test_set$Predictor , test_set$Prediction, method = "spearman")#to judge model performance, calculate Spearman corr. between predicted and observed values
   return(corVal)
-  barplot(corVal, main = deparse(substitute(x)))
 })
 ```
 
