@@ -5,6 +5,6 @@ Report Layout
 
 Hello :) 
 
-Here a quick overview over possible report layouts: http://www.datadreaming.org/post/r-markdown-theme-gallery/
+Here a quick overview over possible report layouts: https://rmarkdown.rstudio.com/gallery.html
 
 On Hermanns Website, the "readthedown" Theme was used
