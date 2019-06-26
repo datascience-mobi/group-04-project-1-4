@@ -2,10 +2,7 @@
 title: "Linear regression"
 author: "Elias Benjamin Farr"
 date: "17 Mai 2019"
-output:
-  word_document: default
-  pdf_document: default
-  html_document: default
+output: tufte::tufte_handout
 ---
 
 ```{r setup, include=FALSE}
@@ -110,47 +107,6 @@ lapply(seq_along(input_data), function(a) {
 })
 ```
 
---------------------------------------------------------------------------------------------
-## Step 3: Multilinear Regression: Data Preperation, Model Training /Testing / Evaluation
-To run the Multilinear Regression, it is advised to create a long function which
-  1. Splits the dataset in 75:25 training:test data
-    + Previous installation of the "caTools" package is necessary
-  2. Conducts Training of Regression model with training data
-    + predict Driver mutation CERES (y; dep.variable) from SST CERES scores (x1 ... xn; indep.variables)
-  3. Runs Test Data on model for performance evaluation
-  4. Calculates Spearman correlation to further asess model performance
-    + Visualizes by barplot
-```{r}
-install.packages("caTools")
-library(caTools) #necessary packages
-
-
-  
-lapply(seq_along(input_data), function(a) {
-                          set.seed(123) #initialize the random numbers, urgently advised to improve reproducability
-                           colnames(data)[length(colnames(data))] <- "Predictor" #The predictors are the SSTs
-                          split = sample.split(data[,ncol(data)], SplitRatio = 0.75) #split the dataset into 3/4 Training and 1/4 Testing dataset
-                          training_set = subset(x, split == TRUE)
-                          test_set = subset(x, split == FALSE)
-                          
-                          regressor = lm(formula = Predictor ~ ., data=training_set)
-                          #predict CERES of Driver Mutation based on all (=.) the input variables (SSTs)
-                          
-                          y_predict = predict(regressor, newdata = test_set) #predict the Driver mut. CERES score based on the test data
-                          test_set$Prediction = y_predict #adding predictions to the dataset
-                          test_set #Now you can compare your Predictions (last column) with the real values of the startups (2nd last column)
-                          
-                          corVal <- cor.test(test_set$Predictor, test_set$Prediction, method = spearman) #to judge model performance, calculate Spearman corr. between predicted and observed values
-                          return(corVal) # return p-value plus Corr. coeff. for discussion
-                          barplot(corVal, main = deparse(substitute(x))) #create a barplot for correlation visualization and further evaluation
-})
-
-df.list.MLR <- list(linRegData_ERBB2, linRegData_MYCBP, linRegData_PARP10, linRegData_PIK3CA)
-lapply(df.list.MLR, MultiLinReg)
-
-# CURRENT ISSUE: "Error in terms.formula(formula, data = data) : '.' erscheint in der Formel und 'data' Argument ist ung?ltig"
-```
-
 ## Interpretation of Spearman correlation coefficient
 
 # Revision: Meaning of the correlation coefficient rho
@@ -173,44 +129,40 @@ lapply(df.list.MLR, MultiLinReg)
 # Results
 We obtained
   + For ERBB2-model:
-    + p-value = 0.6583
-    + rho: 0.2571429
+    + p-value = 0.8397
+    + rho: 0.1071
     
   + For MYCBP-model:
-    + _p-value = 1_
-    + _rho: -0.02857143_
+    + p-value = 0.7825
+    + rho: -0.1428571
     
   + For PARP10-model:
-    + p-value = 0.2972
-    + rho: -0.5428571
+    + p-value = 0.1095
+    + rho: -0.6785714
     
   + For PIK3CA-model:
-    + _p-value = 1_ 
-    + _rho: 0.02857143_
+    + p-value = 0.7131
+    + rho: -0.1785714
 
 # Discussion
 
   + ERBB2-model:
-    + Shows the highest rho value of all four models, but ~ 0.26 is still rather weak positive relationship
+    + Shows the highest rho value of all four models, but ~ 0.1 is a rather weak positive relationship
     + The p-value leads to __acceptance of H0__.
     
   + MYCBP-model:
-    + The rho value does not lead to any correlation
-    + A p-value of 1 is no good for any kind of statistical work
+    + The rho value leads to very weak negative correlation.
+    + A p-value of ~0.78 is leads to condifent acceptance of H0.
     
   + PARP10-model:
-    + The rho value of ~ -0.54 is a moderate negative relationship.
-    + The p-value leads to acceptance of H0.
+    + The rho value of ~ -0.67 is a moderate negative relationship.
+    + The p-value leads to acceptance of H0. The p-value is the lowest with ~ 0.11. But even if we would raise the confidence level to 0.10 (which would be a questionable move in statistics), the result wouldn´t be significant to accept H1.
     
   + PIK3CA-model:
-    + The rho value does not lead to any correlation
+    + The rho value leads to very weak negative correlation.
     + A p-value of 1 is no good for any kind of statistical work
 
 + __All in all, all multilinear regression models failed to deliver a p-value of significant relevance. Thus, they should not be used for further predictions.__
-+ The models for MYCBP and PIK3CA did not show any correlation.
++ The models for MYCBP and PIK3CA only showed weak, negative correlation, which is not useful for further work with this model.
 + The PARP10 model resulted in a moderate negative relationship, which is not of relevance for our objective.
 + The ERBB2 model did not deliver a significant p-value, but indeed contains at least a weak positive correlation.
-----------------  
-## Ideas collected from:
-[linked phrase](https://www.dataquest.io/blog/statistical-learning-for-predictive-modeling-r/)
-[linked phrase](http://r-statistics.co/Linear-Regression.html#Predicting%20Linear%20Models)

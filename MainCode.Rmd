@@ -388,3 +388,33 @@ SST_Data <- lapply(seq_along(SST_Data), function(a) {
 names(SST_Data) <- driver_mut
 ```
 
+# Data Prerparation for Regression
+```{r}
+create_qqplot <- function(a){  
+  p <- ggplot(test[[a]], aes(sample=test[[a]][,ncol(test[[a]])])) + stat_qq()+ stat_qq_line()
+   p + labs(title = "QQ-Plot", subtitle = "Check if data is approx. normally distributed")
+}
+lapply(seq_along(test), create_qqplot)
+```
+
+# Multilinear Regression Function: Data Split, Model calculation, Model evaluation
+```{r}
+input_data <- test
+lapply(seq_along(input_data), function(a) {
+  set.seed(123) #initialize the random numbers, better reproducable
+  data <- input_data[[a]] #get the data
+  colnames(data)[length(colnames(data))] <- "Predictor"
+  
+  split = sample.split(data[,ncol(data)], SplitRatio = 0.75) #split the dataset into 3/4 Training and 1/4 Testing dataset
+  training_set = subset(data, split == TRUE) #use the labels to get the training data
+  test_set = subset(data, split == FALSE)
+
+  regressor = lm(formula = Predictor ~ ., 
+                 data = training_set)  #predict CERES of Driver Mutation based on all (=.) the input variables (SSTs)
+  
+  y_pred = predict(regressor, newdata = test_set) #predict the Driver mut. CERES score based on the test data
+  test_set$Prediction = y_pred #adding predictions to the dataset
+  corVal <- cor.test(test_set$Predictor , test_set$Prediction, method = "spearman")#to judge model performance, calculate Spearman corr. between predicted and observed values
+  return(corVal)
+})
+```
