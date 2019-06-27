@@ -5,6 +5,9 @@ date: "27 6 2019"
 output: tufte::tufte_handout
 ---
 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
 ### Introduction
 ## Revision: Breast Cancer, a challenging disease
 
@@ -44,8 +47,6 @@ PIK3CA    | ~ 30 - 48%          |Interaction with AKT and mTOR pathway   |(Alesk
 Targeting and eliminating driver mutations as a part of tumor treatment is a difficult procedure, since those genes are also essential for survival of non-mutated cells. A differentiation between normal and tumor cell is not possible, thus targeting leads to adverse effects. Plus, high dosages need to be applied. #CITATION
 A promising approach is targeting the so-calles Second Site Targets (SSTs), which are gene mutations interacting genetically with driver mutations to increase cell viability. # CITATION
 If knocking out those genes leads to cell lethality, it may lead to new treatment options. 
-
-
 
 Our central question for our project is thereby:
 > Which __second-site targets__ interact gentically with __driver mutations__ to promote cell viability and prliferation in breast cell cancers?
