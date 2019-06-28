@@ -44,10 +44,10 @@ head(data_regression)
     
 ```{r}
 create_qqplot <- function(a){  
-  p <- ggplot(test[[a]], aes(sample=test[[a]][,ncol(test[[a]])])) + stat_qq()+ stat_qq_line()
+  p <- ggplot(data_regression[[a]], aes(sample=data_regression[[a]][,ncol(data_regression[[a]])])) + stat_qq()+ stat_qq_line()
    p + labs(title = "QQ-Plot", subtitle = "Check if data is approx. normally distributed")
 }
-lapply(seq_along(test), create_qqplot)
+lapply(seq_along(data_regression), create_qqplot)
 ```
 
 #Step 3: Multilinear Regression: Data split, Model calculation, Return correlation data for evaluation
@@ -94,11 +94,16 @@ lapply(seq_along(input_data), function(a) {
     + H0: There is no association between the predicted and observed variable.
     + H1: There is an association between the predicted and observed variable.
   + Most importantly, it is not possible to assess the strength of the correlation based on the p-value. It rather judges the statistical test than the resulting value.
-    + as a standard, set the significance level to 0.05
+    + as a standard, we set the significance level to 0.05
 
 # Objective
  + We will the compare this values for the different models
-    + Best model design is achieved for a rho close to 1.
+  + For a positive correaltion, two variables move in the same direction.
+    + For a well-designed model, we expect the precicted and observed CERES scores being approx. even
+  + Thus, optimal model design is achieved if:
+      + the correlation coefficient is close to 1
+      + the p-value < 0.05
+    
 
 # Results
 We obtained
@@ -123,18 +128,21 @@ We obtained
   + ERBB2-model:
     + Shows the highest rho value of all four models, but ~ 0.1 is a rather weak positive relationship
     + The p-value leads to __acceptance of H0__.
+    + The data is not even approx. normal distributed.
     
   + MYCBP-model:
     + The rho value leads to very weak negative correlation.
-    + A p-value of ~0.78 is leads to condifent acceptance of H0.
+    + A p-value of ~0.78 leads to condifent acceptance of H0.
+    + Data is approx. normal distributed.
     
   + PARP10-model:
     + The rho value of ~ -0.67 is a moderate negative relationship.
     + The p-value leads to acceptance of H0. The p-value is the lowest with ~ 0.11. But even if we would raise the confidence level to 0.10 (which would be a questionable move in statistics), the result wouldn´t be significant to accept H1.
+    + Data is approx. normal distributed.
     
   + PIK3CA-model:
     + The rho value leads to very weak negative correlation.
-    + A p-value of 1 is no good for any kind of statistical work
+    + A p-value of ~0.78  leads to condifent acceptance of H0.
 
 + __All in all, all multilinear regression models failed to deliver a p-value of significant relevance. Thus, they should not be used for further predictions.__
 + The models for MYCBP and PIK3CA only showed weak, negative correlation, which is not useful for further work with this model.
