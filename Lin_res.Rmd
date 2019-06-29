@@ -2,10 +2,7 @@
 title: "Linear regression"
 author: "Elias Benjamin Farr"
 date: "17 Mai 2019"
-output:
-  word_document: default
-  pdf_document: default
-  html_document: default
+output: tufte::tufte_handout
 ---
 
 ```{r setup, include=FALSE}
@@ -17,15 +14,14 @@ knitr::opts_chunk$set(echo = TRUE)
   + For the regression model, we want to predict the CERES score of the driver mutation (dependent variable) based on the CERES score of the SST candidates (independent variables).
   + A multilinear regression will be designed:
 
-### Lisas Idea (keep)
-## Step 1: Building the LR-Datamatrices
-#Generate matrices containing CERES scores of DV and corresponding SSTs
 
-+ We now obtained potential SSTs for the four driver mutation. To form a base for the Multilinear regression, we 
+# Step 1: Construct datasets for Regression
+  + Multilinear regression, we 
     1. reform the BCCL CERES matrix
       + By transponing and format change, we obtain a matrix with colnames = Gene names and rownames = Cell line indices (equal to tPatients_ID)
     2. Collect the relevant the CERES scores for the mutations for the linear regression.
-      + All columns with the corresponding names of the driver mutation plus SST genes will be collected and copied into a new dataframe
+      + All columns with the corresponding names of the SST genes plus the driver mutation will be collected and copied into a new dataframe
+      
 ```{r}
 #reformat BCCL CERES matrix
 BCCL_kd.ceres_df <- as.data.frame(t(BCCL_kd.ceres))
@@ -33,54 +29,28 @@ rownames(BCCL_kd.ceres_df) <- tPatients_ID
 colnames(BCCL_kd.ceres_df) <- rownames(BCCL_kd.ceres)
 
 #generate a dataframe containing data for each DV
-linRegData_ERBB2 <- BCCL_kd.ceres_df %>% select("ERBB2", rownames(SST_cand_ERBB2))
-linRegData_MYCBP <- BCCL_kd.ceres_df %>% select("MYCBP", rownames(SST_cand_MYCBP))
-linRegData_PARP10 <- BCCL_kd.ceres_df %>% select("PARP10", rownames(SST_cand_PARP10))
-linRegData_PIK3CA <- BCCL_kd.ceres_df %>% select("PIK3CA", rownames(SST_cand_PIK3CA))
-```
----------------------------------------------------------------------------------------------
-# Step 1: Load data
-  1. Save driver mutation names in column
-  2. COllect CERES scores of SSTs per driver mutation in data frame list
-  
-```{r}
-driver_mut <- c("ERBB2","MYCBP", "PARP10", "PIK3CA") #Input driver mutations
+linRegData_ERBB2 <- BCCL_kd.ceres_df %>% select(rownames(SST_cand_ERBB2), "ERBB2")
+linRegData_MYCBP <- BCCL_kd.ceres_df %>% select(rownames(SST_cand_MYCBP), "MYCBP")
+linRegData_PARP10 <- BCCL_kd.ceres_df %>% select(rownames(SST_cand_PARP10), "PARP10")
+linRegData_PIK3CA <- BCCL_kd.ceres_df %>% select(rownames(SST_cand_PIK3CA), "PIK3CA")
 
-data_ls <- list(SST_cand_ERBB2, SST_cand_MYCBP, SST_cand_PARP10, SST_cand_PIK3CA)
-names_ls <- c("ERBB2", "MYCCBP", "PARP10", "PIK3CA")
+data_regression <- list(linRegData_ERBB2, linRegData_MYCBP, linRegData_PARP10, linRegData_PIK3CA)
+head(data_regression)
 ```
 
-# Step 2: Construct datasets for Regression
-  + Returns dataframe list will SST names as columns and cell lines as rows, data consisting of CERES scores
-```{r}
-mlr <- function(input_data, names, muts) {
-  output <- lapply(seq_along(input_data), function(x){
-    candidatas <- c(rownames(input_data[[x]]))
-    dataPicker <- t(BCCL_kd.ceres[candidatas,])
-    driverPicker <- t(BCCL_kd.ceres[muts[x], ])
-    outData <- as.data.frame(cbind(dataPicker, driverPicker))
-    return(outData)
-  })
-  names(output) <- names
-  return(output)
-}
-
-test <- mlr(data_ls, names_ls, driver_mut)
-lapply(test, head)
-```
-
-#Step 3: qqplot
+#Step 2: qqplot
   + Check Normality with a qqPlot
     + Using the aes-function of the ggplt package for _aesthetic_ plots.
+    
 ```{r}
 create_qqplot <- function(a){  
-  p <- ggplot(test[[a]], aes(sample=test[[a]][,ncol(test[[a]])])) + stat_qq()+ stat_qq_line()
+  p <- ggplot(data_regression[[a]], aes(sample=data_regression[[a]][,ncol(data_regression[[a]])])) + stat_qq()+ stat_qq_line()
    p + labs(title = "QQ-Plot", subtitle = "Check if data is approx. normally distributed")
 }
-lapply(seq_along(test), create_qqplot)
+lapply(seq_along(data_regression), create_qqplot)
 ```
 
-#Step 4: 
+#Step 3: Multilinear Regression: Data split, Model calculation, Return correlation data for evaluation
 To run the Multilinear Regression, it is advised to create a long function which
   1. Splits the dataset in 75:25 training:test data
     + Previous installation of the "caTools" package is necessary
@@ -88,8 +58,10 @@ To run the Multilinear Regression, it is advised to create a long function which
     + predict Driver mutation CERES (y; dep.variable) from SST CERES scores (x1 ... xn; indep.variables)
   3. Runs Test Data on model for performance evaluation
   4. Calculates Spearman correlation to further asess model performance
+  
 ```{r}
-input_data <- test
+input_data <- data_regression
+
 lapply(seq_along(input_data), function(a) {
   set.seed(123) #initialize the random numbers, better reproducable
   data <- input_data[[a]] #get the data
@@ -106,49 +78,7 @@ lapply(seq_along(input_data), function(a) {
   test_set$Prediction = y_pred #adding predictions to the dataset
   corVal <- cor.test(test_set$Predictor , test_set$Prediction, method = "spearman")#to judge model performance, calculate Spearman corr. between predicted and observed values
   return(corVal)
-  barplot(corVal, main = deparse(substitute(x)))
 })
-```
-
---------------------------------------------------------------------------------------------
-## Step 3: Multilinear Regression: Data Preperation, Model Training /Testing / Evaluation
-To run the Multilinear Regression, it is advised to create a long function which
-  1. Splits the dataset in 75:25 training:test data
-    + Previous installation of the "caTools" package is necessary
-  2. Conducts Training of Regression model with training data
-    + predict Driver mutation CERES (y; dep.variable) from SST CERES scores (x1 ... xn; indep.variables)
-  3. Runs Test Data on model for performance evaluation
-  4. Calculates Spearman correlation to further asess model performance
-    + Visualizes by barplot
-```{r}
-install.packages("caTools")
-library(caTools) #necessary packages
-
-
-  
-lapply(seq_along(input_data), function(a) {
-                          set.seed(123) #initialize the random numbers, urgently advised to improve reproducability
-                           colnames(data)[length(colnames(data))] <- "Predictor" #The predictors are the SSTs
-                          split = sample.split(data[,ncol(data)], SplitRatio = 0.75) #split the dataset into 3/4 Training and 1/4 Testing dataset
-                          training_set = subset(x, split == TRUE)
-                          test_set = subset(x, split == FALSE)
-                          
-                          regressor = lm(formula = Predictor ~ ., data=training_set)
-                          #predict CERES of Driver Mutation based on all (=.) the input variables (SSTs)
-                          
-                          y_predict = predict(regressor, newdata = test_set) #predict the Driver mut. CERES score based on the test data
-                          test_set$Prediction = y_predict #adding predictions to the dataset
-                          test_set #Now you can compare your Predictions (last column) with the real values of the startups (2nd last column)
-                          
-                          corVal <- cor.test(test_set$Predictor, test_set$Prediction, method = spearman) #to judge model performance, calculate Spearman corr. between predicted and observed values
-                          return(corVal) # return p-value plus Corr. coeff. for discussion
-                          barplot(corVal, main = deparse(substitute(x))) #create a barplot for correlation visualization and further evaluation
-})
-
-df.list.MLR <- list(linRegData_ERBB2, linRegData_MYCBP, linRegData_PARP10, linRegData_PIK3CA)
-lapply(df.list.MLR, MultiLinReg)
-
-# CURRENT ISSUE: "Error in terms.formula(formula, data = data) : '.' erscheint in der Formel und 'data' Argument ist ung?ltig"
 ```
 
 ## Interpretation of Spearman correlation coefficient
@@ -164,53 +94,57 @@ lapply(df.list.MLR, MultiLinReg)
     + H0: There is no association between the predicted and observed variable.
     + H1: There is an association between the predicted and observed variable.
   + Most importantly, it is not possible to assess the strength of the correlation based on the p-value. It rather judges the statistical test than the resulting value.
-    + as a standard, set the significance level to 0.05
+    + as a standard, we set the significance level to 0.05
 
 # Objective
  + We will the compare this values for the different models
-    + Best model design is achieved for a rho close to 1.
+  + For a positive correaltion, two variables move in the same direction.
+    + For a well-designed model, we expect the precicted and observed CERES scores being approx. even
+  + Thus, optimal model design is achieved if:
+      + the correlation coefficient is close to 1
+      + the p-value < 0.05
+    
 
 # Results
 We obtained
   + For ERBB2-model:
-    + p-value = 0.6583
-    + rho: 0.2571429
+    + p-value = 0.8397
+    + rho: 0.1071
     
   + For MYCBP-model:
-    + _p-value = 1_
-    + _rho: -0.02857143_
+    + p-value = 0.7825
+    + rho: -0.1428571
     
   + For PARP10-model:
-    + p-value = 0.2972
-    + rho: -0.5428571
+    + p-value = 0.1095
+    + rho: -0.6785714
     
   + For PIK3CA-model:
-    + _p-value = 1_ 
-    + _rho: 0.02857143_
+    + p-value = 0.7131
+    + rho: -0.1785714
 
 # Discussion
 
   + ERBB2-model:
-    + Shows the highest rho value of all four models, but ~ 0.26 is still rather weak positive relationship
+    + Shows the highest rho value of all four models, but ~ 0.1 is a rather weak positive relationship
     + The p-value leads to __acceptance of H0__.
+    + The data is not even approx. normal distributed.
     
   + MYCBP-model:
-    + The rho value does not lead to any correlation
-    + A p-value of 1 is no good for any kind of statistical work
+    + The rho value leads to very weak negative correlation.
+    + A p-value of ~0.78 leads to condifent acceptance of H0.
+    + Data is approx. normal distributed.
     
   + PARP10-model:
-    + The rho value of ~ -0.54 is a moderate negative relationship.
-    + The p-value leads to acceptance of H0.
+    + The rho value of ~ -0.67 is a moderate negative relationship.
+    + The p-value leads to acceptance of H0. The p-value is the lowest with ~ 0.11. But even if we would raise the confidence level to 0.10 (which would be a questionable move in statistics), the result wouldn´t be significant to accept H1.
+    + Data is approx. normal distributed.
     
   + PIK3CA-model:
-    + The rho value does not lead to any correlation
-    + A p-value of 1 is no good for any kind of statistical work
+    + The rho value leads to very weak negative correlation.
+    + A p-value of ~0.78  leads to condifent acceptance of H0.
 
 + __All in all, all multilinear regression models failed to deliver a p-value of significant relevance. Thus, they should not be used for further predictions.__
-+ The models for MYCBP and PIK3CA did not show any correlation.
++ The models for MYCBP and PIK3CA only showed weak, negative correlation, which is not useful for further work with this model.
 + The PARP10 model resulted in a moderate negative relationship, which is not of relevance for our objective.
 + The ERBB2 model did not deliver a significant p-value, but indeed contains at least a weak positive correlation.
-----------------  
-## Ideas collected from:
-[linked phrase](https://www.dataquest.io/blog/statistical-learning-for-predictive-modeling-r/)
-[linked phrase](http://r-statistics.co/Linear-Regression.html#Predicting%20Linear%20Models)

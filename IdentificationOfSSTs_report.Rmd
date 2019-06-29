@@ -3,9 +3,9 @@ title: "Identification of SSTs_report"
 author: "Lisa Marie Milchsack"
 date: "10 Juni 2019"
 output:
+  html_document: default
   word_document: default
   pdf_document: default
-  html_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -266,7 +266,7 @@ data_clus_3e["Driver mutation"] <- sapply(1:nrow(data_clus_3), function(j){
 
 CERES scores and expression as TPM values for the selected 4 driver mutations were visualised as box and whisker plots. Following the generation of the `GOI_X` dataframe containing either CERES or TPM values for the four mutations, the data was reshaped to contain two columns. One column being "variable" with the names of driver mutations, the other "value" with the corresponding CERES or TPM value. The ggplot function, part of the ggplot2 package, was used to plot the following box an whisker plots. 
 
-```{r data visualisation, fig.align = center, fig.cap= Box and Whisker plots for CERES and TPM values}
+```{r data visualisation, fig.align = center}
 
 # CERES_boxplot
 GOI= BCCL_kd.ceres[c("ERBB2","MYCBP", "PARP10", "PIK3CA"),]
