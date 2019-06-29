@@ -535,13 +535,13 @@ rownames(BCCL_kd.ceres_df) <- tPatients_ID
 colnames(BCCL_kd.ceres_df) <- rownames(BCCL_kd.ceres)
 
 #generate a dataframe containing data for each DV
-linRegData_ERBB2 <- BCCL_kd.ceres_df %>% select(rownames(SST_cand_ERBB2), "ERBB2")
-linRegData_MYCBP <- BCCL_kd.ceres_df %>% select(rownames(SST_cand_MYCBP), "MYCBP")
-linRegData_PARP10 <- BCCL_kd.ceres_df %>% select(rownames(SST_cand_PARP10), "PARP10")
-linRegData_PIK3CA <- BCCL_kd.ceres_df %>% select(rownames(SST_cand_PIK3CA), "PIK3CA")
+linRegData_ERBB2 <- BCCL_kd.ceres_df %>% select(rownames(SST_Data$ERBB2), "ERBB2")
+linRegData_MYCBP <- BCCL_kd.ceres_df %>% select(rownames(SST_Data$MYCBP), "MYCBP")
+linRegData_PARP10 <- BCCL_kd.ceres_df %>% select(rownames(SST_Data$PARP10), "PARP10")
+linRegData_PIK3CA <- BCCL_kd.ceres_df %>% select(rownames(SST_Data$PIK3CA), "PIK3CA")
 
 data_regression <- list(linRegData_ERBB2, linRegData_MYCBP, linRegData_PARP10, linRegData_PIK3CA)
-head(data_regression)
+head(data_regression) #take a look at the data
 ```
 
 #Step 2: qqplot
