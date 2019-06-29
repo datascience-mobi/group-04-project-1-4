@@ -648,6 +648,7 @@ We obtained
   + PIK3CA-model:
     + The rho value leads to very weak negative correlation.
     + A p-value of ~0.78  leads to condifent acceptance of H0.
+    + The data is not even approx. normal distributed.
 
 + __All in all, all multilinear regression models failed to deliver a p-value of significant relevance. Thus, they should not be used for further predictions.__
 + The models for MYCBP and PIK3CA only showed weak, negative correlation, which is not useful for further work with this model.
