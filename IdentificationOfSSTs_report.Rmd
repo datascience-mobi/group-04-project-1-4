@@ -28,8 +28,51 @@ library(data.table)
 ```
 
 # Abstract
-# Introduction
-Breast Cancer is the most praevalent tumor disease in women and the most dangerous in blabla...
+(...)
+
+### Introduction
+## Revision: Breast Cancer, a challenging disease
+
+> "The heterogeneity of breast cancers makes them both a fascinating and challenging solid tumor to diagnose and treat."
+
+_Hutchinson, Chief Editor of Nature Reviews Clinical Oncology_
+
+Reading the latest reports of breast cancer prevalence, the current state is very serious:
+  + Breast cancer ranks #2 in worldwide cancer case numbers (Hutchinson 2010)
+  + In Germany alone, there are 70,000 new cases annually. (Barnes, Kraywinkel et al. 2016)
+  + Breast Cancer makes ~ 30% of all reported cases.(Robert-Koch-Institut 2017)
+
+# Driver Mutation
+In our project, we first focus on driver mutations, which can be imagined as the main "force" in tumorigenesis. Certain genes induce/improve tumor growth as consequence of mutation, such as:
+  + Provides tumor cells with Growth advantage
+  + Leads to positive selection in microenvironment
+Furthermore, driver mutations are also often required for tumor maintenance. (Stratton, Campbell et al. 2009)
+  
+## Project design: Our selection of possible driver mutation
+
++ From literature, we selected possible driver mutations based on three main characteristics:
+  1. overexpressed in breast cancer
+  2. observed in a relevant percentage of clinical cases
+  3. part of processes/pathways of tumorgenesis
+  
++ Finally, we selected:
+
+Gene Name | Overexpression rate | Role in Tumorgenesis                   | Sources                                                     |
+----------|---------------------|----------------------------------------|-------------------------------------------------------------|
+CCND      | ~ 50%               |Cell cycle regulator                    |(Arnold and Papanikolaou 2005)                               |
+ERBB2     | ~ 30%               |Encodes endothelial growth factor       |(Slamon, Godolphin et al. 1989)                              |
+MCY       | ~ 30 - 50%          |Cell cycle and apoptosis regulator      |(Gabay, Li et al. , Xu, Chen et al. 2010)                    |
+PARP      | ~ 45%               |Regulates differentiation/proliferation |(Siraj, Pratheeshkumar et al. 2018)                          |
+PIK3CA    | ~ 30 - 48%          |Interaction with AKT and mTOR pathway   |(Aleskandarany, Rakha et al. 2010, Shimoi, Hamada et al.2018)|
+
+## Revision: The concept of Second Site Targets (SSTs)
+Targeting and eliminating driver mutations as a part of tumor treatment is a difficult procedure, since those genes are also essential for survival of non-mutated cells. A differentiation between normal and tumor cell is not possible, thus targeting leads to adverse effects. Plus, high dosages need to be applied. #CITATION
+A promising approach is targeting the so-calles Second Site Targets (SSTs), which are gene mutations interacting genetically with driver mutations to increase cell viability. # CITATION
+If knocking out those genes leads to cell lethality, it may lead to new treatment options. 
+
+Our central question for our project is thereby:
+> Which __second-site targets__ interact gentically with __driver mutations__ to promote cell viability and prliferation in breast cell cancers?
+
 # Main
 
 ## Data clean up
@@ -470,4 +513,157 @@ SST_Data <- lapply(seq_along(SST_Data), function(a) {
 })
 names(SST_Data) <- driver_mut
 ```
+
 ### Regression analysis to predict ceres scores of driver mutation
+## Objective
+
+  + For the regression model, we want to predict the CERES score of the driver mutation (dependent variable) based on the CERES score of the SST candidates (independent variables).
+  + A multilinear regression will be designed:
+
+
+# Step 1: Construct datasets for Regression
+  + Multilinear regression, we 
+    1. reform the BCCL CERES matrix
+      + By transponing and format change, we obtain a matrix with colnames = Gene names and rownames = Cell line indices (equal to tPatients_ID)
+    2. Collect the relevant the CERES scores for the mutations for the linear regression.
+      + All columns with the corresponding names of the SST genes plus the driver mutation will be collected and copied into a new dataframe
+      
+```{r}
+#reformat BCCL CERES matrix
+BCCL_kd.ceres_df <- as.data.frame(t(BCCL_kd.ceres))
+rownames(BCCL_kd.ceres_df) <- tPatients_ID
+colnames(BCCL_kd.ceres_df) <- rownames(BCCL_kd.ceres)
+
+#generate a dataframe containing data for each DV
+linRegData_ERBB2 <- BCCL_kd.ceres_df %>% select(rownames(SST_cand_ERBB2), "ERBB2")
+linRegData_MYCBP <- BCCL_kd.ceres_df %>% select(rownames(SST_cand_MYCBP), "MYCBP")
+linRegData_PARP10 <- BCCL_kd.ceres_df %>% select(rownames(SST_cand_PARP10), "PARP10")
+linRegData_PIK3CA <- BCCL_kd.ceres_df %>% select(rownames(SST_cand_PIK3CA), "PIK3CA")
+
+data_regression <- list(linRegData_ERBB2, linRegData_MYCBP, linRegData_PARP10, linRegData_PIK3CA)
+head(data_regression)
+```
+
+#Step 2: qqplot
+  + Check Normality with a qqPlot
+    + Using the aes-function of the ggplt package for _aesthetic_ plots.
+    
+```{r}
+create_qqplot <- function(a){  
+  p <- ggplot(data_regression[[a]], aes(sample=data_regression[[a]][,ncol(data_regression[[a]])])) + stat_qq()+ stat_qq_line()
+   p + labs(title = "QQ-Plot", subtitle = "Check if data is approx. normally distributed")
+}
+lapply(seq_along(data_regression), create_qqplot)
+```
+#Step 3: Multilinear Regression: Data split, Model calculation, Return correlation data for evaluation
+To run the Multilinear Regression, it is advised to create a long function which
+  1. Splits the dataset in 75:25 training:test data
+    + Previous installation of the "caTools" package is necessary
+  2. Conducts Training of Regression model with training data
+    + predict Driver mutation CERES (y; dep.variable) from SST CERES scores (x1 ... xn; indep.variables)
+  3. Runs Test Data on model for performance evaluation
+  4. Calculates Spearman correlation to further asess model performance
+  
+```{r}
+input_data <- data_regression
+
+lapply(seq_along(input_data), function(a) {
+  set.seed(123) #initialize the random numbers, better reproducable
+  data <- input_data[[a]] #get the data
+  colnames(data)[length(colnames(data))] <- "Predictor"
+  
+  split = sample.split(data[,ncol(data)], SplitRatio = 0.75) #split the dataset into 3/4 Training and 1/4 Testing dataset
+  training_set = subset(data, split == TRUE) #use the labels to get the training data
+  test_set = subset(data, split == FALSE)
+
+  regressor = lm(formula = Predictor ~ ., 
+                 data = training_set)  #predict CERES of Driver Mutation based on all (=.) the input variables (SSTs)
+  
+  y_pred = predict(regressor, newdata = test_set) #predict the Driver mut. CERES score based on the test data
+  test_set$Prediction = y_pred #adding predictions to the dataset
+  corVal <- cor.test(test_set$Predictor , test_set$Prediction, method = "spearman")#to judge model performance, calculate Spearman corr. between predicted and observed values
+  return(corVal)
+})
+```
+
+## Interpretation of Spearman correlation coefficient
+
+# Revision: Meaning of the correlation coefficient rho
+  + the rank-correlation coefficient can take values from +1 to -1
+    + rho ~ 1: perfect positive association of ranks
+    + rho ~ 0: no association of ranks
+    + rho ~ -1: perfect negative association of ranks
+
+# Revision: Adding a statistical parameter
+  + To further interprete the p-value, we construct a H0 / H1 hypothesis:
+    + H0: There is no association between the predicted and observed variable.
+    + H1: There is an association between the predicted and observed variable.
+  + Most importantly, it is not possible to assess the strength of the correlation based on the p-value. It rather judges the statistical test than the resulting value.
+    + as a standard, we set the significance level to 0.05
+
+# Objective
+ + We will the compare this values for the different models
+  + For a positive correaltion, two variables move in the same direction.
+    + For a well-designed model, we expect the precicted and observed CERES scores being approx. even
+  + Thus, optimal model design is achieved if:
+      + the correlation coefficient is close to 1
+      + the p-value < 0.05
+    
+
+# Results
+We obtained
+  + For ERBB2-model:
+    + p-value = 0.8397
+    + rho: 0.1071
+    
+  + For MYCBP-model:
+    + p-value = 0.7825
+    + rho: -0.1428571
+    
+  + For PARP10-model:
+    + p-value = 0.1095
+    + rho: -0.6785714
+    
+  + For PIK3CA-model:
+    + p-value = 0.7131
+    + rho: -0.1785714
+
+# Discussion
+
+  + ERBB2-model:
+    + Shows the highest rho value of all four models, but ~ 0.1 is a rather weak positive relationship
+    + The p-value leads to __acceptance of H0__.
+    + The data is not even approx. normal distributed.
+    
+  + MYCBP-model:
+    + The rho value leads to very weak negative correlation.
+    + A p-value of ~0.78 leads to condifent acceptance of H0.
+    + Data is approx. normal distributed.
+    
+  + PARP10-model:
+    + The rho value of ~ -0.67 is a moderate negative relationship.
+    + The p-value leads to acceptance of H0. The p-value is the lowest with ~ 0.11. But even if we would raise the confidence level to 0.10 (which would be a questionable move in statistics), the result wouldn´t be significant to accept H1.
+    + Data is approx. normal distributed.
+    
+  + PIK3CA-model:
+    + The rho value leads to very weak negative correlation.
+    + A p-value of ~0.78  leads to condifent acceptance of H0.
+
++ __All in all, all multilinear regression models failed to deliver a p-value of significant relevance. Thus, they should not be used for further predictions.__
++ The models for MYCBP and PIK3CA only showed weak, negative correlation, which is not useful for further work with this model.
++ The PARP10 model resulted in a moderate negative relationship, which is not of relevance for our objective.
++ The ERBB2 model did not deliver a significant p-value, but indeed contains at least a weak positive correlation.
+
+### Literature
+  + Aleskandarany, M. A., E. A. Rakha, M. A. H. Ahmed, D. G. Powe, E. C. Paish, R. D. Macmillan, I. O. Ellis and A. R. Green (2010). "PIK3CA expression in invasive breast cancer: a biomarker of poor prognosis." Breast Cancer Research and Treatment 122(1): 45-53.
+  + Arnold, A. and A. Papanikolaou (2005). "Cyclin D1 in Breast Cancer Pathogenesis." Journal of Clinical Oncology 23(18): 4215-4224.
+  + Barnes, B., K. Kraywinkel, E. Nowossadeck, I. Schönfeld, A. Starker, A. Wienecke and U. Wolf (2016). Bericht zum Krebsgeschehen in Deutschland 2016, Robert Koch-Institut.
+  + Gabay, M., Y. Li and D. W. Felsher "MYC activation is a hallmark of cancer initiation and maintenance." Cold Spring Harbor perspectives in medicine 4(6): a014241.
+  + Hutchinson, L. (2010). "Challenges, controversies, breakthroughs." Nature Reviews Clinical Oncology 7: 669.
+  + Koch-Institut, R. (2017). Krebs in Deutschland für 2013/2014, Robert Koch-Institut.
+  + Shimoi, T., A. Hamada, M. Yamagishi, M. Hirai, M. Yoshida, T. Nishikawa, K. Sudo, A. Shimomura, E. Noguchi, M. Yunokawa, K. Yonemori, C. Shimizu, T.   + Kinoshita, T. Fukuda, Y. Fujiwara and K. Tamura (2018). "PIK3CA mutation profiling in patients with breast cancer, using a highly sensitive detection system." Cancer science 109(8): 2558-2566.
+  + Siraj, A. K., P. Pratheeshkumar, S. K. Parvathareddy, S. P. Divya, F. Al-Dayel, A. Tulbah, D. Ajarim and K. S. Al-Kuraya (2018). "Overexpression of PARP is an independent prognostic marker for poor survival in Middle Eastern breast cancer and its inhibition can be enhanced with embelin co-treatment." Oncotarget 9(99): 37319-37332.
+  + Slamon, D., W. Godolphin, L. Jones, J. Holt, S. Wong, D. Keith, W. Levin, S. Stuart, J. Udove, A. Ullrich and a. et (1989). "Studies of the HER-2/neu proto-oncogene in human breast and ovarian cancer." Science 244(4905): 707-712.
+  + Stratton, M. R., P. J. Campbell and P. A. Futreal (2009). "The cancer genome." Nature 458(7239): 719-724.
+  + Xu, J., Y. Chen and O. I. Olopade (2010). "MYC and Breast Cancer." Genes & cancer 1(6): 629-640.
+
