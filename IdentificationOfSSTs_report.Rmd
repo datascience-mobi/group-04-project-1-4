@@ -652,22 +652,15 @@ lapply(seq_along(input_data), function(a) {
     
 
 # Results
-We obtained
-  + For ERBB2-model:
-    + p-value = 0.8397
-    + rho: 0.1071
-    
-  + For MYCBP-model:
-    + p-value = 0.7825
-    + rho: -0.1428571
-    
-  + For PARP10-model:
-    + p-value = 0.1095
-    + rho: -0.6785714
-    
-  + For PIK3CA-model:
-    + p-value = 0.7131
-    + rho: -0.1785714
+
+We obtained the followwing p-values and correlation coefficients:
+
+Model     | p-value     | rho      | 
+----------|-------------|----------|
+ERBB2     | 0.8397      | 0.1071   |
+MCYBP     | 0.7825      |-0.1429   |
+PARP      | 0.1095      |-0.6786   |
+PIK3CA    | 0.7131      |-0.1786   |
 
 # Discussion
 
