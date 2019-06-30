@@ -141,7 +141,9 @@ PIK3CA    | 0.7131      |-0.1786   |
     + The PARP10 model resulted in a moderate negative relationship, which is not of relevance for our objective.
     + The ERBB2 model did not deliver a significant p-value, but indeed contains at least a weak positive correlation.
 
-# Discussing possible Reasons for the unsatisfying results
+## Discussing possible Reasons for the unsatisfying results
+# Possible causes in the size of the sample
+
 It seems possible that the small sample size for the regression model lead to the lack of significant results, with only 28 events (CERES score observed in cell line) per predicting variable (SST gene).
 
 But, a common thumb-rule for building a regression model is to calculate the _limiting sample size_:
@@ -153,34 +155,24 @@ But, a common thumb-rule for building a regression model is to calculate the _li
 If this equation is fullfilled, the model is supposed to be reliable.(Harrell 2001)
 In fact, this condition is true for all four models.
 
+On the other side, for the supervised machine learning process of the regression, sample sizes up to n = 50,000 are reported.(Libbrecht and Noble 2015) 
+In general, more data will lead to improved data quality.(Banko and Brill 2001)
+
+# Possible Causes in the Design of Project
 Furthermore, Harell describes in _Regression modeling strategies_ a strategy for optimal development of predictive models:
 
 He points out to not use  Y (the driver mutation) any descriptive statistics or hypothesis tests in constructing the list of candidate predictors (SSTs).(Harrell 2001)
   + did we do that?
   
-Also, one could delete a group of predictor variable, based on a single p-value, especially if  0.05 < p < 0.2 does not apply.(Harrell 2001)
-  + Problematic is to set a random p-value to delete variables.
-  + In our cases, most p-values of individual predictors were  > 0.3, where it is questionable if deleting those would be any good.
-  
-It was advised to check distributional assumptions (= normal distribution) and choose a different model if needed.
+Checking distributional assumptions (= normal distribution) is also important and a different model should be chosen if needed. (Harrell 2001)
   + As shown in the qq-Plots, normal distribution does only apply to the models of MYCBP and PARp10
   + ERBB2 on the other hand, delivers the highest rho, but is in no way approx. normal distributed.
- 
-```{r}
-l.g.1 = lm(ERBB2 ~ ., data = linRegData_ERBB2)
-summary(l.g.1) # 7 of 17 SSTs have p > 0.5
 
-l.g.2 = lm(MYCBP ~ ., data = linRegData_MYCBP)
-summary(l.g.2) # has a good p value of 0.052, 10 of 15 SSTs have p > 0.05
-
-l.g.3 = lm(PARP10 ~ ., data = linRegData_PARP10)
-summary(l.g.3) # 4 of 17 SSTs have p > 0.5
-
-l.g.4 = lm(PIK3CA ~ ., data = linRegData_PIK3CA)
-summary(l.g.4) # 9 of 18 SSTs have p > 0.5
-``` 
 --------------------
-Harrell, F. E. (2001). Regression modeling strategies : with applications to linear models, logistic regression, and survival analysis. New York ; Berlin ; Heidelberg [u.a.], Springer.
+  + Banko, M. and E. Brill (2001). Scaling to very very large corpora for natural language disambiguation. Proceedings of the 39th Annual Meeting on Association for Computational Linguistics. Toulouse, France, Association for Computational Linguistics: 26-33.
+ + Harrell, F. E. (2001). Regression modeling strategies : with applications to linear models, logistic regression, and survival analysis. New York ; Berlin ; Heidelberg [u.a.], Springer.
++ Libbrecht, M. W. and W. S. Noble (2015). "Machine learning applications in genetics and genomics." Nature reviews. Genetics 16(6): 321-332.
+
 
 
 
