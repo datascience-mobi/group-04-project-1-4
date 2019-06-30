@@ -115,7 +115,7 @@ MCYBP     | 0.7825      |-0.1429   |
 PARP      | 0.1095      |-0.6786   |
 PIK3CA    | 0.7131      |-0.1786   |
 
-# Discussion
+# Discussing p-Values and correlation coefficients
 
   + ERBB2-model:
     + Shows the highest rho value of all four models, but ~ 0.1 is a rather weak positive relationship
@@ -136,7 +136,53 @@ PIK3CA    | 0.7131      |-0.1786   |
     + The rho value leads to very weak negative correlation.
     + A p-value of ~0.78  leads to condifent acceptance of H0.
 
-+ __All in all, all multilinear regression models failed to deliver a p-value of significant relevance. Thus, they should not be used for further predictions.__
-+ The models for MYCBP and PIK3CA only showed weak, negative correlation, which is not useful for further work with this model.
-+ The PARP10 model resulted in a moderate negative relationship, which is not of relevance for our objective.
-+ The ERBB2 model did not deliver a significant p-value, but indeed contains at least a weak positive correlation.
+  + __All in all, all multilinear regression models failed to deliver a p-value of significant relevance. Thus, they should not be used for further predictions.__
+    + The models for MYCBP and PIK3CA only showed weak, negative correlation, which is not useful for further work with this model.
+    + The PARP10 model resulted in a moderate negative relationship, which is not of relevance for our objective.
+    + The ERBB2 model did not deliver a significant p-value, but indeed contains at least a weak positive correlation.
+
+# Discussing possible Reasons for the unsatisfying results
+It seems possible that the small sample size for the regression model lead to the lack of significant results, with only 28 events (CERES score observed in cell line) per predicting variable (SST gene).
+
+But, a common thumb-rule for building a regression model is to calculate the _limiting sample size_:
+
+ $p < \frac{m}{15}$
+  + p: number of predictor variables
+  + m: limiting sample size; for continuous response variables it is the  total sample size n
+
+If this equation is fullfilled, the model is supposed to be reliable.(Harrell 2001)
+In fact, this condition is true for all four models.
+
+Furthermore, Harell describes in _Regression modeling strategies_ a strategy for optimal development of predictive models:
+
+He points out to not use  Y (the driver mutation) any descriptive statistics or hypothesis tests in constructing the list of candidate predictors (SSTs).(Harrell 2001)
+  + did we do that?
+  
+Also, one could delete a group of predictor variable, based on a single p-value, especially if  0.05 < p < 0.2 does not apply.(Harrell 2001)
+  + Problematic is to set a random p-value to delete variables.
+  + In our cases, most p-values of individual predictors were  > 0.3, where it is questionable if deleting those would be any good.
+  
+It was advised to check distributional assumptions (= normal distribution) and choose a different model if needed.
+  + As shown in the qq-Plots, normal distribution does only apply to the models of MYCBP and PARp10
+  + ERBB2 on the other hand, delivers the highest rho, but is in no way approx. normal distributed.
+ 
+```{r}
+l.g.1 = lm(ERBB2 ~ ., data = linRegData_ERBB2)
+summary(l.g.1) # 7 of 17 SSTs have p > 0.5
+
+l.g.2 = lm(MYCBP ~ ., data = linRegData_MYCBP)
+summary(l.g.2) # has a good p value of 0.052, 10 of 15 SSTs have p > 0.05
+
+l.g.3 = lm(PARP10 ~ ., data = linRegData_PARP10)
+summary(l.g.3) # 4 of 17 SSTs have p > 0.5
+
+l.g.4 = lm(PIK3CA ~ ., data = linRegData_PIK3CA)
+summary(l.g.4) # 9 of 18 SSTs have p > 0.5
+``` 
+--------------------
+Harrell, F. E. (2001). Regression modeling strategies : with applications to linear models, logistic regression, and survival analysis. New York ; Berlin ; Heidelberg [u.a.], Springer.
+
+
+
+
+  

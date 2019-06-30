@@ -666,11 +666,37 @@ PIK3CA    | 0.7131      |-0.1786   |
 + The PARP10 model resulted in a moderate negative relationship, which is not of relevance for our objective.
 + The ERBB2 model did not deliver a significant p-value, but indeed contains at least a weak positive correlation.
 
+# Discussing possible Reasons for the unsatisfying results
+It seems possible that the small sample size for the regression model lead to the lack of significant results, with only 28 events (CERES score observed in cell line) per predicting variable (SST gene).
+
+But, a common thumb-rule for building a regression model is to calculate the _limiting sample size_:
+
+ $p < \frac{m}{15}$
+  + p: number of predictor variables
+  + m: limiting sample size; for continuous response variables it is the  total sample size n
+
+If this equation is fullfilled, the model is supposed to be reliable.(Harrell 2001)
+In fact, this condition is true for all four models.
+
+Furthermore, Harell describes in _Regression modeling strategies_ a strategy for optimal development of predictive models:
+
+He points out to not use  Y (the driver mutation) any descriptive statistics or hypothesis tests in constructing the list of candidate predictors (SSTs).(Harrell 2001)
+  + did we do that?
+  
+Also, one could delete a group of predictor variable, based on a single p-value, especially if  0.05 < p < 0.2 does not apply.(Harrell 2001)
+  + Problematic is to set a random p-value to delete variables.
+  + In our cases, most p-values of individual predictors were  > 0.3, where it is questionable if deleting those would be any good.
+  
+It was advised to check distributional assumptions (= normal distribution) and choose a different model if needed.
+  + As shown in the qq-Plots, normal distribution does only apply to the models of MYCBP and PARp10
+  + ERBB2 on the other hand, delivers the highest rho, but is in no way approx. normal distributed.
+
 ### Literature
   + Aleskandarany, M. A., E. A. Rakha, M. A. H. Ahmed, D. G. Powe, E. C. Paish, R. D. Macmillan, I. O. Ellis and A. R. Green (2010). "PIK3CA expression in invasive breast cancer: a biomarker of poor prognosis." Breast Cancer Research and Treatment 122(1): 45-53.
   + Arnold, A. and A. Papanikolaou (2005). "Cyclin D1 in Breast Cancer Pathogenesis." Journal of Clinical Oncology 23(18): 4215-4224.
   + Barnes, B., K. Kraywinkel, E. Nowossadeck, I. Schönfeld, A. Starker, A. Wienecke and U. Wolf (2016). Bericht zum Krebsgeschehen in Deutschland 2016, Robert Koch-Institut.
   + Gabay, M., Y. Li and D. W. Felsher "MYC activation is a hallmark of cancer initiation and maintenance." Cold Spring Harbor perspectives in medicine 4(6): a014241.
+  + Harrell, F. E. (2001). Regression modeling strategies : with applications to linear models, logistic regression, and survival analysis. New York ; Berlin ; Heidelberg [u.a.], Springer.
   + Hutchinson, L. (2010). "Challenges, controversies, breakthroughs." Nature Reviews Clinical Oncology 7: 669.
   + Koch-Institut, R. (2017). Krebs in Deutschland für 2013/2014, Robert Koch-Institut.
   + Shimoi, T., A. Hamada, M. Yamagishi, M. Hirai, M. Yoshida, T. Nishikawa, K. Sudo, A. Shimomura, E. Noguchi, M. Yunokawa, K. Yonemori, C. Shimizu, T.   + Kinoshita, T. Fukuda, Y. Fujiwara and K. Tamura (2018). "PIK3CA mutation profiling in patients with breast cancer, using a highly sensitive detection system." Cancer science 109(8): 2558-2566.
