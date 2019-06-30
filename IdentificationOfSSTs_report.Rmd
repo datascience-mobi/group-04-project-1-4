@@ -35,8 +35,6 @@ library(data.table)
 
 > "The heterogeneity of breast cancers makes them fascinating and challenging to diagnose and treat." 
 
-_Hutchinson, Chief Editor of Nature Reviews Clinical Oncology_
-
 According to the latest reports of breast cancer prevalence, the current state is very serious:
   + Breast cancer ranks #2 in worldwide cancer case numbers (Hutchinson 2010)
   + In Germany there are 70,000 new cases annually. (Barnes, Kraywinkel et al. 2016)
