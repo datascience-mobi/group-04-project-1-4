@@ -13,7 +13,8 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 #Installing required packages
-```{r}
+```{r include=FALSE} 
+#i think this is obsolete in the end, we can keep it, as long as there is confusion about what packages are needed
 install.packages("reshape")
 install.packages("wesanderson")
 install.packages("tidyverse")
@@ -104,7 +105,7 @@ view(data$mutation) #closer look because data$mutation returns NULL in the comma
 lapply(data, function(a) head(a)) #look at the data 
 ```
 
-We find a dataset containing 6 smaller datasets. Five of them are large dataframes while a sixth one is a list of dataframes. For a better overview we separate them.
+We find a dataset containing 6 smaller datasets. Five of them are large dataframes while a sixth one is a list of dataframes. For the extraction of this sixth variable we first separated it fom the others and gave it a new strucure, which is easier to handle. 
 
 ```{r}
 #Extract the mutation data
@@ -113,9 +114,14 @@ mut <- data$mutation #pick the mutation data (this has a specific format and nee
 dt_new <- lapply(which(names(data) %!in% "mutation"), function(a) data[[a]]) #extract only non-mutation data
 names(dt_new) <- names(data)[which(names(data) %!in% "mutation")] #rename the data with the original names
 length(dt_new) #look if it worked (now dim is 5 and NOT 6 (because mutation was removed))
+sample_case = c("Breast Cancer") #gives us the opportunity to analyse other groups of cells
+samples = data$annotation$DepMap_ID[which(data$annotation$Primary.Disease == sample_case)]
+ids = which(names(mut) %in% samples)
+dat = lapply(ids, function(a) mut[[a]])
 ```
 
-To gain an overview of general data distribution we first had to extract the breast cancer data from the larger "allDepMapData" - dataset, containing all kinds of tumor diseases. We therefore identified 28 cell lines harvesting breast cancer.
+We observe a large variety of tumor diseases beeing recorded by this dataset. Because we want to focus on breast cancer we will extract the data contributing to this harmful ilness. We identified 28 cell lines, fulfilling this condition.
+
 ```{r}
 #finding all breast cancer cell lines
 BCCL_Numbers <- which(allDepMapData$annotation[4]== "Breast Cancer")
