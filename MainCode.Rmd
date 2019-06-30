@@ -405,10 +405,10 @@ data_regression <- list(linRegData_ERBB2, linRegData_MYCBP, linRegData_PARP10, l
 head(data_regression)
 
 create_qqplot <- function(a){  
-  p <- ggplot(test[[a]], aes(sample=test[[a]][,ncol(test[[a]])])) + stat_qq()+ stat_qq_line()
+  p <- ggplot(data_regression[[a]], aes(sample=data_regression[[a]][,ncol(data_regression[[a]])])) + stat_qq()+ stat_qq_line()
    p + labs(title = "QQ-Plot", subtitle = "Check if data is approx. normally distributed")
 }
-lapply(seq_along(test), create_qqplot)
+lapply(seq_along(data_regression), create_qqplot)
 ```
 
 # Multilinear Regression Function: Data Split, Model calculation, Model evaluation
