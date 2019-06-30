@@ -13,21 +13,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 #Installing required packages
-```{r include=FALSE} 
-#i think this is obsolete in the end, we can keep it, as long as there is confusion about what packages are needed
-install.packages("reshape")
-install.packages("wesanderson")
-install.packages("tidyverse")
-install.packages("factoextra")
-install.packages("data.table")
-library(tidyverse)
-library(cluster)
-library(factoextra)
-library("reshape")
-library("wesanderson")
-library(data.table)
-```
-
+i think the install things were obsolete.if there is confusion i will bring it back.
 # Abstract
 (...)
 
@@ -103,7 +89,7 @@ view(data$mutation) #closer look because data$mutation returns NULL in the comma
 lapply(data, function(a) head(a)) #look at the data 
 ```
 
-We find a dataset containing 6 smaller datasets. Five of them are large dataframes while a sixth one is a list of dataframes. For the extraction of this sixth variable we first separated it fom the others and gave it a new strucure, which is easier to handle. 
+We find a dataset containing 6 smaller datasets. Five of them are large dataframes while a sixth one is a list of dataframes. For the extraction of this sixth variable we first separated it fom the others and gave it a new strucure, which is easier to handle.
 
 ```{r}
 #Extract the mutation data
@@ -118,43 +104,33 @@ ids = which(names(mut) %in% samples)
 dat = lapply(ids, function(a) mut[[a]])
 ```
 
-We observe a large variety of tumor diseases beeing recorded by this dataset. Because we want to focus on breast cancer we will extract the data contributing to this harmful ilness. We identified 28 cell lines, fulfilling this condition.
+We observe a large variety of tumor diseases beeing recorded by this dataset. Because we want to focus on Breast cancer, we will generate data frames only containing cell lines which are referable to this specific type of tumor. To make it simple we just rename our columns after the tumor disease. After that, we cane subset the dataframe easily in Breast Cancer dataframes.
 
-```{r}
-#finding all breast cancer cell lines
-BCCL_Numbers <- which(allDepMapData$annotation[4]== "Breast Cancer")
-BCCL_Annotation <- subset(allDepMapData$annotation, Primary.Disease == "Breast Cancer")
+```{r include=FALSE}
+#Changing colnames to specific type of tumor:
+pdata <- lapply(1:(length(dt_new)-1), function(a) {
+  dat_picker <- dt_new[[a]] #pick one file at each iteration 
+  col_names <- colnames(dat_picker) #extract the original column names
+  annotation_new <- data$annotation[which(col_names %in% data$annotation$DepMap_ID),4] #get sample names in the order of the col_names list
+  colnames(dat_picker) = annotation_new #rename the columns
+  return(dat_picker)
+})
+names(pdata) <- names(data)[which(names(data) %!in% c("mutation", "annotation"))] #rename the data
+lapply(pdata, dim) #look if the renaming worked
+lapply(pdata, head) #look if at the data
+
+#Generating 4 dataframes, containing just breast cancer cell lines (BCCL)
+BCCL_kd.ceres = pdata$kd.ceres[,which(colnames(pdata$kd.ceres) == sample_case)]
+BCCL_Expression = pdata$expression[,which(colnames(pdata$expression) == sample_case)]
+colnames(BCCL_Expression) <- samples #IDs as colnames are needed later
+BCCL_Mutation = lapply(ids, function(a) mut[[a]])
+names(BCCL_Mutation) = samples #IDs as names are needed later
+BCCL_Annotation <- subset(data$annotation, Primary.Disease == sample_case)
+tPatients_ID <- t(BCCL_Annotation[1]) #create a vector of patientIDs useable in mutimpact stuff
+#Reminder to myself: create another command, to reorder rows alphabetically (for loops are not working)
 ```
-From these cell lines we got expression values, copynumbers, and knockdown scores in cell viability and probability of cell survival as described in the introduction. To make data more clear, we constructed dataframes for every *sort of data* and ordered the genes alphabetically. 
-```{r}
-#summary(BCCL_Annotation)
-# copy expression matrix to new dataframes
-df1 <- allDepMapData$expression
-df2 <- allDepMapData$copynumber
-df3 <- allDepMapData$kd.ceres
-df4 <- allDepMapData$kd.prob
-#change column names to numbers for easier handling
-names(df1) <- c(1:544)
-names(df2) <- c(1:544)
-names(df3) <- c(1:544)
-names(df4) <- c(1:544)
-#extract BCCL as dataframe
-BCCL_Expression <- as.data.frame( df1[, c(BCCL_Numbers)])
-BCCl_Copynumber <- as.data.frame( df2[, c(BCCL_Numbers)])
-BCCL_kd.ceres <- as.data.frame( df3[, c(BCCL_Numbers)])
-BCCL_kd.prob <- as.data.frame( df4[, c(BCCL_Numbers)])
-dim(BCCL_Expression)
-dim(BCCl_Copynumber)
-dim(BCCL_kd.ceres)
-dim(BCCL_kd.prob)
-#reorder rows alphabetically
-BCCL_Expression <- BCCL_Expression[order(rownames(BCCL_Expression)), ]
-BCCl_Copynumber <- BCCl_Copynumber[order(rownames(BCCl_Copynumber)), ]
-BCCL_kd.ceres <- BCCL_kd.ceres[order(rownames(BCCL_kd.ceres)), ]
-BCCL_kd.prob <- BCCL_kd.prob[order(rownames(BCCL_kd.prob)), ]
-#subset Mutation matrix in BCCL
-BCCL_Mutation <- allDepMapData$mutation[c(BCCL_Numbers)]
-```
+
+## Data Exploratory
 As next step we made some experiments, to get a feeling for data distribution. 
 We made a heatmap of expression values, compared single genes for knockdown and copynumber scores and found relatively equally distibuted expression values and CERES Scores. We also tried to gain a first look on driver mutations, known from literature.
 *muss noch sch?n gemacht werden :)*
