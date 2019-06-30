@@ -33,19 +33,19 @@ library(data.table)
 ### Introduction
 ## Revision: Breast Cancer, a challenging disease
 
-> "The heterogeneity of breast cancers makes them both a fascinating and challenging solid tumor to diagnose and treat."
+> "The heterogeneity of breast cancers makes them fascinating and challenging to diagnose and treat." 
 
 _Hutchinson, Chief Editor of Nature Reviews Clinical Oncology_
 
-Reading the latest reports of breast cancer prevalence, the current state is very serious:
+According to the latest reports of breast cancer prevalence, the current state is very serious:
   + Breast cancer ranks #2 in worldwide cancer case numbers (Hutchinson 2010)
-  + In Germany alone, there are 70,000 new cases annually. (Barnes, Kraywinkel et al. 2016)
-  + Breast Cancer makes ~ 30% of all reported cases.(Robert-Koch-Institut 2017)
+  + In Germany there are 70,000 new cases annually. (Barnes, Kraywinkel et al. 2016)
+  + This makes ~ 30% of all reported cases of tumor diseases.(Robert-Koch-Institut 2017)
 
 # Driver Mutation
 In our project, we first focus on driver mutations, which can be imagined as the main "force" in tumorigenesis. Certain genes induce/improve tumor growth as consequence of mutation, such as:
-  + Provides tumor cells with Growth advantage
-  + Leads to positive selection in microenvironment
+  + Providing tumor cells with Growth advantage
+  + Leading to positive selection in microenvironment
 Furthermore, driver mutations are also often required for tumor maintenance. (Stratton, Campbell et al. 2009)
   
 ## Project design: Our selection of possible driver mutation
@@ -67,20 +67,56 @@ PIK3CA    | ~ 30 - 48%          |Interaction with AKT and mTOR pathway   |(Alesk
 
 ## Revision: The concept of Second Site Targets (SSTs)
 Targeting and eliminating driver mutations as a part of tumor treatment is a difficult procedure, since those genes are also essential for survival of non-mutated cells. A differentiation between normal and tumor cell is not possible, thus targeting leads to adverse effects. Plus, high dosages need to be applied. #CITATION
-A promising approach is targeting the so-calles Second Site Targets (SSTs), which are gene mutations interacting genetically with driver mutations to increase cell viability. # CITATION
+A promising approach is targeting so-called Second Site Targets (SSTs), which are gene mutations interacting genetically with driver mutations to increase cell viability. # CITATION
 If knocking out those genes leads to cell lethality, it may lead to new treatment options. 
 
 Our central question for our project is thereby:
-> Which __second-site targets__ interact gentically with __driver mutations__ to promote cell viability and prliferation in breast cell cancers?
+> Which __second-site targets__ interact genetically with __driver mutations__ to promote cell viability and proliferation in breast cell cancers?
 
 # Main
 
-## Data clean up
-To gain an overview of general data distribution we first had to extract the breast cancer data from the larger dataset containing all kinds of tumor diseases. After loading the data we therefore identified 28 cell lines harvesting breast cancer.
-```{r}
-#load data
-allDepMapData = readRDS("C:/Users/lisa-/Desktop/Studium/4. FS/Bioinfo/DepMap19Q1_allData.RDS")
+## Data cleanup
 
+Before we start our statistical part, we have to load the data correctly:
+```{r include=FALSE}
+#Importing the libs
+library(ggplot2)
+library(reshape2)
+library(data.table)
+library(cluster)
+library(caTools) 
+library(tidyverse)
+library(factoextra)
+
+#Setting a sys-path
+root.dir = dirname(rstudioapi::getSourceEditorContext()$path)
+
+#Importing the data
+data = readRDS(paste0(root.dir, "/DepMap19Q1_allData.RDS")) #read in the data (with paste0 you can concatinate strings; here some paths this makes your code very flexible)
+```
+
+To get a feeling for the dataset we will have a look on data structure 
+
+```{r include=FALSE}
+length(data) #get some info about the data (the dimensions here)
+lapply(data, dim)#get some impression about the data
+view(data$mutation) #closer look because data$mutation returns NULL in the command above
+lapply(data, function(a) head(a)) #look at the data 
+```
+
+We find a dataset containing 6 smaller datasets. Five of them are large dataframes while a sixth one is a list of dataframes. For a better overview we separate them.
+
+```{r}
+#Extract the mutation data
+mut <- data$mutation #pick the mutation data (this has a specific format and neets to be treated separately)
+'%!in%' <- function(x,y)!('%in%'(x,y)) #define an operator that will only pick the data that is NOT defined in the list; 
+dt_new <- lapply(which(names(data) %!in% "mutation"), function(a) data[[a]]) #extract only non-mutation data
+names(dt_new) <- names(data)[which(names(data) %!in% "mutation")] #rename the data with the original names
+length(dt_new) #look if it worked (now dim is 5 and NOT 6 (because mutation was removed))
+```
+
+To gain an overview of general data distribution we first had to extract the breast cancer data from the larger "allDepMapData" - dataset, containing all kinds of tumor diseases. We therefore identified 28 cell lines harvesting breast cancer.
+```{r}
 #finding all breast cancer cell lines
 BCCL_Numbers <- which(allDepMapData$annotation[4]== "Breast Cancer")
 BCCL_Annotation <- subset(allDepMapData$annotation, Primary.Disease == "Breast Cancer")
@@ -126,7 +162,8 @@ We already discarded some of this genes, mostly because they are known as tumor 
 
 ### Generation of the mutImpact matrix
 
-In order to gain an overview over the effects on viability of each mutation present in one cell line the mutImpact matrix was generated.
+Vorschlag: Every mutation has an impact on cell viability. In our analysis we have to distinguish not only between single mutations, we also have to evaluate different mutations in our cell lines "working together" and making every cell line different in its chcaracteristics. In order to gain an overview of these characteristics, we will generate a matrix, showing the effect on viability, caused by a single mutation, in every cell line. 
+In order to gain an overview of the effects on viability of each mutation present in one cell line the mutImpact matrix was generated.
 
 Therefore, the BCCL_kd.ceres matrix containing CERES scores for all genes in breast cancer cell lines was used as a template and the cell line IDs were added as column names creating a pre_mutImpact matrix. An empty matrix was generated comprising 17634 rows and 28 columns matching the number of genes per cell line and the number of breast cancer cell lines, respectively. 
 
