@@ -13,7 +13,8 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 #Installing required packages
-i think the install things were obsolete.if there is confusion i will bring it back.
+i think the install things were obsolete.if there is confusion i will bring it back. 
+Yes I think we should definitely put this back in as otherwise the rest of the code will not function properly....
 # Abstract
 (...)
 
