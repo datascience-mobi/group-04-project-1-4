@@ -141,8 +141,9 @@ PIK3CA    | 0.7131      |-0.1786   |
     + The PARP10 model resulted in a moderate negative relationship, which is not of relevance for our objective.
     + The ERBB2 model did not deliver a significant p-value, but indeed contains at least a weak positive correlation.
 
-## Discussing possible Reasons for the unsatisfying results
-# Possible causes in the size of the sample
+### Discussing possible Reasons for the unsatisfying results
+## Possible causes in the Regression model
+#Sample Size
 
 It seems possible that the small sample size for the regression model lead to the lack of significant results, with only 28 events (CERES score observed in cell line) per predicting variable (SST gene).
 
@@ -152,21 +153,24 @@ But, a common thumb-rule for building a regression model is to calculate the _li
   + p: number of predictor variables
   + m: limiting sample size; for continuous response variables it is the  total sample size n
 
-If this equation is fullfilled, the model is supposed to be reliable.(Harrell 2001)
+If this equation is fulfilled, the model is supposed to be reliable.(Harrell 2001)
 In fact, this condition is true for all four models.
 
-On the other side, for the supervised machine learning process of the regression, sample sizes up to n = 50,000 are reported.(Libbrecht and Noble 2015) 
-In general, more data will lead to improved data quality.(Banko and Brill 2001)
+# Distribution
 
-# Possible Causes in the Design of Project
-Furthermore, Harell describes in _Regression modeling strategies_ a strategy for optimal development of predictive models:
-
-He points out to not use  Y (the driver mutation) any descriptive statistics or hypothesis tests in constructing the list of candidate predictors (SSTs).(Harrell 2001)
-  + did we do that?
-  
 Checking distributional assumptions (= normal distribution) is also important and a different model should be chosen if needed. (Harrell 2001)
-  + As shown in the qq-Plots, normal distribution does only apply to the models of MYCBP and PARp10
+  + As shown in the qq-Plots, normal distribution does only apply to the models of MYCBP and PARP10
   + ERBB2 on the other hand, delivers the highest rho, but is in no way approx. normal distributed.
+  + The PIK3CA model also does not fulfill the condition of normal distribution.
+
+The normal distribution does not lead to higher correlation coefficients. But not satisfying distribution assumptions should be treated as a red flag; and the model is not suited for further use.
+
+## Possible causes in the Prediction model
+#raining & prediction data size
+Our data seems to have an appropriate size for a basic regression model.
+On the other hand, for the supervised machine learning process of the regression, sample sizes up to n = 50,000 are reported.(Libbrecht and Noble 2015) 
+In general, more data will lead to improved data quality. Generally, scientists are advised to focus on obtaining and analyzing larger data sets instead of comparing different learning techniques on small training sets.(Banko and Brill 2001)
+
 
 --------------------
   + Banko, M. and E. Brill (2001). Scaling to very very large corpora for natural language disambiguation. Proceedings of the 39th Annual Meeting on Association for Computational Linguistics. Toulouse, France, Association for Computational Linguistics: 26-33.

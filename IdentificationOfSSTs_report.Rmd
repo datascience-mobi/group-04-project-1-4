@@ -665,16 +665,49 @@ PIK3CA    | 0.7131      |-0.1786   |
 + The models for MYCBP and PIK3CA only showed weak, negative correlation, which is not useful for further work with this model.
 + The PARP10 model resulted in a moderate negative relationship, which is not of relevance for our objective.
 + The ERBB2 model did not deliver a significant p-value, but indeed contains at least a weak positive correlation.
+### Discussing possible Reasons for the unsatisfying results
+## Possible causes in the Regression model
+#Sample Size
 
+It seems possible that the small sample size for the regression model lead to the lack of significant results, with only 28 events (CERES score observed in cell line) per predicting variable (SST gene).
+
+But, a common thumb-rule for building a regression model is to calculate the _limiting sample size_:
+
+ $p < \frac{m}{15}$
+  + p: number of predictor variables
+  + m: limiting sample size; for continuous response variables it is the  total sample size n
+
+If this equation is fulfilled, the model is supposed to be reliable.(Harrell 2001)
+In fact, this condition is true for all four models.
+
+# Distribution
+
+Checking distributional assumptions (= normal distribution) is also important and a different model should be chosen if needed. (Harrell 2001)
+  + As shown in the qq-Plots, normal distribution does only apply to the models of MYCBP and PARP10
+  + ERBB2 on the other hand, delivers the highest rho, but is in no way approx. normal distributed.
+  + The PIK3CA model also does not fulfill the condition of normal distribution.
+
+The normal distribution does not lead to higher correlation coefficients. But not satisfying distribution assumptions should be treated as a red flag; and the model is not suited for further use.
+
+## Possible causes in the Prediction model
+# Training & prediction data size
+Our data seems to have an appropriate size for a basic regression model.
+On the other hand, for the supervised machine learning process of the regression, sample sizes up to n = 50,000 are reported.(Libbrecht and Noble 2015) 
+In general, more data will lead to improved data quality. Generally, scientists are advised to focus on obtaining and analyzing larger data sets instead of comparing different learning techniques on small training sets.(Banko and Brill 2001)
+
+
+--------------------
 
 ### Literature
   + Aleskandarany, M. A., E. A. Rakha, M. A. H. Ahmed, D. G. Powe, E. C. Paish, R. D. Macmillan, I. O. Ellis and A. R. Green (2010). "PIK3CA expression in invasive breast cancer: a biomarker of poor prognosis." Breast Cancer Research and Treatment 122(1): 45-53.
   + Arnold, A. and A. Papanikolaou (2005). "Cyclin D1 in Breast Cancer Pathogenesis." Journal of Clinical Oncology 23(18): 4215-4224.
   + Barnes, B., K. Kraywinkel, E. Nowossadeck, I. Schönfeld, A. Starker, A. Wienecke and U. Wolf (2016). Bericht zum Krebsgeschehen in Deutschland 2016, Robert Koch-Institut.
+  + + Banko, M. and E. Brill (2001). Scaling to very very large corpora for natural language disambiguation. Proceedings of the 39th Annual Meeting on Association for Computational Linguistics. Toulouse, France, Association for Computational Linguistics: 26-33.
   + Gabay, M., Y. Li and D. W. Felsher "MYC activation is a hallmark of cancer initiation and maintenance." Cold Spring Harbor perspectives in medicine 4(6): a014241.
   + Harrell, F. E. (2001). Regression modeling strategies : with applications to linear models, logistic regression, and survival analysis. New York ; Berlin ; Heidelberg [u.a.], Springer.
   + Hutchinson, L. (2010). "Challenges, controversies, breakthroughs." Nature Reviews Clinical Oncology 7: 669.
   + Koch-Institut, R. (2017). Krebs in Deutschland für 2013/2014, Robert Koch-Institut.
+  + Libbrecht, M. W. and W. S. Noble (2015). "Machine learning applications in genetics and genomics." Nature reviews. Genetics 16(6): 321-332.
   + Shimoi, T., A. Hamada, M. Yamagishi, M. Hirai, M. Yoshida, T. Nishikawa, K. Sudo, A. Shimomura, E. Noguchi, M. Yunokawa, K. Yonemori, C. Shimizu, T.   + Kinoshita, T. Fukuda, Y. Fujiwara and K. Tamura (2018). "PIK3CA mutation profiling in patients with breast cancer, using a highly sensitive detection system." Cancer science 109(8): 2558-2566.
   + Siraj, A. K., P. Pratheeshkumar, S. K. Parvathareddy, S. P. Divya, F. Al-Dayel, A. Tulbah, D. Ajarim and K. S. Al-Kuraya (2018). "Overexpression of PARP is an independent prognostic marker for poor survival in Middle Eastern breast cancer and its inhibition can be enhanced with embelin co-treatment." Oncotarget 9(99): 37319-37332.
   + Slamon, D., W. Godolphin, L. Jones, J. Holt, S. Wong, D. Keith, W. Levin, S. Stuart, J. Udove, A. Ullrich and a. et (1989). "Studies of the HER-2/neu proto-oncogene in human breast and ovarian cancer." Science 244(4905): 707-712.
