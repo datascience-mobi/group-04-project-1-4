@@ -1,0 +1,18 @@
+﻿SST;PARP10;mutType;function;reference
+AMER2;0.9910601;Silent, Missense_Mutation;APC membrane recruitment protein 2 - negative regulator of canonical Wnt signaling pathway involved in neuroectodermal patterning;https://www.uniprot.org/uniprot/Q8N7J2
+ATP13A1;0.9731846;De_novo_Start_OutOfFrame;"Manganese-transporting ATPase 13A1; mediates manganese transport into the endoplsmic reticulum required for cellular manganese homeostasis  ";https://www.uniprot.org/uniprot/Q9HD20
+CSDC2;0.9910601;Missense_Mutation;"Cold schock domain-containing protein C2; might play a role in negative regulation of histone variant synthesis and mRNA 3'- UTR Binding "; https://www.uniprot.org/uniprot/Q9Y534
+DUSP22;1;Missense_Mutation;Dual specificity protein posphatase 22 activates Jnk singaling pathway dephosphorylating and deactivating p38 and stress-activated protein kinase/c-Jun N-terminal kinase;https://www.uniprot.org/uniprot/Q9NRW4
+FAM161B;1;Splice_Site;Protein FAM161B involved in cilium organization ;https://www.uniprot.org/uniprot/Q96MY7
+FANCA;1;Missense_Mutation;"Fanconi anemia group A protein; DNA repair protein operating in postreplication repair or cell cycle checkpoint function. Potentially also in DNA cross-link interstrand repair and maintenance of normal chromosome instability ";https://www.uniprot.org/uniprot/O15360
+KCNC4;1;Silent;"Potassium voltage-gated channel subfamily C member 4 ; mediates volate-dependent potassium iion permeability of excited membranes enabling potassium ions to pass according to their electrochemical gradient ";https://www.uniprot.org/uniprot/Q03721
+LCE2A;0.9910601;Missense_Mutation;"Late cornified enevelope protein 2A; precursor of cornified envelope of the stratum corneum - structural molecule activity ";https://www.uniprot.org/uniprot/Q5TA79
+MICALL1;1;Missense_Mutation;"MICAL-like protein 1; downstream effector of RAB prteins recruting cytosolic proteins to regulate membrane tubulation; late step enabling endocytosed-EGF receptor trafficking; regulate slow endocytic recycling ";https://www.uniprot.org/uniprot/Q8N3F8
+MMP17;0.9731846;Missense_Mutation;"Matrix metalloproteinase-17; endopeptidase degraing extracellular matrix components such as fibrin; activation of membrane-bound precursors of groyth factors or inflammatory mediators (TNF-a).";https://www.uniprot.org/uniprot/Q9ULZ9
+PDGFRA;1;De_novo_Start_OutOfFrame;"platelet-derived growth factor receptor alpha; tyrosine-protein kinase as cell-surface receptor of PDGFA, PDGFB, PDGFC, plays role (promotion or inhibition) in cell proliferation, survival and chemotaxis. ";https://www.uniprot.org/uniprot/P16234
+POTEH;0.9731846;Missense_Mutation;"POTE ankyrin domain family member H; ";https://www.uniprot.org/uniprot/Q6S545
+RTN3;0.9731846;Frame_Shift_Del;"Reticulon-3; perhaps involved in membrane trafficking in early secretory pathway; capsapse-8 cascade and apopotis, may favor BCL2 translocation to mitochondria upon ER stress, involved in endoplasmic reticulum tubulor network formation and organization";https://www.uniprot.org/uniprot/O95197
+SH3PXD2A;0.9910601;Silent;"SH3 and PX domain-containing protein 2A; extracellular matrix organisation, osteoclast function and superoxide metabolic process";https://www.uniprot.org/uniprot/Q5TCZ1
+SKIV2L;0.9731846;Silent;"Helicase SKI2W; ATP-dependant RNA helicase activity";https://www.uniprot.org/uniprot/Q15477
+TMEM183A;0.9731846;Missense_Mutation;Transmembrane protein 183A ;https://www.uniprot.org/uniprot/Q8IXX5
+TNS3;0.9910601;Splice_Site, Missense_Mutation, Splice_Site, Silent;"Tensin-3; cell migration and actin remodeling; mammary cell migration";https://www.uniprot.org/uniprot/Q68CZ2

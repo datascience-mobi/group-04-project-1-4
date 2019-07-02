@@ -1,0 +1,19 @@
+﻿;PIK3CA;mutType;function;reference
+APC;0.9374815;Missense_Mutation, Silent;test;test
+ATP1B3;1;Missense_Mutation;test;test
+BRD2;0.9374815;Missense_Mutation;test;test
+CYFIP1;0.9196711;Silent;test;test
+DIMT1;0.9196711;Silent;test;test
+GABPA;0.9910601;Silent;test;test
+GAK;0.9196711;Missense_Mutation, Silent, Missense_Mutation;test;test
+GPR61;0.9374815;Missense_Mutation;test;test
+HCRTR1;0.9196711;Missense_Mutation;test;test
+HIST1H2BI;0.9731846;Silent;test;test
+MAX;0.9910601;Missense_Mutation;test;test
+NSMCE4A;1;Missense_Mutation;test;test
+POLQ;1;Missense_Mutation, Splice_Site, Silent, Missense_Mutation;test;test
+PTAR1;0.9731846;Silent;test;test
+RFC1;0.9910601;Silent, Silent;test;test
+SAMM50;0.9196711;Nonsense_Mutation;test;test
+SLC3A2;0.9374815;Missense_Mutation;test;test
+TRMT10C;0.9731846;Missense_Mutation;test;test
