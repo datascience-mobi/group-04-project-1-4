@@ -385,9 +385,20 @@ SST_Data <- lapply(seq_along(SST_Data), function(a) {
   })
   return(dvPicker)
 })
-names(SST_Data) <- driver_mut
+names(SST_Data) <- driver_mut paste0(root.dir,
 ```
 
+# SST characterization - gene function
+```{r}
+functionTable <- list(
+read_delim(paste0(root.dir,"/functionTable_ERBB2.csv"), ";", escape_double = FALSE, col_names = TRUE, trim_ws = TRUE),  read_delim(paste0(root.dir,"/functionTable_MYCBP.csv"), ";", escape_double = FALSE, col_names = TRUE, trim_ws = TRUE), read_delim(paste0(root.dir,"/functionTable_PARP10.csv"), ";", escape_double = FALSE, col_names = TRUE, trim_ws = TRUE), read_delim(paste0(root.dir,"/functionTable_PIK3CA.csv"), ";", escape_double = FALSE, col_names = TRUE, trim_ws = TRUE)) #create list of data frames containing the data of the Excel files (e.g. gene function, references)
+
+SST_Data <- lapply(seq_along(SST_Data), function(a) {
+  SST_Data[[a]] <- cbind(SST_Data [[a]], as.data.frame(functionTable[[a]]["function"])) #add gene function for every SST of every DV
+})
+
+names(SST_Data) <- driver_mut #regenerate names
+```
 # Data Prerparation for Regression
 ```{r}
 #reformat BCCL CERES matrix
