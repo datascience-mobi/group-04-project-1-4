@@ -143,12 +143,13 @@ We already discarded some of this genes, mostly because they are known as tumor 
 
 ### Generation of the mutImpact matrix
 
-Vorschlag: Every mutation has an impact on cell viability. In our analysis we have to distinguish not only between single mutations, we also have to evaluate different mutations in our cell lines "working together" and making every cell line different in its chcaracteristics. In order to gain an overview of these characteristics, we will generate a matrix, showing the effect on viability, caused by a single mutation, in every cell line. 
-In order to gain an overview of the effects on viability of each mutation present in one cell line the mutImpact matrix was generated.
+Suggestion: Every mutation has an impact on cell viability. In our analysis we have to distinguish not only between single mutations, we also have to evaluate different mutations in our cell lines "working together" and making every cell line different in its chcaracteristics. In order to gain an overview of these characteristics, we will generate a matrix, showing the effect on viability, caused by a single mutation, in every cell line. 
+
+Erase: In order to gain an overview of the effects on viability of each mutation present in one cell line the mutImpact matrix was generated.
 
 Therefore, the BCCL_kd.ceres matrix containing CERES scores for all genes in breast cancer cell lines was used as a template and the cell line IDs were added as column names creating a pre_mutImpact matrix. An empty matrix was generated comprising 17634 rows and 28 columns matching the number of genes per cell line and the number of breast cancer cell lines, respectively. 
 
-Subsequently, CERES scores of genes which were not mutated in a given cell line were replaced with "NA" by implementing an if statement. This statement included the enquiry whether the gene ID is present in the list of mutated genes of a considered cell line as and in case the condition was met the CERES score was maintained. If "FALSE" was returned the CERES score of the gene was replaced with "NA" for the considered cell line.
+Subsequently, CERES scores of genes which were not mutated in a given cell line were replaced with "NA" by implementing an "if statement". This statement included the enquiry whether the gene ID is present in the list of mutated genes of a considered cell line as and in case the condition was met the CERES score was maintained. If "FALSE" was returned, the CERES score of the gene was replaced with "NA" for the considered cell line.
 
 ```{r, warning=FALSE}
 #Generate pre_mutImpact matrix containing all CERES values and with IDs as colnames
@@ -202,7 +203,7 @@ for (j in 1:ncol(pre_mutImpact)){
 }
 ```
 
-K means clustering was performed with all genes mutated at least once out of all 28 cell line samples and whose CERES score was equal to or lower than zero. For this, all genes with only NA values, hence not one mutation in any cell sample, were removed. A new dataframe `BCCL_kd.ceres_2`was generated containing all 28 CERES scores for each gene, with gene names in the first column. Gene names in the first column of the data frame `BCCL_kd.ceres_2`were compared to the rownames of `mutImpact_c` to generate the BCCL_kd.ceres_3 dataframe containing CERES scores for all breast cell cancer lines for all genes mutated at least once. Subsequently, the mean CERES score for each gene was computed using the rowmeans function and saved in the last column. For this, the column `rownameskdc2`had to be removed. Finally, all genes with CERES scores > 0 were deleted. The final BCCL_kd.ceres_3 dataframe now contains 4934 genes mutated at least once in the 28 breast cancer cell lines and with CERES scores equal to or below 0. 
+K means clustering was performed with all genes mutated at least once out of all 28 cell line samples and whose CERES score was equal to or lower than zero. For this, all genes with only NA values, hence not one mutation in any cell sample, were removed. A new dataframe `BCCL_kd.ceres_2`was generated containing all 28 CERES scores for each gene, with gene names in the first column. Gene names in the first column of the data frame `BCCL_kd.ceres_2`were compared to the rownames of `mutImpact_c` to generate the BCCL_kd.ceres_3 dataframe, containing CERES scores for all breast cell cancer lines for all genes mutated at least once. Subsequently, the mean CERES score for each gene was computed using the rowmeans function and saved in the last column. To carry out this step, the column `rownameskdc2` was removed. Finally, all genes with CERES scores > 0 were deleted. The final BCCL_kd.ceres_3 dataframe consisted of 4934 genes mutated at least once in the 28 breast cancer cell lines and with CERES scores equal to or below 0. 
 
 ```{r}
 # selecting only genes mutated at least once and with Ceres >= 0
@@ -218,7 +219,7 @@ BCCL_kd.ceres_3 = cbind(BCCL_kd.ceres_3, rowMeans(BCCL_kd.ceres_3))[rowMeans(cbi
 dim(BCCL_kd.ceres_3)
 ```
 
-In preparation of k means clustering, the column containing average CERES scores for each gene was removed (new dataframe `BCCL_kd.ceresKS`) and the optimal number of k clusters identified. For each column, so cell samples, of the dataframe the data values were scaled. For cluster numbers between 2 und 15 the within sum of squares for each cell sample was calculated and stored as a seperate dataframe. To ensure that the same result is obtained each time the code is run the set.seed(1234) function was used.  
+In preparation of k means clustering, the column containing average CERES scores for each gene was removed (new dataframe `BCCL_kd.ceresKS`) and the optimal number of k clusters identified. For each column (cell sample) of the dataframe, the data values were scaled. For cluster numbers between 2 and 15 the within sum of squares for each cell sample was calculated and stored as a separate dataframe. To ensure that the same result is obtained each time the code is run, the set.seed(1234) function was used.  
 
 ```{r}
 #determining optimal cluster number k
@@ -292,14 +293,14 @@ fviz_cluster(km_CERES, data=BCCL_kd.ceres_3, labelsize = 6) # plotting clusters
 In order to verify our selection of driver mutations from literature, the cluster number of each driver mutation was identified. All selected driver mutations from literature,"ERBB2", "MYCBP", "PARP10" and "PIK3CA" were colocalized in cluster 3, hence with similar CERES scores, with the exception of "CCND" and "ERBBIP". While "CCND" was removed in the filtering process and no longer found in`BCCL_kd.ceres_3`, "ERBB2IP" was found in cluster 2. For these reasons the mentioned two mutations were excluded from further analysis, to leave only "ERBB2", "MYCBP", "PARP10" and "PIK3CA" as selected driver mutations for further analysis. 
 
 ``` {r}
-km_CERES$cluster["ERBB2"] #obtaining cluster number for each driver mutation from literature 
+km_CERES$cluster["ERBB2"] #obtaining cluster number for each driver mutation from literature # do you think it is possible to do this in a loop ?
 km_CERES$cluster["ERBB2IP"]
 km_CERES$cluster["MYCBP"]
 km_CERES$cluster["PARP10"]
 km_CERES$cluster["PIK3CA"] 
 ```
 
-Since our approach defined SSTs as genes expected to interact synergistcally with the corresponding driver mutation in promoting cell viability, similar CERES scores were expected. Thus all potential SSTs candidates were expected to also be found in cluster 3. A dataframe `data_clus_3`was subsequently generated to contain all 1148 genes colocalized with driver mutations in cluster 3. 
+Since our approach defined SSTs as genes expected to interact synergistically with the corresponding driver mutation in promoting cell viability, similar CERES scores were expected. Thus all potential SSTs candidates were expected to be found in cluster 3 as well. A dataframe `data_clus_3`was subsequently generated to contain all 1148 genes colocalized with driver mutations in cluster 3. 
 
 ```{r}
 data_cluster = km_CERES$cluster
@@ -371,9 +372,9 @@ Expression_boxplot = ggplot(Expression_driver_mut, aes(x = variable, y = value))
 Expression_boxplot
 ```
 
-The box and whisker plot of CERES scores reveals highest essentiallity of the MYCBP driver mutation for cell survival, through the lowest average CERES scores. This is followed by PIK3CA and PARP10 mutations. While ERBB2 has the highest average CERES scores and hence lowest impact on cell proliferation, this mutation exhibits the largest spread of values across 28 breast cell cancer lines, reaching the overall minimum value of -1. The interquartile range of CERES scores for both MYCBP and PARP10, are lowest, indicating a consistent impact of gene knockouts on cell sample survival.To be noted also is the large interquartile range of the PIK3CA mutation, with data points found in two clusters, one around -0.15 and the other bweetn -0.5 and -0.9. 
+The box and whisker plot of CERES scores reveals highest essentiallity of the MYCBP driver mutation for cell survival, through the lowest average CERES scores. This is followed by PIK3CA and PARP10 mutations. While ERBB2 has the highest average CERES scores and hence lowest impact on cell proliferation, this mutation exhibits the largest spread of values across 28 breast cell cancer lines, reaching the overall minimum value of -1. The interquartile range of CERES scores for both MYCBP and PARP10, are the lowest, indicating a consistent impact of gene knockouts on cell sample survival.Interesting is also the large interquartile range of the PIK3CA mutation, with data points found in two clusters, one around -0.15 and the other bweetn -0.5 and -0.9. 
 
-While the ERBB2 driver mutation was found to have on average the lowest essentiallity for cell survival, average TPM values are shown to be highest, suggesting overexpression. Once again TPM values for this mutation have the largest spread, reaching a maximum over 11.5, implying greatest variation overall in data for the ERBB2 driver mutation. Like for the CERES scores, both MYCBP and PIK3CA have a small interquartile range, while ranges for PARP10 are markedly larger. Further, it is interesting to note despite two CERES score data clusters for PIK3CA, TPM values show little variation around the mean. 
+While the ERBB2 driver mutation was found to have the lowest essentiallity for cell survival on average, average TPM values are shown to be highest, suggesting overexpression. Once again TPM values for this mutation have the largest spread, reaching a more than 11.5 TPM. This implyies the greatest variation overall in data for the ERBB2 driver mutation. Like for the CERES scores, both MYCBP and PIK3CA have a small interquartile range, while ranges for PARP10 are markedly larger. Further, it is interesting to note despite two CERES score data clusters for PIK3CA, TPM values show little variation around the mean. 
 
 ### Spotting genetic interactions: the Wilcoxon test
 
