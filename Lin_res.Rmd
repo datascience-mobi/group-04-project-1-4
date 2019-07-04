@@ -13,7 +13,12 @@ knitr::opts_chunk$set(echo = TRUE)
 
   + For the regression model, we want to predict the CERES score of the driver mutation (dependent variable) based on the CERES score of the SST candidates (independent variables).
   + A multilinear regression will be designed:
-
+  
+# Packages
+```{r}
+install.packages("ggpubr")
+library("ggpubr")
+```
 
 # Step 1: Construct datasets for Regression
   + Multilinear regression, we 
@@ -43,11 +48,15 @@ head(data_regression)
     + Using the aes-function of the ggplt package for _aesthetic_ plots.
     
 ```{r}
-create_qqplot <- function(a){  
+check_assumptions <- function(a){  
   p <- ggplot(data_regression[[a]], aes(sample=data_regression[[a]][,ncol(data_regression[[a]])])) + stat_qq()+ stat_qq_line()
    p + labs(title = "QQ-Plot", subtitle = "Check if data is approx. normally distributed")
-}
-lapply(seq_along(data_regression), create_qqplot)
+   
+  return (p)
+   }
+lapply(seq_along(data_regression), check_assumptions1)
+
+
 ```
 
 #Step 3: Multilinear Regression: Data split, Model calculation, Return correlation data for evaluation
@@ -74,11 +83,26 @@ lapply(seq_along(input_data), function(a) {
   regressor = lm(formula = Predictor ~ ., 
                  data = training_set)  #predict CERES of Driver Mutation based on all (=.) the input variables (SSTs)
   
+  ResidPlot <- hist(resid(regressor),main='Histogram of residuals',xlab='Standardised
+Residuals',ylab='Frequency') #plot a histogram of standardised residuals to check the assumption of normality
+  HomoPlot <- plot(regressor, which = 1) #fitted values and residuals plot to check the assumption of homoscedasticity
+  
   y_pred = predict(regressor, newdata = test_set) #predict the Driver mut. CERES score based on the test data
   test_set$Prediction = y_pred #adding predictions to the dataset
-  corVal <- cor.test(test_set$Predictor , test_set$Prediction, method = "spearman")#to judge model performance, calculate Spearman corr. between predicted and observed values
-  return(corVal)
+  
+  corVal <- cor.test(test_set$Predictor , test_set$Prediction, method = "spearman") #to judge model performance, calculate Spearman corr. between predicted and observed values
+
+ spearmanPlot <- ggscatter(test_set, x = test_set$Predictor, y = test_set$Prediction, 
+          add = "reg.line", conf.int = TRUE, 
+          cor.coef = TRUE, cor.method = "spearman", #plot observed and predicted values against each other to visualize correlation
+          xlab = "Observed CERES score", ylab = "Predicted CERES score")
+ 
+ # says it can´t find y values?! 
+ 
+ return (list(ResidPlot, HomoPlot, corVal, spearmanPlot))
 })
+
+
 ```
 
 ## Interpretation of Spearman correlation coefficient
