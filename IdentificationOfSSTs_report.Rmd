@@ -372,15 +372,15 @@ Expression_boxplot = ggplot(Expression_driver_mut, aes(x = variable, y = value))
 Expression_boxplot
 ```
 
-The box and whisker plot of CERES scores reveals highest essentiallity of the MYCBP driver mutation for cell survival, through the lowest average CERES scores. This is followed by PIK3CA and PARP10 mutations. While ERBB2 has the highest average CERES scores and hence lowest impact on cell proliferation, this mutation exhibits the largest spread of values across 28 breast cell cancer lines, reaching the overall minimum value of -1. The interquartile range of CERES scores for both MYCBP and PARP10, are the lowest, indicating a consistent impact of gene knockouts on cell sample survival.Interesting is also the large interquartile range of the PIK3CA mutation, with data points found in two clusters, one around -0.15 and the other bweetn -0.5 and -0.9. 
+The box- and whisker plot of CERES scores reveal MYCB mutations as the most essential driver mutations for cell survival. They are followed by PIK3CA and PARP10 mutations. While ERBB2 has the highest average CERES scores and hence lowest impact on cell proliferation, this mutation exhibits the largest spread of values across 28 breast cell cancer lines, reaching the overall minimum value of -1. The interquartile range of CERES scores for both MYCBP and PARP10, are the lowest, indicating a consistent impact of gene knockouts on cell sample survival. Also Interesting is the large interquartile range of the PIK3CA mutation, with data points found in two clusters, one around -0.15 and the other bweetn -0.5 and -0.9. 
 
 While the ERBB2 driver mutation was found to have the lowest essentiallity for cell survival on average, average TPM values are shown to be highest, suggesting overexpression. Once again TPM values for this mutation have the largest spread, reaching a more than 11.5 TPM. This implyies the greatest variation overall in data for the ERBB2 driver mutation. Like for the CERES scores, both MYCBP and PIK3CA have a small interquartile range, while ranges for PARP10 are markedly larger. Further, it is interesting to note despite two CERES score data clusters for PIK3CA, TPM values show little variation around the mean. 
 
 ### Spotting genetic interactions: the Wilcoxon test
 
-Genetic interactions of driver mutations with other genes were examined based on a Wilcoxon signed rank test. As SSTs are expected to interact synergistcally with the corresponding driver mutation in promoting cell viability similar CERES scores are suggested to infer the presence of gene interactions. Thus, high p-values are anticipated for such cooperating gene pairs when performing the Wilcoxon signed rank test. The Wilcoxon signed rank test was chosed rather than a t-test due to non-normal distribution of the data and the requirement of a paired test to compare the data of two genes per cell line. Asuming that the ranks of the CERES scores of the driver mutation and their SSTs are equal SST candidates were chosen by the means of the highst p-values (accepting the H0 hypothesis).
+Genetic interactions of driver mutations with other genes were examined based on a Wilcoxon signed rank test. As SSTs are expected to interact synergistically with the corresponding driver mutation in promoting cell viability similar CERES scores are suggested to infer the presence of gene interactions. Thus, high p-values are anticipated for such cooperating gene pairs when performing the Wilcoxon signed rank test. The Wilcoxon signed rank test was chosed rather than a t-test due to non-normal distribution of the data and the requirement of a paired test to compare the data of two genes per cell line. Asuming that the ranks of the CERES scores of the driver mutation and their SSTs are equal SST candidates were chosen by the means of the highest p-values (accepting the H0 hypothesis).
 
-For the purpose of conducting the Wilcoxon test the data from which the CERES scores for the test are taken was prepared. Therefore, a vector containg the identified driver mutations was generated. Furthermore, a reduced mutImpact matrix `mutImpact_r` was created from `mutImpact`which only includ genes which are mutated and do not have `NA`values only. Based on `mutImpact_r`the `BCCL_kd.ceres` matrix was reduced resutling in the `mutImpact_kd.ceres` matrix containing the CERES scores of all genes in all cell lines if the gene is mutated in one cell line at minimum. 
+For the purpose of conducting the Wilcoxon test the data from which the CERES scores for the test are taken was prepared. Therefore, a vector containg the identified driver mutations was generated. Furthermore, a reduced mutImpact matrix `mutImpact_r` was created from `mutImpact`which only includes genes which are mutated and do not have `NA`values only. Based on `mutImpact_r`the `BCCL_kd.ceres` matrix was reduced resulting in the `mutImpact_kd.ceres` matrix containing the CERES scores of all genes in all cell lines if the gene is mutated in one cell line at minimum. 
 
 ```{r}
 #preparation of the data
@@ -418,8 +418,8 @@ names(testData) <- driver_mut
 lapply(testData, function(a) head(a)) #look at the data
 ```
 
-As the null hypothesis claims that the CEREs scores of the driver mutation and the reference gene is are equal, low p-values indicate that there is no relation between the CERES scores of the driver mutation and the reference gene whereas high p-values may allude to genetic interaction of the driver mutation with an SST.
-The obtained p-values were distributed as shown below. Most strinkingly, the first quantile was set at a p-value of 0.0 for each driver mutation indicating that there are many genes with CERES scores which are not relatable to the CERES scores of the driver mutations. However, the maximum p-value of each test constituted 1.0 suggesting that there are also genes with similar CERES scores as the driver mutations which are supposed to be the SSTs. 
+As the null hypothesis claims that the CERES scores of the driver mutation and the reference genes are equal, low p-values indicate that there is no relation between the CERES scores of the driver mutation and the reference gene whereas high p-values may allude to genetic interaction of the driver mutation with an SST.
+The obtained p-values were distributed as shown below. Most strinkingly, the first quantile was set at a p-value of 0.0 for each driver mutation, indicating that there are many genes with CERES scores which are not relatable to the CERES scores of the driver mutations. However, the maximum p-value of each test constituted 1.0 suggesting that there are also genes with similar CERES scores as the driver mutations which are supposed to be the SSTs. 
 
 ```{r}
 #get summary of distribution
@@ -429,7 +429,7 @@ summary(testData$PARP10)
 summary(testData$PIK3CA)
 ```
 
-Based on the results of the Wilcoxon test potential SSTs were chosen by means of the highest p-values. Thus, the list `SST_Data`consisting of one data frame per driver mutation was created based on the test results given in the `test_data` list. Therefore, an `lapply`command was used filtering each data frames of `test_data` by selecting the reference genes which were found to have the most similar CERES scores as the driver mutation, indicated by high p-values. In this course, the rownames of the data frames had to be transferred to an extra column before selection and transferred back afterwards as otherwise the rownames would have been lost during the filtering process. Unequal numbers of SST candidates were found due to similar test restults for several reference genes.
+Based on the results of the Wilcoxon test potential SSTs were chosen by means of the highest p-values. Thus, the list `SST_Data`consisting of one data frame per driver mutation was created based on the test results given in the `test_data` list. Therefore, an `lapply`command was used filtering each data frames of `test_data` by selecting the reference genes which were found to have the most similar CERES scores as the driver mutation, indicated by high p-values. In this course, the rownames of the data frames had to be transferred to an extra column before selection and transferred back afterwards as otherwise the rownames would have been lost during the filtering process. Unequal numbers of SST candidates were found due to similar test results for several reference genes.
 
 ```{r}
 #select 15 most promising SST candidates based on highest p-values - libraries needed: dplyr, tibble (included in "tidyverse")
@@ -449,7 +449,7 @@ head(SST_Data)
 
 ## Verification of SST candidates by assigned k means cluster number 
 
-After selection of the SST candidates stored in `SST_cand_x`,loops were installed to verify the coexistance of SST candidates and driver mutations in the same k means cluster. An assignment to the same cluster would confirm a possible cooperation of gene pairs due to similar CERES scores. For this, new dataframes were created  before a separate loop was installed for each driver mutation. By comparing each rowname of the `SST_cand_X` dataframes to all possible  `data_clus_3e` rownames, a coexistance of genes in the 3rd k means cluster was identified, leading to the labelling of `SST X`  in a new separate column. Otherwise no match lead to the `No SST`entry. In order to combine all four dataframes with the `rbind`command the first columns were all renamed to "p_values". FInally all confirmed SSTs were ordered alphabetically, with no gene identified twice for a different driver mutation. 
+After selection of the SST candidates stored in `SST_cand_x`,loops were installed to verify the coexistance of SST candidates and driver mutations in the same k means cluster. An assignment to the same cluster would confirm a possible cooperation of gene pairs due to similar CERES scores. For this, new dataframes were created  before a separate loop was installed for each driver mutation. By comparing each rowname of the `SST_cand_X` dataframes to all possible  `data_clus_3e` rownames, a coexistance of genes in the 3rd k means cluster was identified, leading to the labelling of `SST X`  in a new separate column. Otherwise no match led to the `No SST`entry. In order to combine all four dataframes with the `rbind`command, the first columns were all renamed to "p_values". Finally all confirmed SSTs were ordered alphabetically, with no gene identified twice for a different driver mutation. 
 
 ```{r}
 SST_ERBB2 <- SST_cand_ERBB2 #creating new dataframes
@@ -510,7 +510,7 @@ SSTs <- SSTs[order(rownames(SSTs)),] # reorder in alphabetical order
 
 In order to characterize the SSTs, additional information on each SST was retrieved from the original data set and added to the data frames in `SST_Data`.
 
-First, the type of mutation was examined for each SST and each cell line in which it was mutated. For this purpose a nested `lapply`construction was used. Initially, a data frame of one driver mutation was chosen and the new column `mutType` was generated by the second `lapply`loop. Thus, iterating the SST candidates the mutation status of each SST in each cell line was determined inspecting the presence of the SST in the list of mutated genes for each cell line. If the SST candidate was mutated in a given cell line its type of mutation (stored in the `BCCL_Mutation`list as `Variant_Classification`) was obtained and saved in a temporary vector to which all possible types of mutations were collected for each SST. Finally, this vector was concatenated as a string which was assigned to the `mutType` column.
+First, the type of mutation was examined for each SST and each cell line in which it was mutated. For this purpose a nested `lapply`construction was used. Initially, a data frame of one driver mutation was chosen and the new column `mutType` was generated by the second `lapply`loop. Thus, iterating the SST candidates the mutation status of each SST in each cell line was determined inspecting the presence of the SST in the list of mutated genes for each cell line. If the SST candidate was mutated in a given cell line its type of mutation (stored in the `BCCL_Mutation`list as `Variant_Classification`) was obtained and saved in a temporary vector to which all possible types of mutations were collected for each SST. Finally, this vector was concatenated as a string, which was assigned to the `mutType` column.
 
 ```{r}
 SST_Data <- lapply(seq_along(SST_Data), function(a) {
@@ -545,14 +545,14 @@ SST_Data <- lapply(seq_along(SST_Data), function(a) {
 names(SST_Data) <- driver_mut #regenerate names
 ```
 
-### Regression analysis to predict ceres scores of driver mutation
+# Regression analysis to predict ceres scores of driver mutation
 ## Objective
 
   + For the regression model, we want to predict the CERES score of the driver mutation (dependent variable) based on the CERES score of the SST candidates (independent variables).
   + A multilinear regression will be designed:
 
 
-# Step 1: Construct datasets for Regression
+### Step 1: Construct datasets for Regression
   + Multilinear regression, we 
     1. reform the BCCL CERES matrix
       + By transponing and format change, we obtain a matrix with colnames = Gene names and rownames = Cell line indices (equal to tPatients_ID)
@@ -575,7 +575,7 @@ data_regression <- list(linRegData_ERBB2, linRegData_MYCBP, linRegData_PARP10, l
 head(data_regression) #take a look at the data
 ```
 
-#Step 2: qqplot
+### Step 2: qqplot
   + Check Normality with a qqPlot
     + Using the aes-function of the ggplt package for _aesthetic_ plots.
     
@@ -619,20 +619,20 @@ lapply(seq_along(input_data), function(a) {
 
 ## Interpretation of Spearman correlation coefficient
 
-# Revision: Meaning of the correlation coefficient rho
+### Revision: Meaning of the correlation coefficient rho
   + the rank-correlation coefficient can take values from +1 to -1
     + rho ~ 1: perfect positive association of ranks
     + rho ~ 0: no association of ranks
     + rho ~ -1: perfect negative association of ranks
 
-# Revision: Adding a statistical parameter
+### Revision: Adding a statistical parameter
   + To further interprete the p-value, we construct a H0 / H1 hypothesis:
     + H0: There is no association between the predicted and observed variable.
     + H1: There is an association between the predicted and observed variable.
   + Most importantly, it is not possible to assess the strength of the correlation based on the p-value. It rather judges the statistical test than the resulting value.
     + as a standard, we set the significance level to 0.05
 
-# Objective
+### Objective
  + We will the compare this values for the different models
   + For a positive correaltion, two variables move in the same direction.
     + For a well-designed model, we expect the precicted and observed CERES scores being approx. even
@@ -641,7 +641,7 @@ lapply(seq_along(input_data), function(a) {
       + the p-value < 0.05
     
 
-# Results
+## Results
 
 We obtained the followwing p-values and correlation coefficients:
 
@@ -652,7 +652,7 @@ MCYBP     | 0.7825      |-0.1429   |
 PARP      | 0.1095      |-0.6786   |
 PIK3CA    | 0.7131      |-0.1786   |
 
-# Discussion
+## Discussion
 
   + ERBB2-model:
     + Shows the highest rho value of all four models, but ~ 0.1 is a rather weak positive relationship
@@ -678,6 +678,7 @@ PIK3CA    | 0.7131      |-0.1786   |
 + The models for MYCBP and PIK3CA only showed weak, negative correlation, which is not useful for further work with this model.
 + The PARP10 model resulted in a moderate negative relationship, which is not of relevance for our objective.
 + The ERBB2 model did not deliver a significant p-value, but indeed contains at least a weak positive correlation.
+
 ### Discussing possible Reasons for the unsatisfying results
 ## Possible causes in the Regression model
 #Sample Size
