@@ -3,9 +3,8 @@ title: "Identification of SSTs_report"
 author: "Lisa Marie Milchsack"
 date: "10 Juni 2019"
 output:
-  html_document: default
-  word_document: default
-  pdf_document: default
+  md_document: 
+        variant: markdown_github  
 ---
 
 ```{r setup, include=FALSE}
@@ -65,7 +64,7 @@ Our central question for our project is thereby:
 
 Before we start our statistical part, we have to load the data correctly:
 ```{r include=FALSE}
-#Importing the libs
+# importing the libs
 library(ggplot2)
 library(reshape2)
 library(data.table)
@@ -86,7 +85,7 @@ To get a feeling for the dataset we will have a look on data structure
 ```{r include=FALSE}
 length(data) #get some info about the data (the dimensions here)
 lapply(data, dim)#get some impression about the data
-view(data$mutation) #closer look because data$mutation returns NULL in the command above
+View(data$mutation) #closer look because data$mutation returns NULL in the command above
 lapply(data, function(a) head(a)) #look at the data 
 ```
 
