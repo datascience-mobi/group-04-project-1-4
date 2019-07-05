@@ -43,19 +43,26 @@ data_regression <- list(linRegData_ERBB2, linRegData_MYCBP, linRegData_PARP10, l
 head(data_regression)
 ```
 
-#Step 2: qqplot
+#Step 2: Checking assumptions
+To run regression, certain conditions must be fulfilled:
   + Check Normality with a qqPlot
-    + Using the aes-function of the ggplt package for _aesthetic_ plots.
+    + Using the aes-function for _aesthetic_ plots, provided by the "ggplot2" package
+  + Check Multicollinearity
+    + Multicollinearity is given if two dependent variables are strongly correlated, which can lead to difficulties in further analysis
+    + As rule of thumb, the Pearson correlation coefficient should be lower than 0.8:
+      $r < 0.8$
+    + if this requirement is not met, one of the correlated variables should be deleted as it is seen as redundant.
     
 ```{r}
 check_assumptions <- function(a){  
-  p <- ggplot(data_regression[[a]], aes(sample=data_regression[[a]][,ncol(data_regression[[a]])])) + stat_qq()+ stat_qq_line()
+  p <- ggplot(data_regression[[a]], aes(sample=data_regression[[a]][,ncol(data_regression[[a]])])) + stat_qq()+ stat_qq_line() #create qq-Plot with line for comparison to normal distribution
    p + labs(title = "QQ-Plot", subtitle = "Check if data is approx. normally distributed")
-   
-  return (p)
-   }
-lapply(seq_along(data_regression), check_assumptions1)
 
+  q <-  round(cor(data_regression[[a]]),2) #create table with correlation values between all SSTs; the values are rounded to two decimal places
+  
+  return(list(p,q))
+   }
+lapply(seq_along(data_regression), check_assumptions)
 
 ```
 
@@ -86,18 +93,23 @@ lapply(seq_along(input_data), function(a) {
   ResidPlot <- hist(resid(regressor),main='Histogram of residuals',xlab='Standardised
 Residuals',ylab='Frequency') #plot a histogram of standardised residuals to check the assumption of normality
   HomoPlot <- plot(regressor, which = 1) #fitted values and residuals plot to check the assumption of homoscedasticity
+ 
+### Gibt nur jeweils 1 statt 4 Plots raus, wie kann ich das verbessern?
   
   y_pred = predict(regressor, newdata = test_set) #predict the Driver mut. CERES score based on the test data
   test_set$Prediction = y_pred #adding predictions to the dataset
   
   corVal <- cor.test(test_set$Predictor , test_set$Prediction, method = "spearman") #to judge model performance, calculate Spearman corr. between predicted and observed values
 
- spearmanPlot <- ggscatter(test_set, x = test_set$Predictor, y = test_set$Prediction, 
-          add = "reg.line", conf.int = TRUE, 
-          cor.coef = TRUE, cor.method = "spearman", #plot observed and predicted values against each other to visualize correlation
-          xlab = "Observed CERES score", ylab = "Predicted CERES score")
- 
- # says it can´t find y values?! 
+ spearmanPlot <- ggscatter(test_set, x = "test_set$Predictor", y = "test_set$Prediction",
+                  color = 'blue',   # design the points
+                  add = "reg.line", #add the regression line
+                  add.params = list(color = "black", fill = "lightgray"),  # design the line
+                  conf.int = TRUE, #show confidence interval
+                  cor.coef = TRUE, cor.method = "spearman", #output is Spearman correlation coeff.
+                  xlab = "test_set$Prediction", ylab = "Predicted CERES score") #name x/y axis
+                 
+ ###Error in `[.data.frame`(data, , x) : nicht definierte Spalten gewählt
  
  return (list(ResidPlot, HomoPlot, corVal, spearmanPlot))
 })
@@ -180,6 +192,7 @@ But, a common thumb-rule for building a regression model is to calculate the _li
 If this equation is fulfilled, the model is supposed to be reliable.(Harrell 2001)
 In fact, this condition is true for all four models.
 
+## Checking assumptions
 # Distribution
 
 Checking distributional assumptions (= normal distribution) is also important and a different model should be chosen if needed. (Harrell 2001)
@@ -189,8 +202,10 @@ Checking distributional assumptions (= normal distribution) is also important an
 
 The normal distribution does not lead to higher correlation coefficients. But not satisfying distribution assumptions should be treated as a red flag; and the model is not suited for further use.
 
+There was no multicollinearity detected. The condition r < 0.8 was met for all variables.
+
 ## Possible causes in the Prediction model
-#raining & prediction data size
+#Training & prediction data size
 Our data seems to have an appropriate size for a basic regression model.
 On the other hand, for the supervised machine learning process of the regression, sample sizes up to n = 50,000 are reported.(Libbrecht and Noble 2015) 
 In general, more data will lead to improved data quality. Generally, scientists are advised to focus on obtaining and analyzing larger data sets instead of comparing different learning techniques on small training sets.(Banko and Brill 2001)
