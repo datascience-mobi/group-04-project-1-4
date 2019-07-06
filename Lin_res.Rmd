@@ -107,7 +107,7 @@ Residuals',ylab='Frequency') #plot a histogram of standardised residuals to chec
                   add.params = list(color = "black", fill = "lightgray"),  # design the line
                   conf.int = TRUE, #show confidence interval
                   cor.coef = TRUE, cor.method = "spearman", #output is Spearman correlation coeff.
-                  xlab = "test_set$Prediction", ylab = "Predicted CERES score") #name x/y axis
+                  xlab = "Observed CERES score", ylab = "Predicted CERES score") #name x/y axis
                  
  ###Error in `[.data.frame`(data, , x) : nicht definierte Spalten gewählt
  
