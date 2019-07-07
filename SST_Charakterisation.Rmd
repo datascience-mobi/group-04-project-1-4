@@ -78,4 +78,40 @@ processingfunction <- function(inputData, dtPicker, mutPicker) {
   return(inputData)
 }
 SST_PARP10 <- processingfunction(SST_PARP10, SST_cand_PARP10, "PARP10")
+
+```
+
+```{r}
+SST_ERBB2 <- SST_cand_ERBB2 #creating new dataframes
+SST_MYCBP <- SST_cand_MYCBP
+SST_PARP10 <- SST_cand_PARP10
+SST_PIK3CA <- SST_cand_PIK3CA
+
+SST_all_can <- list(SST_cand_ERBB2, SST_cand_MYCBP, SST_cand_PARP10, SST_cand_PIK3CA)# combining all dataframes into one list
+
+processingfunction <- lapply(seq_along(SST_all_can), function(a) { # pick one dataframe fro list
+  mutpicker <- SST_all_can[a] # define dataframe as mutpicker
+  
+    SST_all_can["SST Cluster Check"] <- sapply(1:nrow(mutpicker), function(b) {
+    if (rownames(mutpicker) %in% rownames(data_clus_3e)) {
+      SST_all_can[a,1] <- paste0("SST", " ", mutPicker)
+    } else {
+      SST_all_can[a,1] <- "No SST"  
+    }
+  })
+  return(SST_all_can)
+})
+
+SST_PARP10 <- processingfunction(SST_PARP10, SST_cand_PARP10, "PARP10")
+SST_PARP10 <- SST_PARP10 %>% rename(p_values=PARP10)
+
+SST_ERBB2 <- processingfunction(SST_ERBB2, SST_cand_ERBB2, "ERBB2")
+SST_ERBB2 <- SST_ERBB2 %>% rename(p_values=ERBB2)
+
+SST_MYCBP <- processingfunction(SST_MYCBP, SST_cand_MYCBP, "MYCBP")
+SST_MYCBP <- SST_MYCBP %>% rename(p_values=MYCBP)
+
+SST_PIK3CA <- processingfunction(SST_PIK3CA, SST_cand_PIK3CA, "PIK3CA")
+SST_PIK3CA <- SST_PIK3CA %>% rename(p_values=PIK3CA)
+
 ```
