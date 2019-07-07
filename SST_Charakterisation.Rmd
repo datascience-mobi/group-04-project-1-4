@@ -91,15 +91,17 @@ SST_all_can <- list(SST_cand_ERBB2, SST_cand_MYCBP, SST_cand_PARP10, SST_cand_PI
 
 processingfunction <- lapply(seq_along(SST_all_can), function(a) { # pick one dataframe fro list
   mutpicker <- SST_all_can[[a]] # define dataframe as mutpicker
-  
-    SST_all_can["SST Cluster Check"] <- sapply(1:nrow(mutpicker), function(b) {
-    if (rownames(mutpicker) %in% rownames(data_clus_3e)) {
-      SST_all_can[b,1] <- paste0("SST"," ", mutpicker)
+  mutpicker$classifier <- NA
+  evaluate <- sapply(1:nrow(mutpicker), function(b) {
+    if (rownames(mutpicker)[b] %in% rownames(data_clus_3e)) {
+      evaluate$paste0("SST", rownames(mutpicker)[b])
     } else {
-      SST_all_can[b,1] <- "No SST"  
+      evaluate$paste0("No SST", rownames(mutpicker)[b]) 
     }
+  evaluate <- as.vecto(evaluate) 
+  mutpicker$classifier <- evaluate
   })
-  return(SST_all_can)
+  return(mutpicker)
 })
 
 SST_PARP10 <- processingfunction(SST_PARP10, SST_cand_PARP10, "PARP10")
