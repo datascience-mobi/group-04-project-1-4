@@ -90,13 +90,13 @@ SST_PIK3CA <- SST_cand_PIK3CA
 SST_all_can <- list(SST_cand_ERBB2, SST_cand_MYCBP, SST_cand_PARP10, SST_cand_PIK3CA)# combining all dataframes into one list
 
 processingfunction <- lapply(seq_along(SST_all_can), function(a) { # pick one dataframe fro list
-  mutpicker <- SST_all_can[a] # define dataframe as mutpicker
+  mutpicker <- SST_all_can[[a]] # define dataframe as mutpicker
   
     SST_all_can["SST Cluster Check"] <- sapply(1:nrow(mutpicker), function(b) {
     if (rownames(mutpicker) %in% rownames(data_clus_3e)) {
-      SST_all_can[a,1] <- paste0("SST", " ", mutPicker)
+      SST_all_can[b,1] <- paste0("SST"," ", mutpicker)
     } else {
-      SST_all_can[a,1] <- "No SST"  
+      SST_all_can[b,1] <- "No SST"  
     }
   })
   return(SST_all_can)
