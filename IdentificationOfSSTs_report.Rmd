@@ -452,15 +452,15 @@ SST_PARP10["SST Cluster Check"] <- sapply(1:nrow(SST_cand_PARP10), function(a){
 })
 SST_PARP10 <- SST_PARP10 %>% rename(p_values=PARP10)
 
-processingfunction <- function(inputData, dtPicker, mutPicker) {
-  inputData["SST Cluster Check"] <- sapply(1:nrow(dtPicker), function(a) {
-    if (rownames(dtPicker) %in% rownames(data_clus_3e)) {
+processingfunction <- seqalong(SST_all_can), function(a) {
+  SST_all_can["SST Cluster Check"] <- sapply(1:nrow[SST_all_can[a]], function(b) {
+    if (rownames[SST_all_can[a]] %in% rownames(data_clus_3e)) {
       inputData[a,1] <- paste0("SST", " ", mutPicker)
     } else {
       inputData[a,1] <- "No SST"  
     }
   })
-  return(inputData)
+  return(SST_all_can)
 }
 SST_PARP10 <- processingfunction(SST_PARP10, SST_cand_PARP10, "PARP10")
 SST_PARP10 <- SST_PARP10 %>% rename(p_values=PARP10)
@@ -501,9 +501,6 @@ SSTs <-  do.call("rbind", list(SST_ERBB2, SST_MYCBP, SST_PARP10, SST_PIK3CA))
 SSTs <- SSTs[order(rownames(SSTs)),] # reorder in alphabetical order 
 
 #no SSTs the same for different driver mutations 
-
-
-
 
 ```
 
