@@ -12,11 +12,20 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 #Installing required packages
-i think the install things were obsolete.if there is confusion i will bring it back. 
-Yes I think we should definitely put this back in as otherwise the rest of the code will not function properly....
-
-I think we definetly need to put all the packages and libraries back in to ensure that the following code works on any device regardless of previous installations. 
-# Abstract
+```{r include=FALSE} 
+install.packages("reshape")
+install.packages("wesanderson")
+install.packages("tidyverse")
+install.packages("factoextra")
+install.packages("data.table")
+library(tidyverse)
+library(cluster)
+library(factoextra)
+library("reshape")
+library("wesanderson")
+library(data.table)
+# in my opinion it is unnecessary to reinstall the packages every time, runinng the whole code. the libraries are in the next chunk anyway. on my device it makes problems every time i do this chunk. and knitr doesnt like it. ¯\_(???)_/¯ (ELias)
+```
 (...)
 
 ### Introduction
