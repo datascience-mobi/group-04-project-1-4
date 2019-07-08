@@ -15,7 +15,6 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 #Installing required packages
-```{r include=FALSE} 
 install.packages("reshape")
 install.packages("wesanderson")
 install.packages("tidyverse")
@@ -27,8 +26,7 @@ library(factoextra)
 library("reshape")
 library("wesanderson")
 library(data.table)
-```
-(...)
+
 
 ### Introduction
 ## Revision: Breast Cancer, a challenging disease
@@ -77,7 +75,7 @@ Our central question for our project is thereby:
 
 Before we start our statistical part, we have to load the data correctly:
 ```{r include=FALSE}
-# importing the libs
+# importing libraries
 library(ggplot2)
 library(reshape2)
 library(data.table)
