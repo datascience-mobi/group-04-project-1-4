@@ -117,3 +117,20 @@ SST_PIK3CA <- processingfunction(SST_PIK3CA, SST_cand_PIK3CA, "PIK3CA")
 SST_PIK3CA <- SST_PIK3CA %>% rename(p_values=PIK3CA)
 
 ```
+
+
+```{r SST Cluster Check}
+SST_Data <- lapply(seq_along(SST_Data), function(a) { # pick one dataframe from list
+  DvPicker <- SST_all_can[[a]] # choose DV 
+  
+  DvPicker$classifier <- sapply(1:nrow(DvPicker), function(b) {
+    if (rownames(mutpicker)[b] %in% rownames(data_clus_3e)) {
+      DvPicker[b, 5] <- "verified"
+    } else {
+      DvPicker[b, 5] <- "not verified" 
+    }
+  })
+  return(mutpicker)
+})
+names(SST_Data) <- driver_mut
+```

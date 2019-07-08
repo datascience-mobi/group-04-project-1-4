@@ -4,11 +4,10 @@ author: "Lisa Marie Milchsack"
 date: "10 Juni 2019"
 output: 
   html_document:
-    toc_depth: 3
-    number_sections: true
-    theme: lumen
     highlight: tango
-    toc: true
+    number_sections: yes
+    theme: lumen
+    toc: yes
 ---
 
 ```{r setup, include=FALSE}
@@ -28,7 +27,6 @@ library(factoextra)
 library("reshape")
 library("wesanderson")
 library(data.table)
-# in my opinion it is unnecessary to reinstall the packages every time, runinng the whole code. the libraries are in the next chunk anyway. on my device it makes problems every time i do this chunk. and knitr doesnt like it. ¯\_(???)_/¯ (ELias)
 ```
 (...)
 
@@ -286,7 +284,7 @@ fviz_cluster(km_CERES, data=BCCL_kd.ceres_3, labelsize = 6) # plotting clusters
 
 In order to verify our selection of driver mutations from literature, the cluster number of each driver mutation was identified. All selected driver mutations from literature,"ERBB2", "MYCBP", "PARP10" and "PIK3CA" were colocalized in cluster 3, hence with similar CERES scores, with the exception of "CCND" and "ERBBIP". While "CCND" was removed in the filtering process and no longer found in`BCCL_kd.ceres_3`, "ERBB2IP" was found in cluster 2. For these reasons the two mentionedmutations were excluded from further analysis, to leave only "ERBB2", "MYCBP", "PARP10" and "PIK3CA" as selected driver mutations.
 
-``` {r}
+```{r}
 km_CERES$cluster["ERBB2"] #obtaining cluster number for each driver mutation from literature # do you think it is possible to do this in a loop ?
 km_CERES$cluster["ERBB2IP"]
 km_CERES$cluster["MYCBP"]
@@ -297,7 +295,7 @@ km_CERES$cluster["PIK3CA"]
 Since our approach defined SSTs as genes expected to interact synergistically with the corresponding driver mutation in promoting cell viability, similar CERES scores were expected. Thus all potential SSTs candidates were expected to be found in cluster 3 as well. A dataframe `data_clus_3`was subsequently generated to contain all 1148 genes colocalized with driver mutations in cluster 3. 
 
 ```{r}
-data_cluster = km_CERES$cluster
+data_cluster = as.data.frame(km_CERES$cluster)
 rownames(data_cluster) = rownames(BCCL_kd.ceres_3)
 data_clus_3 = BCCL_kd.ceres_3[data_cluster == 3,] #dataframe with all 1148 genes in same cluster as driver mutations 
 ```
