@@ -2,9 +2,13 @@
 title: "Identification of SSTs_report"
 author: "Lisa Marie Milchsack"
 date: "10 Juni 2019"
-output:
-  md_document: 
-        variant: markdown_github  
+output: 
+  html_document:
+    toc_depth: 3
+    number_sections: true
+    theme: lumen
+    highlight: tango
+    toc: true
 ---
 
 ```{r setup, include=FALSE}
