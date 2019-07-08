@@ -46,29 +46,44 @@ head(data_regression)
 #Step 2: Checking assumptions
 To run regression, certain conditions must be fulfilled:
   + Check Normality with a qqPlot
-    + Using the aes-function for _aesthetic_ plots, provided by the "ggplot2" package
+    + Using the aes-function for aesthetic plots, provided by the "ggplot2" package
   + Check Multicollinearity
     + Multicollinearity is given if two dependent variables are strongly correlated, which can lead to difficulties in further analysis
     + As rule of thumb, the Pearson correlation coefficient should be lower than 0.8:
-      $r < 0.8$
+      $r < 0.80$
     + if this requirement is not met, one of the correlated variables should be deleted as it is seen as redundant.
+  + Run Shapiro-Wilk Test
+    + hypothesis test with H0: data is normal distributed
+      + we want to observe a p-value > 0.05
     
 ```{r}
-check_assumptions <- function(a){  
+lapply(seq_along(data_regression), function(a){  
   p <- ggplot(data_regression[[a]], aes(sample=data_regression[[a]][,ncol(data_regression[[a]])])) + stat_qq()+ stat_qq_line() #create qq-Plot with line for comparison to normal distribution
    p + labs(title = "QQ-Plot", subtitle = "Check if data is approx. normally distributed")
-
-  q <-  round(cor(data_regression[[a]]),2) #create table with correlation values between all SSTs; the values are rounded to two decimal places
   
-  return(list(p,q))
-   }
-lapply(seq_along(data_regression), check_assumptions)
+  r <-  round(cor(data_regression[[a]]),2) #create table with correlation values between all SSTs; the values are rounded to two decimal places [,2)]
+  
+  return(list(p,r))
+   })
 
+lapply(seq_along(data_regression), function(a){
+  as.numeric(data_regression[[a]])
+  s <- shapiro.test(data_regression[[a]]) #to expand quality control, run Shapiro Test
+  return(s)
+})
+
+#Error  object cannot be coerced to type 'double'
+#need to save data as.mumeric, won´t work yet.
 ```
+  + Quick Results:
+    + Data of MYCBP and PARP10 is approx. normally distributed; ERBB2 and PIK3CA not
+    + no multicollinearity detected, all 0.80 > x
+    + 
+
 
 #Step 3: Multilinear Regression: Data split, Model calculation, Return correlation data for evaluation
 To run the Multilinear Regression, it is advised to create a long function which
-  1. Splits the dataset in 75:25 training:test data
+  1. Splits the dataset in __75:25__ training:test data
     + Previous installation of the "caTools" package is necessary
   2. Conducts Training of Regression model with training data
     + predict Driver mutation CERES (y; dep.variable) from SST CERES scores (x1 ... xn; indep.variables)
@@ -79,7 +94,7 @@ To run the Multilinear Regression, it is advised to create a long function which
 input_data <- data_regression
 
 lapply(seq_along(input_data), function(a) {
-  set.seed(123) #initialize the random numbers,ensures better repoducibility 
+  set.seed(123) #initialize the random numbers, ensure better reproducability
   data <- input_data[[a]] #get the data
   colnames(data)[length(colnames(data))] <- "Predictor"
   
@@ -101,21 +116,25 @@ Residuals',ylab='Frequency') #plot a histogram of standardised residuals to chec
   
   corVal <- cor.test(test_set$Predictor , test_set$Prediction, method = "spearman") #to judge model performance, calculate Spearman corr. between predicted and observed values
 
- spearmanPlot <- ggscatter(test_set, x = "test_set$Predictor", y = "test_set$Prediction",
-                  color = 'blue',   # design the points
-                  add = "reg.line", #add the regression line
-                  add.params = list(color = "black", fill = "lightgray"),  # design the line
-                  conf.int = TRUE, #show confidence interval
-                  cor.coef = TRUE, cor.method = "spearman", #output is Spearman correlation coeff.
-                  xlab = "Observed CERES score", ylab = "Predicted CERES score") #name x/y axis
-                 
+ SpearmanPlot <- ggscatter(test_set, x = "test_set$Predictor",
+                   y = "test_set$Prediction",
+                   add = "reg.line", #add the regression line
+                   cor.coef = TRUE,
+                   cor.method = "spearman",#output is Spearman correlation coeff.
+                   conf.int = TRUE, #show confidence interval
+                   xlab = "Observed CERES score",
+                   ylab = "Predicted CERES score") #name x/y axis 
+ 
  ###Error in `[.data.frame`(data, , x) : nicht definierte Spalten gewählt
  
- return (list(ResidPlot, HomoPlot, corVal, spearmanPlot))
+ return (list(ResidPlot, HomoPlot, corVal, SpearmanPlot))
 })
 
 
 ```
+https://stackoverflow.com/questions/45602586/undefined-columns-data-frame-error
+https://github.com/kassambara/ggpubr/issues/23 #this doesn´t help
+
 
 ## Interpretation of Spearman correlation coefficient
 
@@ -130,7 +149,7 @@ Residuals',ylab='Frequency') #plot a histogram of standardised residuals to chec
     + H0: There is no association between the predicted and observed variable.
     + H1: There is an association between the predicted and observed variable.
   + Most importantly, it is not possible to assess the strength of the correlation based on the p-value. It rather judges the statistical test than the resulting value.
-    + as a standard, we set the significance level to 0.05
+    + as default, we set the significance level to 0.05
 
 # Objective
  + We will the compare this values for the different models
@@ -160,7 +179,7 @@ PIK3CA    | 0.7131      |-0.1786   |
     
   + MYCBP-model:
     + The rho value leads to very weak negative correlation.
-    + A p-value of ~0.78 leads to condifent acceptance of H0.
+    + A p-value of ~ 0.78 leads to condifent acceptance of H0.
     + Data is approx. normal distributed.
     
   + PARP10-model:
@@ -170,7 +189,7 @@ PIK3CA    | 0.7131      |-0.1786   |
     
   + PIK3CA-model:
     + The rho value leads to very weak negative correlation.
-    + A p-value of ~0.78  leads to condifent acceptance of H0.
+    + A p-value of ~ 0.78  leads to condifent acceptance of H0.
 
   + __All in all, all multilinear regression models failed to deliver a p-value of significant relevance. Thus, they should not be used for further predictions.__
     + The models for MYCBP and PIK3CA only showed weak, negative correlation, which is not useful for further work with this model.
@@ -213,8 +232,8 @@ In general, more data will lead to improved data quality. Generally, scientists 
 
 --------------------
   + Banko, M. and E. Brill (2001). Scaling to very very large corpora for natural language disambiguation. Proceedings of the 39th Annual Meeting on Association for Computational Linguistics. Toulouse, France, Association for Computational Linguistics: 26-33.
- + Harrell, F. E. (2001). Regression modeling strategies : with applications to linear models, logistic regression, and survival analysis. New York ; Berlin ; Heidelberg [u.a.], Springer.
-+ Libbrecht, M. W. and W. S. Noble (2015). "Machine learning applications in genetics and genomics." Nature reviews. Genetics 16(6): 321-332.
+  + Harrell, F. E. (2001). Regression modeling strategies : with applications to linear models, logistic regression, and survival analysis. New York ; Berlin ; Heidelberg [u.a.], Springer.
+  + Libbrecht, M. W. and W. S. Noble (2015). "Machine learning applications in genetics and genomics." Nature reviews. Genetics 16(6): 321-332.
 
 
 
