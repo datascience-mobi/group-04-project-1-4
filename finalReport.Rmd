@@ -445,74 +445,20 @@ head(SST_Data)
 After selection of the SST candidates stored in `SST_cand_x`,loops were installed to verify the coexistance of SST candidates and driver mutations in the same k means cluster. An assignment to the same cluster would confirm a possible cooperation of gene pairs due to similar CERES scores. For this, new dataframes were created  before a separate loop was installed for each driver mutation. By comparing each rowname of the `SST_cand_X` dataframes to all possible  `data_clus_3e` rownames, a coexistance of genes in the 3rd k means cluster was identified, leading to the labelling of `SST X`  in a new separate column. Otherwise no match led to the `No SST`entry. In order to combine all four dataframes with the `rbind`command, the first columns were all renamed to "p_values". Finally all confirmed SSTs were ordered alphabetically, with no gene identified twice for a different driver mutation. 
 *work in progress-still want to reduce my code a little*
 
-```{r}
-SST_ERBB2 <- SST_cand_ERBB2 #creating new dataframes
-SST_MYCBP <- SST_cand_MYCBP
-SST_PARP10 <- SST_cand_PARP10
-SST_PIK3CA <- SST_cand_PIK3CA
-
-#labelling of SST candidates with "SST" or "No SST" depending on if in k means cluster 3 or not
-
-#PARP10 candidates
-SST_PARP10["SST Cluster Check"] <- sapply(1:nrow(SST_cand_PARP10), function(a){
-  if (rownames(SST_cand_PARP10) %in% rownames(data_clus_3e)) {
-      SST_PARP10[a,1] ="SST PARP10"
-  }else{
-     SST_PARP10[a,1] = "No SST"
-  }
-})
-SST_PARP10 <- SST_PARP10 %>% rename(p_values=PARP10)
-
-processingfunction <- seqalong(SST_all_can), function(a) {
-  SST_all_can["SST Cluster Check"] <- sapply(1:nrow[SST_all_can[a]], function(b) {
-    if (rownames[SST_all_can[a]] %in% rownames(data_clus_3e)) {
-      inputData[a,1] <- paste0("SST", " ", mutPicker)
+```{r SST Cluster Check}
+SST_Data <- lapply(seq_along(SST_Data), function(a) { # pick one dataframe from list
+  DvPicker <- SST_Data[[a]] # choose DV 
+  
+  DvPicker$classifier <- sapply(1:nrow(DvPicker), function(b) {
+    if (rownames(DvPicker)[b] %in% rownames(data_clus_3e)) {
+      DvPicker[b, 4] <- "verified"
     } else {
-      inputData[a,1] <- "No SST"  
+      DvPicker[b, 4] <- "not verified" 
     }
   })
-  return(SST_all_can)
-}
-SST_PARP10 <- processingfunction(SST_PARP10, SST_cand_PARP10, "PARP10")
-SST_PARP10 <- SST_PARP10 %>% rename(p_values=PARP10)
-
-
-#ERBB2 candidates
-SST_ERBB2["SST Cluster Check"] <- sapply(1:nrow(SST_cand_ERBB2), function(a){
-  if (rownames(SST_cand_ERBB2) %in% rownames(data_clus_3e)) {
-      SST_ERBB2[a,1] ="SST ERBB2"
-  }else{
-     SST_PARP10[a,1] = "No SST"
-  }
+  return(DvPicker)
 })
-SST_ERBB2 <- SST_ERBB2 %>% rename(p_values= ERBB2)
-
-#MYCBP candidates
-SST_MYCBP["SST Cluster Check"] <- sapply(1:nrow(SST_cand_MYCBP), function(a){
-  if (rownames(SST_cand_MYCBP) %in% rownames(data_clus_3e)) {
-      SST_MYCBP[a,1] ="SST MYCBP"
-  }else{
-     SST_MYCBP[a,1] = "No SST"
-  }
-})
-SST_MYCBP <- SST_MYCBP %>% rename(p_values= MYCBP)
-
-#PIK3CA candidates
-SST_PIK3CA["SST Cluster Check"] <- sapply(1:nrow(SST_cand_PIK3CA), function(a){
-  if (rownames(SST_cand_PIK3CA) %in% rownames(data_clus_3e)) {
-      SST_PIK3CA[a,1] ="SST PIK3CA"
-  }else{
-     SST_PIK3CA[a,1] = "No SST"
-  }
-})
-SST_PIK3CA <- SST_PIK3CA %>% rename(p_values= PIK3CA)
-
-#All approved SSTs in one dataframe with driver mutation label and p-value
-SSTs <-  do.call("rbind", list(SST_ERBB2, SST_MYCBP, SST_PARP10, SST_PIK3CA)) 
-SSTs <- SSTs[order(rownames(SSTs)),] # reorder in alphabetical order 
-
-#no SSTs the same for different driver mutations 
-
+names(SST_Data) <- driver_mut
 ```
 
 ## characterization of second-site targets
