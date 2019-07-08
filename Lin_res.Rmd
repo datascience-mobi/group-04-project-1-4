@@ -94,7 +94,7 @@ To run the Multilinear Regression, it is advised to create a long function which
 input_data <- data_regression
 
 lapply(seq_along(input_data), function(a) {
-  set.seed(123) #initialize the random numbers, ensure better reproducability
+  set.seed(123) #initialize the random numbers, ensures better repoducibility
   data <- input_data[[a]] #get the data
   colnames(data)[length(colnames(data))] <- "Predictor"
   
