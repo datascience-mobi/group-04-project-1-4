@@ -19,6 +19,7 @@ install.packages("data.table")
 install.packages("wesanderson")
 install.packages("reshape")
 install.packages("caTools")
+install.packages("ggpubr")
 library(tidyverse)
 library(cluster)
 library(factoextra)
@@ -26,6 +27,7 @@ library(data.table)
 library("reshape")
 library("wesanderson")
 library(caTools)
+library("ggpubr")
 ```
 
 #data clean up
@@ -415,31 +417,62 @@ linRegData_PIK3CA <- BCCL_kd.ceres_df %>% select(rownames(SST_Data$PIK3CA), "PIK
 data_regression <- list(linRegData_ERBB2, linRegData_MYCBP, linRegData_PARP10, linRegData_PIK3CA)
 head(data_regression)
 
-create_qqplot <- function(a){  
-  p <- ggplot(data_regression[[a]], aes(sample=data_regression[[a]][,ncol(data_regression[[a]])])) + stat_qq()+ stat_qq_line()
+lapply(seq_along(data_regression), function(a){  
+  p <- ggplot(data_regression[[a]], aes(sample=data_regression[[a]][,ncol(data_regression[[a]])])) + stat_qq()+ stat_qq_line() #create qq-Plot with line for comparison to normal distribution
    p + labs(title = "QQ-Plot", subtitle = "Check if data is approx. normally distributed")
-}
-lapply(seq_along(data_regression), create_qqplot)
+  
+  r <-  round(cor(data_regression[[a]]),2) #create table with correlation values between all SSTs; the values are rounded to two decimal places [,2)]
+  
+  return(list(p,r))
+   })
 ```
 
 # Multilinear Regression Function: Data Split, Model calculation, Model evaluation
 ```{r}
 input_data <- data_regression
+
 lapply(seq_along(input_data), function(a) {
-  set.seed(123) #initialize the random numbers, better reproducable
+  set.seed(123) #initialize the random numbers, ensures better repoducibility
   data <- input_data[[a]] #get the data
   colnames(data)[length(colnames(data))] <- "Predictor"
   
   split = sample.split(data[,ncol(data)], SplitRatio = 0.75) #split the dataset into 3/4 Training and 1/4 Testing dataset
   training_set = subset(data, split == TRUE) #use the labels to get the training data
   test_set = subset(data, split == FALSE)
-
+  
   regressor = lm(formula = Predictor ~ ., 
                  data = training_set)  #predict CERES of Driver Mutation based on all (=.) the input variables (SSTs)
   
+
+  pdf(paste0("Resid-HomoPlot.pdf")) #save plots as pdf, in working directory "wd"
+  
+  ResidPlot <- hist(resid(regressor), main = 'Histogram of residuals',xlab='Standardised Residuals',ylab='Frequency') #plot a histogram of standardised residuals to check the assumption of normality
+  HomoPlot <- plot(regressor, which = 1) #fitted values and residuals plot to check the assumption of homoscedasticity
+  
+dev.off() #closing the figure file
+ 
+
   y_pred = predict(regressor, newdata = test_set) #predict the Driver mut. CERES score based on the test data
   test_set$Prediction = y_pred #adding predictions to the dataset
-  corVal <- cor.test(test_set$Predictor , test_set$Prediction, method = "spearman")#to judge model performance, calculate Spearman corr. between predicted and observed values
-  return(corVal)
+  
+  corVal <- cor.test(test_set$Predictor , test_set$Prediction, method = "spearman") #to judge model performance, calculate Spearman corr. between predicted and observed values
+
+  pdf(paste0("SpearmanPlot.pdf"))
+ ggplot(data = test_set, aes(x=test_set$Predictor, y=test_set$Prediction)) + 
+    geom_density(alpha=.3) +
+    ggtitle("Spearman Correlation plot") +
+    ylab("Predicted CERES score") +
+    xlab("Observed CERES score") +
+    theme_bw(base_size = 7) +
+    theme(legend.position="bottom",
+          legend.direction="horizontal",
+          plot.title = element_text(hjust = 0.5),
+          axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+          legend.title= element_blank(),
+          axis.title.x = element_blank(),
+          strip.text.y = element_text(angle = 0))
+ dev.off()#closing the figure file
+ 
+ return (corVal)
 })
 ```

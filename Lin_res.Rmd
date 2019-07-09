@@ -78,6 +78,7 @@ To run the Multilinear Regression, it is advised to create a long function which
     + Previous installation of the "caTools" package is necessary
   2. Conducts Training of Regression model with training data
     + predict Driver mutation CERES (y; dep.variable) from SST CERES scores (x1 ... xn; indep.variables)
+  3. Checks model assumptions of residual normal distribution and homoscedasticity
   3. Runs Test Data on model for performance evaluation
   4. Calculates Spearman correlation to further asess model performance
   
@@ -208,7 +209,7 @@ If this equation is fulfilled, the model is supposed to be reliable.(Harrell 200
 In fact, this condition is true for all four models.
 
 ## Checking assumptions
-# Distribution
+# Distribution of sample data
 
 Checking distributional assumptions (= normal distribution) is also important and a different model should be chosen if needed. (Harrell 2001)
   + As shown in the qq-Plots, normal distribution does only apply to the models of MYCBP and PARP10
@@ -218,6 +219,17 @@ Checking distributional assumptions (= normal distribution) is also important an
 The normal distribution does not lead to higher correlation coefficients. But not satisfying distribution assumptions should be treated as a red flag; and the model is not suited for further use.
 
 There was no multicollinearity detected. The condition r < 0.8 was met for all variables.
+
+# Distribution of residuals
+The residual distribution of ERBB2 was closest to normal distribution. The PIK3CA residuals showed still acceptable approximation of normal distribution.
+
+MYCBP and PARP10 failed to shoe approx. normal residual distribution.
+
+# Homoscedasticity
+Also known as homogeneity of variance, this condition is met if random variables have similar variance. Also, there is no pattern of variance change if the random variables in- or decrease. #citation
+
+ERBB2 and PIK3CA violate the condition, while MYCBP and PARP10 show homoscedasticity.
+
 
 ## Possible causes in the Prediction model
 #Training & prediction data size
