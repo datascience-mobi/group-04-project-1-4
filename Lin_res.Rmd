@@ -52,9 +52,6 @@ To run regression, certain conditions must be fulfilled:
     + As rule of thumb, the Pearson correlation coefficient should be lower than 0.8:
       $r < 0.80$
     + if this requirement is not met, one of the correlated variables should be deleted as it is seen as redundant.
-  + Run Shapiro-Wilk Test
-    + hypothesis test with H0: data is normal distributed
-      + we want to observe a p-value > 0.05
     
 ```{r}
 lapply(seq_along(data_regression), function(a){  
@@ -66,19 +63,10 @@ lapply(seq_along(data_regression), function(a){
   return(list(p,r))
    })
 
-lapply(seq_along(data_regression), function(a){
-  as.numeric(data_regression[[a]])
-  s <- shapiro.test(data_regression[[a]]) #to expand quality control, run Shapiro Test
-  return(s)
-})
-
-#Error  object cannot be coerced to type 'double'
-#need to save data as.mumeric, won´t work yet.
 ```
   + Quick Results:
     + Data of MYCBP and PARP10 is approx. normally distributed; ERBB2 and PIK3CA not
     + no multicollinearity detected, all 0.80 > x
-    + 
 
 
 #Step 3: Multilinear Regression: Data split, Model calculation, Return correlation data for evaluation
@@ -101,40 +89,45 @@ lapply(seq_along(input_data), function(a) {
   split = sample.split(data[,ncol(data)], SplitRatio = 0.75) #split the dataset into 3/4 Training and 1/4 Testing dataset
   training_set = subset(data, split == TRUE) #use the labels to get the training data
   test_set = subset(data, split == FALSE)
-
+  
   regressor = lm(formula = Predictor ~ ., 
                  data = training_set)  #predict CERES of Driver Mutation based on all (=.) the input variables (SSTs)
   
-  ResidPlot <- hist(resid(regressor),main='Histogram of residuals',xlab='Standardised
-Residuals',ylab='Frequency') #plot a histogram of standardised residuals to check the assumption of normality
-  HomoPlot <- plot(regressor, which = 1) #fitted values and residuals plot to check the assumption of homoscedasticity
- 
-### Gibt nur jeweils 1 statt 4 Plots raus, wie kann ich das verbessern?
+
+  pdf(paste0("Resid-HomoPlot.pdf")) #save plots as pdf, in working directory "wd"
   
+  ResidPlot <- hist(resid(regressor), main = 'Histogram of residuals',xlab='Standardised Residuals',ylab='Frequency') #plot a histogram of standardised residuals to check the assumption of normality
+  HomoPlot <- plot(regressor, which = 1) #fitted values and residuals plot to check the assumption of homoscedasticity
+  
+dev.off() #closing the figure file
+ 
+
   y_pred = predict(regressor, newdata = test_set) #predict the Driver mut. CERES score based on the test data
   test_set$Prediction = y_pred #adding predictions to the dataset
   
   corVal <- cor.test(test_set$Predictor , test_set$Prediction, method = "spearman") #to judge model performance, calculate Spearman corr. between predicted and observed values
 
- SpearmanPlot <- ggscatter(test_set, x = "test_set$Predictor",
-                   y = "test_set$Prediction",
-                   add = "reg.line", #add the regression line
-                   cor.coef = TRUE,
-                   cor.method = "spearman",#output is Spearman correlation coeff.
-                   conf.int = TRUE, #show confidence interval
-                   xlab = "Observed CERES score",
-                   ylab = "Predicted CERES score") #name x/y axis 
+  pdf(paste0("SpearmanPlot.pdf"))
+ ggplot(data = test_set, aes(x=test_set$Predictor, y=test_set$Prediction)) + 
+    geom_density(alpha=.3) +
+    ggtitle("Spearman Correlation plot") +
+    ylab("Predicted CERES score") +
+    xlab("Observed CERES score") +
+    theme_bw(base_size = 7) +
+    theme(legend.position="bottom",
+          legend.direction="horizontal",
+          plot.title = element_text(hjust = 0.5),
+          axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+          legend.title= element_blank(),
+          axis.title.x = element_blank(),
+          strip.text.y = element_text(angle = 0))
+ dev.off()#closing the figure file
  
- ###Error in `[.data.frame`(data, , x) : nicht definierte Spalten gewählt
- 
- return (list(ResidPlot, HomoPlot, corVal, SpearmanPlot))
+ return (corVal)
 })
 
 
 ```
-https://stackoverflow.com/questions/45602586/undefined-columns-data-frame-error
-https://github.com/kassambara/ggpubr/issues/23 #this doesn´t help
-
 
 ## Interpretation of Spearman correlation coefficient
 
