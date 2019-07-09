@@ -52,6 +52,9 @@ To run regression, certain conditions must be fulfilled:
     + As rule of thumb, the Pearson correlation coefficient should be lower than 0.8:
       $r < 0.80$
     + if this requirement is not met, one of the correlated variables should be deleted as it is seen as redundant.
+  + Run Shapiro-Wilk Test
+    + hypothesis test with H0: data is normal distributed
+      + we want to observe a p-value > 0.05
     
 ```{r}
 lapply(seq_along(data_regression), function(a){  
@@ -62,11 +65,11 @@ lapply(seq_along(data_regression), function(a){
   
   return(list(p,r))
    })
-
 ```
   + Quick Results:
     + Data of MYCBP and PARP10 is approx. normally distributed; ERBB2 and PIK3CA not
     + no multicollinearity detected, all 0.80 > x
+
 
 
 #Step 3: Multilinear Regression: Data split, Model calculation, Return correlation data for evaluation
@@ -82,7 +85,7 @@ To run the Multilinear Regression, it is advised to create a long function which
 input_data <- data_regression
 
 lapply(seq_along(input_data), function(a) {
-  set.seed(123) #initialize the random numbers, better reproducable
+  set.seed(123) #initialize the random numbers, ensures better repoducibility
   data <- input_data[[a]] #get the data
   colnames(data)[length(colnames(data))] <- "Predictor"
   
