@@ -24,16 +24,16 @@ h1.title {
 }
 h1 { /* Header 1 */
   font-size: 28px;
-  color: darkgoldenrod1;
+  color: #fba92e;
 }
 h2 { /* Header 2 */
     font-size: 22px;
-  color: deepskyblue4;
+  color: #158597;
 }
 h3 { /* Header 3 */
   font-size: 18px;
   font-family: "Times New Roman", Times, serif;
-  color: deepskyblue4;
+  color: #158597;
 }
 code.r{ /* Code block */
     font-size: 16px;
@@ -101,7 +101,7 @@ Targeting and eliminating driver mutations as a part of tumor treatment is a dif
 A promising approach is targeting so-called Second Site Targets (SSTs), which are gene mutations interacting genetically with driver mutations to increase cell viability. # CITATION
 If knocking out those genes leads to cell lethality, it may lead to new treatment options.
 
-```{r pressure, echo=FALSE, fig.cap="Concept of SSTs", out.width = '100%'}
+```{r pressure, echo=FALSE, fig.cap="Concept of SSTs", out.width = '100%', fig.align = "center"}
 knitr::include_graphics("Concept_of_SSTs.png")
 ```
 
@@ -223,7 +223,7 @@ tPatients_ID <- t(BCCL_Annotation[1]) #create a vector of patientIDs useful for 
 #Reminder to myself: create another command, to reorder rows alphabetically (for loops are not working)
 ```
 
-## Data Exploratory
+## General data exploration
 
 The next step was to undertake some experiments, in order to get a feeling for the data distribution. 
 We made a heatmap of expression values and found a very diverse an unordered expression of genes trough the 28 breast cancer cell lines. Somehow, the CERES values showed a wide variety as well, giving us a clue how useful our computer based approach might be. To make shure we can use all cell lines, we investigated if some of the cell lines shows abnormal values in comparison to others. A few boxplots prooved this is not the case. 
@@ -238,7 +238,7 @@ boxplot(tBCCL_Expression[, c("MYC", "PTEN", "TP53", "PIK3CA", "GATA3", "BRCA1", 
 
 We already discarded some of this genes, mostly because they are known as tumor suppressor genes. In our approach we looked for targets, which show similar characteristics in cell viability after a knockdown. A knockdown of a tumor supressor gene, even if it is mutated, will rarely have a negative effect on cell viability. This makes genes associated with tumor supressor genes useless for an inhibitory drug and therefore not appropriate for our analysis. 
 
-### Generation of the mutImpact matrix
+## Generation of the mutImpact matrix
 
 Suggestion: Every mutation has an impact on cell viability. In our analysis we have to distinguish not only between single mutations, we also have to evaluate different mutations in our cell lines "working together" and making every cell line different in its chcaracteristics. In order to gain an overview of these characteristics, we will generate a matrix, showing the effect on viability, caused by a single mutation, in every cell line. 
 
@@ -274,6 +274,8 @@ for (j in 1:ncol(pre_mutImpact)){
 #have a look at the mutImpact matrtix
 head(mutImpact)
 ```
+
+## Seletion of driver mutations
 
 ### Identification of driver mutations using k means clustering of CERES scores 
 
@@ -452,6 +454,8 @@ The box- and whisker plot of CERES scores reveal MYCB mutations as the most esse
 
 While the ERBB2 driver mutation was found to have the lowest essentiallity for cell survival on average, mean TPM values are shown to be highest, suggesting overexpression. Once again TPM values for this mutation have the largest spread, reaching more than 11.5 TPM. This implies the greatest variation overall in data for the ERBB2 driver mutation. Like for the CERES scores, both MYCBP and PIK3CA have a small interquartile range, while ranges for PARP10 are markedly larger. Further, it is interesting to note despite two CERES score data clusters for PIK3CA, TPM values show little variation around the mean. 
 
+## Identification of second-site targets
+
 ### Spotting genetic interactions: the Wilcoxon test
 
 Genetic interactions of driver mutations with other genes were examined based on a Wilcoxon signed rank test. As SSTs are expected to interact synergistically with the corresponding driver mutation in promoting cell viability similar CERES scores are suggested to infer the presence of gene interactions. Thus, high p-values are anticipated for such cooperating gene pairs when performing the Wilcoxon signed rank test. The Wilcoxon signed rank test was chosen rather than a t-test due to non-normal distribution of the data and the requirement of a paired test to compare the data of two genes per cell line. Assuming that the ranks of the CERES scores of the driver mutation and their SSTs are equa,l SST candidates were chosen by the means of the highest p-values (accepting the H0 hypothesis).
@@ -523,7 +527,7 @@ names(SST_Data) <- driver_mut
 head(SST_Data)
 ```
 
-## Verification of SST candidates by assigned k means cluster number 
+### Verification of SST candidates by assigned k means cluster number 
 
 After selection of the SST candidates stored in `SST_Data` the coexsitance of SST candidates and driver mutation in the same k means cluster was verified. An assignment to the same cluster would confirm a possible cooperation of gene pairs due to similar CERES scores. For this, the lapply function was used to chose each dataframe and thus driver mutation in turn from the list using the seq_along command.A further loop was installed such that for each driver mutation dataframes, the rownames of the `DvPicker` were compared to all possible  `data_clus_3e` rownames. If a coexistance of genes in the 3rd k means cluster was identified, genes were labelled as `verified` in a new column entitled "classifier". No match between rownames led to the `not verified`entry.
 
@@ -543,7 +547,7 @@ SST_Data <- lapply(seq_along(SST_Data), function(a) { # pick one dataframe from 
 names(SST_Data) <- driver_mut
 ```
 
-## Characterization of second-site targets
+### Characterization of second-site targets
 
 In order to characterize the SSTs, additional information on each SST was retrieved from the original data set and added to the data frames in `SST_Data`.
 
@@ -590,13 +594,14 @@ show(SST_Data$PARP10)
 show(SST_Data$PIK3CA)
 ```
 
-# Regression analysis to predict ceres scores of driver mutation
+## Forecasting interactions: Regression analysis to predict CERES scores of driver mutation
 
   + For the regression model, we want to predict the CERES score of the driver mutation (dependent variable) based on the CERES score of the SST candidates (independent variables).
   + A multilinear regression will be designed:
 
 
-## Construct datasets for Regression
+### Construct datasets for Regression
+
   + Multilinear regression, we 
     1. reform the BCCL CERES matrix
       + By transponing and format change, we obtain a matrix with colnames = Gene names and rownames = Cell line indices (equal to tPatients_ID)
@@ -619,7 +624,8 @@ data_regression <- list(linRegData_ERBB2, linRegData_MYCBP, linRegData_PARP10, l
 head(data_regression) #take a look at the data
 ```
 
-## Step 2: qqplot
+### Step 2: qqplot
+
   + Check Normality with a qqPlot
     + Using the aes-function of the ggplt package for _aesthetic_ plots.
     
@@ -631,7 +637,8 @@ create_qqplot <- function(a){
 lapply(seq_along(data_regression), create_qqplot)
 ```
 
-## Multilinear Regression: Data split, Model calculation, Return correlation data for evaluation
+### Multilinear Regression: Data split, Model calculation, Return correlation data for evaluation
+
 To run the Multilinear Regression, it is advised to create a long function which
   1. Splits the dataset in 75:25 training:test data
     + Previous installation of the "caTools" package is necessary
@@ -662,22 +669,25 @@ lapply(seq_along(input_data), function(a) {
 })
 ```
 
-## Interpretation of Spearman correlation coefficient
+### Interpretation of Spearman correlation coefficient
 
-### Revision: Meaning of the correlation coefficient rho
+#### Revision: Meaning of the correlation coefficient rho
+
   + the rank-correlation coefficient can take values from +1 to -1
     + rho ~ 1: perfect positive association of ranks
     + rho ~ 0: no association of ranks
     + rho ~ -1: perfect negative association of ranks
 
-### Revision: Adding a statistical parameter
+#### Revision: Adding a statistical parameter
+
   + To further interprete the p-value, we construct a H0 / H1 hypothesis:
     + H0: There is no association between the predicted and observed variable.
     + H1: There is an association between the predicted and observed variable.
   + Most importantly, it is not possible to assess the strength of the correlation based on the p-value. It rather judges the statistical test than the resulting value.
     + as a standard, we set the significance level to 0.05
 
-### Objective
+#### Objective
+
  + We will the compare this values for the different models
   + For a positive correlation, two variables move in the same direction.
     + For a well-designed model, we expect the precicted and observed CERES scores being approx. even
@@ -686,7 +696,7 @@ lapply(seq_along(input_data), function(a) {
       + the p-value < 0.05
     
 
-## Results
+### Results
 
 We obtained the followwing p-values and correlation coefficients:
 
@@ -699,7 +709,7 @@ PIK3CA    | 0.7131      |-0.1786   |
 
 *How about doing a linear regression model and comparing the F-statistic values?*
 
-## Discussion
+### Discussion
 
   + ERBB2-model:
     + Shows the highest rho value of all four models, but ~ 0.1 is a rather weak positive relationship
