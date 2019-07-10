@@ -10,9 +10,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 ### Multilinear Regression
 ## Objective
-
-  + For the regression model, we want to predict the CERES score of the driver mutation (dependent variable) based on the CERES score of the SST candidates (independent variables).
-  + A multilinear regression will be designed:
+For the regression model, we want to predict the CERES score of the driver mutation (dependent variable) based on the CERES score of the SST candidates (independent variables).
   
 # Packages
 ```{r}
@@ -21,11 +19,8 @@ library("ggpubr")
 ```
 
 # Step 1: Construct datasets for Regression
-  + Multilinear regression, we 
-    1. reform the BCCL CERES matrix
-      + By transponing and format change, we obtain a matrix with colnames = Gene names and rownames = Cell line indices (equal to tPatients_ID)
-    2. Collect the relevant the CERES scores for the mutations for the linear regression.
-      + All columns with the corresponding names of the SST genes plus the driver mutation will be collected and copied into a new dataframe
+Multilinear regression, we reform the BCCL CERES matrix. By transponing and format change, we obtain a matrix with colnames = Gene names and rownames = Cell line indices (equal to tPatients_ID). Then, we collect the relevant the CERES scores for the mutations for the linear regression.
+All columns with the corresponding names of the SST genes plus the driver mutation will be collected and copied into a new dataframe
       
 ```{r}
 #reformat BCCL CERES matrix
@@ -45,17 +40,11 @@ head(data_regression)
 
 #Step 2: Checking assumptions
 To run regression, certain conditions must be fulfilled:
-  + Check Normality with a qqPlot
-    + Using the aes-function for aesthetic plots, provided by the "ggplot2" package
-  + Check Multicollinearity
-    + Multicollinearity is given if two dependent variables are strongly correlated, which can lead to difficulties in further analysis
+Normal distribution, checked with a qqPlot:Using the aes-function for aesthetic plots, provided by the "ggplot2" package.
+Multicollinearity, which is given if two dependent variables are strongly correlated, which can lead to difficulties in further analysis.
     + As rule of thumb, the Pearson correlation coefficient should be lower than 0.8:
       $r < 0.80$
-    + if this requirement is not met, one of the correlated variables should be deleted as it is seen as redundant.
-  + Run Shapiro-Wilk Test
-    + hypothesis test with H0: data is normal distributed
-      + we want to observe a p-value > 0.05
-    
+If this requirement is not met, one of the correlated variables should be deleted as it is seen as redundant.
 ```{r}
 lapply(seq_along(data_regression), function(a){  
   p <- ggplot(data_regression[[a]], aes(sample=data_regression[[a]][,ncol(data_regression[[a]])])) + stat_qq()+ stat_qq_line() #create qq-Plot with line for comparison to normal distribution
@@ -73,14 +62,10 @@ lapply(seq_along(data_regression), function(a){
 
 
 #Step 3: Multilinear Regression: Data split, Model calculation, Return correlation data for evaluation
-To run the Multilinear Regression, it is advised to create a long function which
-  1. Splits the dataset in __75:25__ training:test data
-    + Previous installation of the "caTools" package is necessary
-  2. Conducts Training of Regression model with training data
-    + predict Driver mutation CERES (y; dep.variable) from SST CERES scores (x1 ... xn; indep.variables)
-  3. Checks model assumptions of residual normal distribution and homoscedasticity
-  3. Runs Test Data on model for performance evaluation
-  4. Calculates Spearman correlation to further asess model performance
+To run the Multilinear Regression, it is advised to create a long function which splits the dataset in __75:25__ training:test data. (Previous installation of the "caTools" package is necessary)
+Then the function conducts Training of Regression model with training data to predict Driver mutation CERES (y; dep.variable) from SST CERES scores (x1 ... xn; indep.variables)
+Followed by checking model assumptions of residual normal distribution and homoscedasticity.
+Lateron, the function runs the test Data on model for performance evaluation and finally calculates and plots Spearman correlation to further asess model performance
   
 ```{r}
 input_data <- data_regression
@@ -99,10 +84,12 @@ lapply(seq_along(input_data), function(a) {
   
 
   pdf(paste0("Resid-HomoPlot.pdf")) #save plots as pdf, in working directory "wd"
-  
-  ResidPlot <- hist(resid(regressor), main = 'Histogram of residuals',xlab='Standardised Residuals',ylab='Frequency') #plot a histogram of standardised residuals to check the assumption of normality
-  HomoPlot <- plot(regressor, which = 1) #fitted values and residuals plot to check the assumption of homoscedasticity
-  
+hist(resid(regressor), main = 'Histogram of residuals',xlab='Standardised Residuals',ylab='Frequency') #plot a histogram of standardised residuals to check the assumption of normality
+dev.off() #closing the figure file
+
+
+pdf(paste0("HomoPlot.pdf")) #save plots as pdf, in working directory "wd"
+plot(regressor, which = 1) #fitted values and residuals plot to check the assumption of homoscedasticity
 dev.off() #closing the figure file
  
 
@@ -111,8 +98,7 @@ dev.off() #closing the figure file
   
   corVal <- cor.test(test_set$Predictor , test_set$Prediction, method = "spearman") #to judge model performance, calculate Spearman corr. between predicted and observed values
 
-  pdf(paste0("SpearmanPlot.pdf"))
- ggplot(data = test_set, aes(x=test_set$Predictor, y=test_set$Prediction)) + 
+  spearmanPlot <- ggplot(data = test_set, aes(x=test_set$Predictor, y=test_set$Prediction)) + 
     geom_density(alpha=.3) +
     ggtitle("Spearman Correlation plot") +
     ylab("Predicted CERES score") +
@@ -125,7 +111,10 @@ dev.off() #closing the figure file
           legend.title= element_blank(),
           axis.title.x = element_blank(),
           strip.text.y = element_text(angle = 0))
- dev.off()#closing the figure file
+
+pdf(paste0("SpearmanPlot.pdf"))
+print(spearmanPlot)
+dev.off()#closing the figure file
  
  return (corVal)
 })
@@ -136,25 +125,21 @@ dev.off() #closing the figure file
 ## Interpretation of Spearman correlation coefficient
 
 # Revision: Meaning of the correlation coefficient rho
-  + the rank-correlation coefficient can take values from +1 to -1
+The rank-correlation coefficient can take values from +1 to -1
     + rho ~ 1: perfect positive association of ranks
     + rho ~ 0: no association of ranks
     + rho ~ -1: perfect negative association of ranks
 
 # Revision: Adding a statistical parameter
-  + To further interprete the p-value, we construct a H0 / H1 hypothesis:
+To further interprete the p-value, we construct a H0 / H1 hypothesis:
     + H0: There is no association between the predicted and observed variable.
     + H1: There is an association between the predicted and observed variable.
-  + Most importantly, it is not possible to assess the strength of the correlation based on the p-value. It rather judges the statistical test than the resulting value.
-    + as default, we set the significance level to 0.05
+Most importantly, it is not possible to assess the strength of the correlation based on the p-value. It rather judges the statistical test than the resulting value. As default, we set the significance level to 0.05
 
 # Objective
- + We will the compare this values for the different models
-  + For a positive correaltion, two variables move in the same direction.
-    + For a well-designed model, we expect the precicted and observed CERES scores being approx. even
-  + Thus, optimal model design is achieved if:
-      + the correlation coefficient is close to 1
-      + the p-value < 0.05
+We will the compare this values for the different models. For a positive correlation, two variables move in the same direction. For a well-designed model, we expect the precicted and observed CERES scores being approx. even. Thus, optimal model design is achieved if:
+    + the correlation coefficient is close to 1
+    + the p-value < 0.05
     
 
 # Results
@@ -237,7 +222,8 @@ Our data seems to have an appropriate size for a basic regression model.
 On the other hand, for the supervised machine learning process of the regression, sample sizes up to n = 50,000 are reported.(Libbrecht and Noble 2015) 
 In general, more data will lead to improved data quality. Generally, scientists are advised to focus on obtaining and analyzing larger data sets instead of comparing different learning techniques on small training sets.(Banko and Brill 2001)
 
-
+### Conclusion
+All four models, at least one of the conditions for a multilinear regression model was violated. Thus, none 
 --------------------
   + Banko, M. and E. Brill (2001). Scaling to very very large corpora for natural language disambiguation. Proceedings of the 39th Annual Meeting on Association for Computational Linguistics. Toulouse, France, Association for Computational Linguistics: 26-33.
   + Harrell, F. E. (2001). Regression modeling strategies : with applications to linear models, logistic regression, and survival analysis. New York ; Berlin ; Heidelberg [u.a.], Springer.
