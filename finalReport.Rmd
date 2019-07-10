@@ -49,6 +49,9 @@ Furthermore, driver mutations are also often required for tumor maintenance. (St
 Targeting and eliminating driver mutations as a part of tumor treatment is a difficult procedure, since those genes are also essential for survival of non-mutated cells. A differentiation between normal and tumor cell is not possible, thus targeting leads to adverse effects. Plus, high dosages need to be applied. #CITATION
 A promising approach is targeting so-called Second Site Targets (SSTs), which are gene mutations interacting genetically with driver mutations to increase cell viability. # CITATION
 If knocking out those genes leads to cell lethality, it may lead to new treatment options. 
+```{r pressure, echo=FALSE, fig.cap="Concept of SSTs", out.width = '100%'}
+knitr::include_graphics("Concept_of_SSTs.png")
+```
 
 Our central question for our project is thereby:
 > Which __second-site targets__ interact genetically with __driver mutations__ to promote cell viability and proliferation in breast cell cancers?
@@ -468,7 +471,7 @@ head(SST_Data)
 
 ## Verification of SST candidates by assigned k means cluster number 
 
-After selection of the SST candidates stored in `SST_cand_x`,loops were installed to verify the coexistance of SST candidates and driver mutations in the same k means cluster. An assignment to the same cluster would confirm a possible cooperation of gene pairs due to similar CERES scores. For this, new dataframes were created  before a separate loop was installed for each driver mutation. By comparing each rowname of the `SST_cand_X` dataframes to all possible  `data_clus_3e` rownames, a coexistance of genes in the 3rd k means cluster was identified, leading to the labelling of `SST X`  in a new separate column. Otherwise no match led to the `No SST`entry. In order to combine all four dataframes with the `rbind`command, the first columns were all renamed to "p_values". Finally all confirmed SSTs were ordered alphabetically, with no gene identified twice for a different driver mutation. 
+After selection of the SST candidates stored in `SST_Data` the coexsitance of SST candidates and driver mutation in the same k means cluster was verified. An assignment to the same cluster would confirm a possible cooperation of gene pairs due to similar CERES scores. For this, the lapply function was used to chose each dataframe and thus driver mutation in turn from the list using the seq_along command.A further loop was installed such that for each driver mutation dataframes, the rownames of the `DvPicker` were compared to all possible  `data_clus_3e` rownames. If a coexistance of genes in the 3rd k means cluster was identified, genes were labelled as `verified` in a new column entitled "classifier". No match between rownames led to the `not verified`entry.
 
 ```{r SST Cluster Check}
 SST_Data <- lapply(seq_along(SST_Data), function(a) { # pick one dataframe from list
@@ -669,7 +672,7 @@ PIK3CA    | 0.7131      |-0.1786   |
 + The PARP10 model resulted in a moderate negative relationship, which is not of relevance for our objective.
 + The ERBB2 model did not deliver a significant p-value, but indeed contains at least a weak positive correlation.
 
-### Discussing possible Reasons for the unsatisfying results
+### Discussing possible reasons for the unsatisfying results
 ## Possible causes in the Regression model
 #Sample Size
 
