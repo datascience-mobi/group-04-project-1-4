@@ -174,7 +174,9 @@ tPatients_ID <- t(BCCL_Annotation[1]) #create a vector of patientIDs useful for 
 ## Data Exploratory
 
 The next step was to undertake some experiments, in order to get a feeling for the data distribution. 
-We made a heatmap of expression values, compared single genes for knockdown and copynumber scores and found relatively equally distibuted expression values and CERES Scores. We also tried to gain a first insight into driver mutations, extracted from literature.
+We made a heatmap of expression values and found a very diverse an unordered expression of genes trough the 28 breast cancer cell lines. Somehow, the CERES values showed a wide variety as well, giving us a clue how useful our computer based approach might be. To make shure we can use all cell lines, we investigated if some of the cell lines shows abnormal values in comparison to others. A few boxplots prooved this is not the case. 
+Another issue was the very low level of expression of most genes. We discussed the possibility of erasing an amount of these genes and decided to not cut out any data, before we don't know  which kind of data we will need in the end. In this phase of the project is was open if a second site target will have a high expression in every case. 
+As next step we made some tests, using driver mutations suggested in literature. These boxplots show the different roles of genes ending up in various expression values in a nice way. 
 *muss noch sch?n gemacht werden :)*
 
 ```{r echo=TRUE, fig.align= "center"}
