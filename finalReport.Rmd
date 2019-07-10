@@ -4,7 +4,7 @@ author: "ELias Farr, Lennart Linke, Lisa Marie Milchsack, Salome Steinke"
 date: "17. Juli 2019"
 output: 
   html_document:
-    highlight: tango
+    highlight: pygments
     number_sections: yes
     theme: lumen
     toc: yes
@@ -19,9 +19,51 @@ td {  /* Table  */
   font-size: 16px;
 }
 h1.title {
-  font-size: 38px;
-  color: DarkRed;
+  font-size: 40px;
+  color: Red;
 }
+h1 { /* Header 1 */
+  font-size: 28px;
+  color: darkgoldenrod1;
+}
+h2 { /* Header 2 */
+    font-size: 22px;
+  color: deepskyblue4;
+}
+h3 { /* Header 3 */
+  font-size: 18px;
+  font-family: "Times New Roman", Times, serif;
+  color: deepskyblue4;
+}
+code.r{ /* Code block */
+    font-size: 16px;
+}
+pre { /* Code block - determines code spacing between lines */
+    font-size: 14px;
+}
+
+<blockquote class="blockquote-reverse">
+  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a ante.</p>
+  <small>Someone famous in <cite title="Source Title">Source Title</cite></small>
+</blockquote>
+
+<table class="table table-striped table-hover ">
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Column heading</th>
+      <th>Column heading</th>
+      <th>Column heading</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>Column content</td>
+      <td>Column content</td>
+      <td>Column content</td>
+    </tr>
+    </tbody>
 </style>
 
 ```{r setup, include=FALSE}
@@ -31,7 +73,7 @@ knitr::opts_chunk$set(echo = TRUE, error = FALSE)
 
 ## Revision: Breast Cancer, a challenging disease
 
-> "The heterogeneity of breast cancers makes them fascinating and challenging to diagnose and treat." 
+> "The heterogeneity of breast cancers makes them fascinating and challenging to diagnose and treat." *Please, add whom you quoted from*
 
 According to the latest reports of breast cancer prevalence, the current state is very serious:
 + Breast cancer ranks second in worldwide cancer case numbers (Hutchinson 2010)
@@ -39,6 +81,15 @@ According to the latest reports of breast cancer prevalence, the current state i
 + This makes ~ 30% of all reported cases of tumor diseases.(Robert-Koch-Institut 2017)
 
 ## Driver Mutations: the driving force in tumorigenesis
+
+Driver mutations (DV) are what is to be seen as the ticket of admission to the different stages of cancer growth. Thus, the acquisition of driver mutations is essential for tumour initiation, transformation as well as progression and metastasis. According to Bert Vogelstein three mutations in genes displaying a crucial function in cell proliferation, DNA integrity and cellular motility are enough to drive a normal cell into aberrant growth and malignancy:
+
+> "Focusing on driver-gene mutations and the pathways they control has rendered complex cancer-genome landscapes intelligible. In solid tumors of adults, alterations in as few as three driver genes appear to suffice for a cell to evolve into an advanced cancer." quote.footer("--- *The Path to Cancer - Three Strikes and You're Out*, Bert Vogelstein 2015")
+
+These DVs comprise both gain-of-function mutations in (proto-)oncogenes which usually promote cell proliferation and loss-of-function mutations in tumour suppressor genes which usually decelerate the cell cycle as well as genes involved in DNA repair and proofreading. Thereby, the cell is aqcuires indispensable properties in tumorigenesis such as immortality, continous proliferation, immune and apoptosis resistance and the ability to promote angiogenesis. Examples for prominent oncogenes are k-ras and b-raf encoding kinases regulating a complex network of proteins involved in cellular growth when bound to ATP or GTP, respectively. On the other hand the most illustrious tumour suppressor gene is p53 whose physiological role is to induce cell senescence and apoptosis in case of DNA damage, a condition often encountered in cancer cells.
+
+Due to their essential role in tumour progression DVs are predisposed targets in novel approaches in cancer therapy. For instance, trastuzumab, an antibody against HER2 which is an oncogene promoting cell growth while inhibiting apotosis launched in 1998 was proven to reduce the recurrence rate by 50% and mortality by 30%. However, targeting genes or gene products involved in vital cellular processes remains a major challenge as healthy cells expressing the same genes are often affected as well. As therapies tailored to the molecular phenotype of the tumour achieved greater successes than conventional strategies such as chemotherapy and irradiation scientists now focus on identifying other molecular targets with a negligible effect on healthy tissues.  
+
 In our project, we first focus on driver mutations, which can be imagined as the main "force" in tumorigenesis. Certain genes induce/improve tumor growth as a consequence of mutation, such as:
 + Providing tumor cells with a growth advantage
 + Leading to positive selection in microenvironment
@@ -48,7 +99,8 @@ Furthermore, driver mutations are also often required for tumor maintenance. (St
 
 Targeting and eliminating driver mutations as a part of tumor treatment is a difficult procedure, since those genes are also essential for survival of non-mutated cells. A differentiation between normal and tumor cell is not possible, thus targeting leads to adverse effects. Plus, high dosages need to be applied. #CITATION
 A promising approach is targeting so-called Second Site Targets (SSTs), which are gene mutations interacting genetically with driver mutations to increase cell viability. # CITATION
-If knocking out those genes leads to cell lethality, it may lead to new treatment options. 
+If knocking out those genes leads to cell lethality, it may lead to new treatment options.
+
 ```{r pressure, echo=FALSE, fig.cap="Concept of SSTs", out.width = '100%'}
 knitr::include_graphics("Concept_of_SSTs.png")
 ```
