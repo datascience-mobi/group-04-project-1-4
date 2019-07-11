@@ -127,9 +127,9 @@ MCY       | ~ 30 - 50%          |Cell cycle and apoptosis regulator      |(Gabay
 PARP      | ~ 45%               |Regulates differentiation/proliferation |(Siraj, Pratheeshkumar et al. 2018)                          |
 PIK3CA    | ~ 30 - 48%          |Interaction with AKT and mTOR pathway   |(Aleskandarany, Rakha et al. 2010, Shimoi, Hamada et al.2018)|
 
-# Main
+# Methods
 
-## Data cleanup
+## Data cleanup and exploration
 
 Before we start our statistical part, we have to load the required packages as well as the data:
 
@@ -169,8 +169,8 @@ library(tidyverse)
 library(factoextra)
 library(wesanderson)
 
-data = readRDS("C:/Users/lisa-/Desktop/Studium/4. FS/Bioinfo/DepMap19Q1_allData.RDS")
-root.dir = "C:/Users/lisa-/Desktop/Studium/4. FS/Bioinfo/project-01-group-04/"
+data = readRDS("C:/Users/Salome/Documents/4.FS/Bioinfo/DepMap19Q1_allData.RDS")
+root.dir = "C:/Users/Salome/Documents/4.FS/Bioinfo/"
 ```
 
 To get a feeling for the dataset we will have a look at the given data structure.  
@@ -223,7 +223,7 @@ tPatients_ID <- t(BCCL_Annotation[1]) #create a vector of patientIDs useful for 
 #Reminder to myself: create another command, to reorder rows alphabetically (for loops are not working)
 ```
 
-## General data exploration
+### Exploring gene expression patterns 
 
 The next step was to undertake some experiments, in order to get a feeling for the data distribution. 
 We made a heatmap of expression values and found a very diverse an unordered expression of genes trough the 28 breast cancer cell lines. Somehow, the CERES values showed a wide variety as well, giving us a clue how useful our computer based approach might be. To make shure we can use all cell lines, we investigated if some of the cell lines shows abnormal values in comparison to others. A few boxplots prooved this is not the case. 
@@ -238,7 +238,7 @@ boxplot(tBCCL_Expression[, c("MYC", "PTEN", "TP53", "PIK3CA", "GATA3", "BRCA1", 
 
 We already discarded some of this genes, mostly because they are known as tumor suppressor genes. In our approach we looked for targets, which show similar characteristics in cell viability after a knockdown. A knockdown of a tumor supressor gene, even if it is mutated, will rarely have a negative effect on cell viability. This makes genes associated with tumor supressor genes useless for an inhibitory drug and therefore not appropriate for our analysis. 
 
-## Generation of the mutImpact matrix
+### Generation of the mutImpact matrix
 
 Suggestion: Every mutation has an impact on cell viability. In our analysis we have to distinguish not only between single mutations, we also have to evaluate different mutations in our cell lines "working together" and making every cell line different in its chcaracteristics. In order to gain an overview of these characteristics, we will generate a matrix, showing the effect on viability, caused by a single mutation, in every cell line. 
 
@@ -275,7 +275,7 @@ for (j in 1:ncol(pre_mutImpact)){
 head(mutImpact)
 ```
 
-## Seletion of driver mutations
+## Selection of driver mutations
 
 ### Identification of driver mutations using k means clustering of CERES scores 
 
@@ -402,7 +402,7 @@ data_clus_3e["Driver mutation"] <- sapply(1:nrow(data_clus_3), function(j){
   }) # labeling driver mutations with "driver mutation" in data_clus_3e 
 ```
 
-### Data visualisation of CERES and TPM values for the four selected driver mutations 
+### Data visualisation of CERES and TPM values for selected driver mutations 
 
 CERES scores and expression in TPM values for the selected 4 driver mutations were visualised as box and whisker plots. Following the generation of the `GOI_X` dataframe containing either CERES or TPM values for the four mutations, the data was reshaped to contain two columns. One column being "variable" with the names of driver mutations, the other "value" with the corresponding CERES or TPM value. The ggplot function, part of the ggplot2 package, was used to plot the following box an whisker plots. 
 
@@ -594,13 +594,12 @@ show(SST_Data$PARP10)
 show(SST_Data$PIK3CA)
 ```
 
-## Forecasting interactions: Regression analysis to predict CERES scores of driver mutation
+## Exploiting interactions: Regression analysis to predict CERES scores of driver mutation
 
   + For the regression model, we want to predict the CERES score of the driver mutation (dependent variable) based on the CERES score of the SST candidates (independent variables).
   + A multilinear regression will be designed:
 
-
-### Construct datasets for Regression
+### Conditioning the dataset
 
   + Multilinear regression, we 
     1. reform the BCCL CERES matrix
@@ -624,8 +623,6 @@ data_regression <- list(linRegData_ERBB2, linRegData_MYCBP, linRegData_PARP10, l
 head(data_regression) #take a look at the data
 ```
 
-### Step 2: qqplot
-
   + Check Normality with a qqPlot
     + Using the aes-function of the ggplt package for _aesthetic_ plots.
     
@@ -637,7 +634,7 @@ create_qqplot <- function(a){
 lapply(seq_along(data_regression), create_qqplot)
 ```
 
-### Multilinear Regression: Data split, Model calculation, Return correlation data for evaluation
+### Design of the multilinear regression
 
 To run the Multilinear Regression, it is advised to create a long function which
   1. Splits the dataset in 75:25 training:test data
@@ -669,16 +666,10 @@ lapply(seq_along(input_data), function(a) {
 })
 ```
 
-### Interpretation of Spearman correlation coefficient
-
-#### Revision: Meaning of the correlation coefficient rho
-
   + the rank-correlation coefficient can take values from +1 to -1
     + rho ~ 1: perfect positive association of ranks
     + rho ~ 0: no association of ranks
     + rho ~ -1: perfect negative association of ranks
-
-#### Revision: Adding a statistical parameter
 
   + To further interprete the p-value, we construct a H0 / H1 hypothesis:
     + H0: There is no association between the predicted and observed variable.
@@ -686,7 +677,6 @@ lapply(seq_along(input_data), function(a) {
   + Most importantly, it is not possible to assess the strength of the correlation based on the p-value. It rather judges the statistical test than the resulting value.
     + as a standard, we set the significance level to 0.05
 
-#### Objective
 
  + We will the compare this values for the different models
   + For a positive correlation, two variables move in the same direction.
@@ -696,9 +686,7 @@ lapply(seq_along(input_data), function(a) {
       + the p-value < 0.05
     
 
-### Results
-
-We obtained the followwing p-values and correlation coefficients:
+We obtained the following p-values and correlation coefficients:
 
 Model     | p-value     | rho      | 
 ----------|-------------|----------|
@@ -709,7 +697,7 @@ PIK3CA    | 0.7131      |-0.1786   |
 
 *How about doing a linear regression model and comparing the F-statistic values?*
 
-### Discussion
+### Evaluating the fit of the regression model
 
   + ERBB2-model:
     + Shows the highest rho value of all four models, but ~ 0.1 is a rather weak positive relationship
@@ -736,9 +724,6 @@ PIK3CA    | 0.7131      |-0.1786   |
 + The PARP10 model resulted in a moderate negative relationship, which is not of relevance for our objective.
 + The ERBB2 model did not deliver a significant p-value, but indeed contains at least a weak positive correlation.
 
-### Discussing possible reasons for the unsatisfying results
-## Possible causes in the Regression model
-#Sample Size
 
 It seems possible that the small sample size for the regression model lead to the lack of significant results, with only 28 events (CERES score observed in cell line) per predicting variable (SST gene).
 
@@ -751,7 +736,7 @@ But, a common thumb-rule for building a regression model is to calculate the _li
 If this equation is fulfilled, the model is supposed to be reliable.(Harrell 2001)
 In fact, this condition is true for all four models.
 
-# Distribution
+# Distribution *perhaps we could get rid of this and the following title*
 
 Checking distributional assumptions (= normal distribution) is also important and a different model should be chosen if needed. (Harrell 2001)
   + As shown in the qq-Plots, normal distribution does only apply to the models of MYCBP and PARP10
@@ -766,6 +751,7 @@ Our data seems to have an appropriate size for a basic regression model.
 On the other hand, for the supervised machine learning process of the regression, sample sizes up to n = 50,000 are reported.(Libbrecht and Noble 2015) 
 In general, more data will lead to improved data quality. Generally, scientists are advised to focus on obtaining and analyzing larger data sets instead of comparing different learning techniques on small training sets.(Banko and Brill 2001)
 
+# Results and Discussion
 
 --------------------
 
