@@ -219,8 +219,9 @@ tPatients_ID <- t(BCCL_Annotation[1]) #create a vector of patientIDs useful for 
 
 ### Exploring gene expression patterns 
 
-The next step was to undertake some experiments, in order to get a feeling for the data distribution. 
-We made a heatmap of expression values as well as CERES scores and found a diverse an unordered expression of genes trough the 28 breast cancer cell lines. Somehow, within the CERES scores were genes, a group of genes was showy, having a clear negative effect on cell viability. This group is suggested to be so called "housekeeping-genes", genes fulfilling the essential roles in Cellcycle. All the other genes showed a large variety of through the cell lines, giving us a clue how useful our computer based approach might be. To make shure we can use all cell lines, we investigated if some of the cell lines shows abnormal values in comparison to others. The boxplot below proofs, this is not the case. 
+The next step was to do some experiments, in order to get a feeling for data distribution. 
+We made a heatmap of expression values as well as CERES scores and found a diverse an unordered expression of genes trough the 28 breast cancer cell lines. Somehow, within the CERES scores were genes, a group of genes was showy, having a clear negative effect on cell viability. This group is suggested to be so called "housekeeping-genes", genes fulfilling the essential roles in cellcycle. All the other genes showed a large variety of through the cell lines, giving us a clue how useful our computer based approach might be. To make shure we can use all cell lines, we investigated if some of the cell lines shows abnormal values in comparison to others. The boxplot below proofs, this is not the case. 
+
 ```{r echo=TRUE, fig.align= "center"}
 #Create a heatmap for all Genes and their CERES score
 CERES50 <- as.matrix(BCCL_kd.ceres[c(1:nrow(BCCL_kd.ceres)),c(1:28)])
@@ -239,17 +240,16 @@ GenExmelt= melt(GeneralExp)
 GeneralExp_boxplot = ggplot(GenExmelt, aes(x = variable, y = value)) +
      geom_boxplot(aes(fill=variable), outlier.alpha = 0.7,
                 outlier.colour = "grey", outlier.shape = 20, outlier.size = 2) +
-     labs(title = 'General expression in all 28 BCCLs', x = 'The eleven most prevalent driver mutations in   BC', y = 'Expression [TPM]') +
+     labs(title = 'General expression in all 28 BCCLs', x = 'Breast cancer cell lines', y = 'Expression [TPM]') +
      theme_minimal() +
      geom_jitter(width = 0.15) +
      scale_fill_manual(values = newcolours) +
      theme(legend.position ='none',
            plot.title = element_text(hjust = 0.4),
-           axis.text.x = element_text(angle = 0, vjust = 0, hjust=0.5),
+           axis.text.x = element_blank(),
            legend.title= element_blank(),
-           axis.title.x = element_blank(),
+           axis.title.x = element_text(),
            strip.text.y = element_text(angle = 0))
- 
 GeneralExp_boxplot
 ```
 
