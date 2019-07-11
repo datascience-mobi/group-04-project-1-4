@@ -106,7 +106,7 @@ Targeting and eliminating driver mutations as a part of tumor treatment is a dif
 A promising approach is targeting so-called Second Site Targets (SSTs), which are gene mutations interacting genetically with driver mutations to increase cell viability. # CITATION
 If knocking out those genes leads to cell lethality, it may lead to new treatment options.
 
-```{r pressure, echo=FALSE, fig.cap="Concept of SSTs", out.width = '100%', fig.align = "center"}
+```{r pressure, eval=FALSE, echo=FALSE, fig.cap="Concept of SSTs", out.width = '100%', fig.align = "center"}
 knitr::include_graphics("Concept_of_SSTs.png")
 ```
 
@@ -132,6 +132,9 @@ MYC       | ~ 30 - 50%          |Cell cycle and apoptosis regulator      |(Gabay
 PARP10      | ~ 45%               |Regulates differentiation/proliferation |(Siraj, Pratheeshkumar et al. 2018)                          |
 PIK3CA    | ~ 30 - 48%          |Interaction with AKT and mTOR pathway   |(Aleskandarany, Rakha et al. 2010, Shimoi, Hamada et al.2018)|
 
+```{r pressure, eval=FALSE, echo=FALSE, fig.cap="Possible_Driver_Mutations", out.width = '100%', fig.align = "center"}
+knitr::include_graphics("Possible_Driver_Mutations.png")
+```
 # Methods
 
 ## Data cleanup and exploration
