@@ -4,7 +4,7 @@ author: "ELias Farr, Lennart Linke, Lisa Marie Milchsack, Salome Steinke"
 date: "17. Juli 2019"
 output: 
   html_document:
-    highlight: tango
+    highlight: pygments
     number_sections: yes
     theme: lumen
     toc: yes
@@ -19,9 +19,51 @@ td {  /* Table  */
   font-size: 16px;
 }
 h1.title {
-  font-size: 38px;
-  color: DarkRed;
+  font-size: 40px;
+  color: Red;
 }
+h1 { /* Header 1 */
+  font-size: 28px;
+  color: #fba92e;
+}
+h2 { /* Header 2 */
+    font-size: 22px;
+  color: #158597;
+}
+h3 { /* Header 3 */
+  font-size: 18px;
+  font-family: "Times New Roman", Times, serif;
+  color: #158597;
+}
+code.r{ /* Code block */
+    font-size: 16px;
+}
+pre { /* Code block - determines code spacing between lines */
+    font-size: 14px;
+}
+
+<blockquote class="blockquote-reverse">
+  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a ante.</p>
+  <small>Someone famous in <cite title="Source Title">Source Title</cite></small>
+</blockquote>
+
+<table class="table table-striped table-hover ">
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Column heading</th>
+      <th>Column heading</th>
+      <th>Column heading</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>Column content</td>
+      <td>Column content</td>
+      <td>Column content</td>
+    </tr>
+    </tbody>
 </style>
 
 ```{r setup, include=FALSE}
@@ -31,7 +73,7 @@ knitr::opts_chunk$set(echo = TRUE, error = FALSE)
 
 ## Revision: Breast Cancer, a challenging disease
 
-> "The heterogeneity of breast cancers makes them fascinating and challenging to diagnose and treat." 
+> "The heterogeneity of breast cancers makes them fascinating and challenging to diagnose and treat." *Please, add whom you quoted from*
 
 According to the latest reports of breast cancer prevalence, the current state is very serious:
 + Breast cancer ranks second in worldwide cancer case numbers (Hutchinson 2010)
@@ -39,6 +81,15 @@ According to the latest reports of breast cancer prevalence, the current state i
 + This makes ~ 30% of all reported cases of tumor diseases.(Robert-Koch-Institut 2017)
 
 ## Driver Mutations: the driving force in tumorigenesis
+
+Driver mutations (DV) are what is to be seen as the ticket of admission to the different stages of cancer growth. Thus, the acquisition of driver mutations is essential for tumour initiation, transformation as well as progression and metastasis. According to Bert Vogelstein three mutations in genes displaying a crucial function in cell proliferation, DNA integrity and cellular motility are enough to drive a normal cell into aberrant growth and malignancy:
+
+> "Focusing on driver-gene mutations and the pathways they control has rendered complex cancer-genome landscapes intelligible. In solid tumors of adults, alterations in as few as three driver genes appear to suffice for a cell to evolve into an advanced cancer." quote.footer("--- *The Path to Cancer - Three Strikes and You're Out*, Bert Vogelstein 2015")
+
+These DVs comprise both gain-of-function mutations in (proto-)oncogenes which usually promote cell proliferation and loss-of-function mutations in tumour suppressor genes which usually decelerate the cell cycle as well as genes involved in DNA repair and proofreading. Thereby, the cell is aqcuires indispensable properties in tumorigenesis such as immortality, continous proliferation, immune and apoptosis resistance and the ability to promote angiogenesis. Examples for prominent oncogenes are k-ras and b-raf encoding kinases regulating a complex network of proteins involved in cellular growth when bound to ATP or GTP, respectively. On the other hand the most illustrious tumour suppressor gene is p53 whose physiological role is to induce cell senescence and apoptosis in case of DNA damage, a condition often encountered in cancer cells.
+
+Due to their essential role in tumour progression DVs are predisposed targets in novel approaches in cancer therapy. For instance, trastuzumab, an antibody against HER2 which is an oncogene promoting cell growth while inhibiting apotosis launched in 1998 was proven to reduce the recurrence rate by 50% and mortality by 30%. However, targeting genes or gene products involved in vital cellular processes remains a major challenge as healthy cells expressing the same genes are often affected as well. As therapies tailored to the molecular phenotype of the tumour achieved greater successes than conventional strategies such as chemotherapy and irradiation scientists now focus on identifying other molecular targets with a negligible effect on healthy tissues.  
+
 In our project, we first focus on driver mutations, which can be imagined as the main "force" in tumorigenesis. Certain genes induce/improve tumor growth as a consequence of mutation, such as:
 + Providing tumor cells with a growth advantage
 + Leading to positive selection in microenvironment
@@ -48,7 +99,11 @@ Furthermore, driver mutations are also often required for tumor maintenance. (St
 
 Targeting and eliminating driver mutations as a part of tumor treatment is a difficult procedure, since those genes are also essential for survival of non-mutated cells. A differentiation between normal and tumor cell is not possible, thus targeting leads to adverse effects. Plus, high dosages need to be applied. #CITATION
 A promising approach is targeting so-called Second Site Targets (SSTs), which are gene mutations interacting genetically with driver mutations to increase cell viability. # CITATION
-If knocking out those genes leads to cell lethality, it may lead to new treatment options. 
+If knocking out those genes leads to cell lethality, it may lead to new treatment options.
+
+```{r pressure, echo=FALSE, fig.cap="Concept of SSTs", out.width = '100%', fig.align = "center"}
+knitr::include_graphics("Concept_of_SSTs.png")
+```
 
 Our central question for our project is thereby:
 > Which __second-site targets__ interact genetically with __driver mutations__ to promote cell viability and proliferation in breast cell cancers?
@@ -72,9 +127,9 @@ MCY       | ~ 30 - 50%          |Cell cycle and apoptosis regulator      |(Gabay
 PARP      | ~ 45%               |Regulates differentiation/proliferation |(Siraj, Pratheeshkumar et al. 2018)                          |
 PIK3CA    | ~ 30 - 48%          |Interaction with AKT and mTOR pathway   |(Aleskandarany, Rakha et al. 2010, Shimoi, Hamada et al.2018)|
 
-# Main
+# Methods
 
-## Data cleanup
+## Data cleanup and exploration
 
 Before we start our statistical part, we have to load the required packages as well as the data:
 
@@ -114,8 +169,8 @@ library(tidyverse)
 library(factoextra)
 library(wesanderson)
 
-data = readRDS("C:/Users/lisa-/Desktop/Studium/4. FS/Bioinfo/DepMap19Q1_allData.RDS")
-root.dir = "C:/Users/lisa-/Desktop/Studium/4. FS/Bioinfo/project-01-group-04/"
+data = readRDS("C:/Users/Salome/Documents/4.FS/Bioinfo/DepMap19Q1_allData.RDS")
+root.dir = "C:/Users/Salome/Documents/4.FS/Bioinfo/"
 ```
 
 To get a feeling for the dataset we will have a look at the given data structure.  
@@ -168,10 +223,12 @@ tPatients_ID <- t(BCCL_Annotation[1]) #create a vector of patientIDs useful for 
 #Reminder to myself: create another command, to reorder rows alphabetically (for loops are not working)
 ```
 
-## Data Exploratory
+### Exploring gene expression patterns 
 
 The next step was to undertake some experiments, in order to get a feeling for the data distribution. 
-We made a heatmap of expression values, compared single genes for knockdown and copynumber scores and found relatively equally distibuted expression values and CERES Scores. We also tried to gain a first insight into driver mutations, extracted from literature.
+We made a heatmap of expression values and found a very diverse an unordered expression of genes trough the 28 breast cancer cell lines. Somehow, the CERES values showed a wide variety as well, giving us a clue how useful our computer based approach might be. To make shure we can use all cell lines, we investigated if some of the cell lines shows abnormal values in comparison to others. A few boxplots prooved this is not the case. 
+Another issue was the very low level of expression of most genes. We discussed the possibility of erasing an amount of these genes and decided to not cut out any data, before we don't know  which kind of data we will need in the end. In this phase of the project is was open if a second site target will have a high expression in every case. 
+As next step we made some tests, using driver mutations suggested in literature. These boxplots show the different roles of genes ending up in various expression values in a nice way. 
 *muss noch sch?n gemacht werden :)*
 
 ```{r echo=TRUE, fig.align= "center"}
@@ -217,6 +274,8 @@ for (j in 1:ncol(pre_mutImpact)){
 #have a look at the mutImpact matrtix
 head(mutImpact)
 ```
+
+## Selection of driver mutations
 
 ### Identification of driver mutations using k means clustering of CERES scores 
 
@@ -343,7 +402,7 @@ data_clus_3e["Driver mutation"] <- sapply(1:nrow(data_clus_3), function(j){
   }) # labeling driver mutations with "driver mutation" in data_clus_3e 
 ```
 
-### Data visualisation of CERES and TPM values for the four selected driver mutations 
+### Data visualisation of CERES and TPM values for selected driver mutations 
 
 CERES scores and expression in TPM values for the selected 4 driver mutations were visualised as box and whisker plots. Following the generation of the `GOI_X` dataframe containing either CERES or TPM values for the four mutations, the data was reshaped to contain two columns. One column being "variable" with the names of driver mutations, the other "value" with the corresponding CERES or TPM value. The ggplot function, part of the ggplot2 package, was used to plot the following box an whisker plots. 
 
@@ -394,6 +453,8 @@ Expression_boxplot
 The box- and whisker plot of CERES scores reveal MYCB mutations as the most essential driver mutations for cell survival. They are followed by PIK3CA and PARP10 mutations. While ERBB2 has the highest average CERES scores and hence lowest impact on cell proliferation, this mutation exhibits the largest spread of values across 28 breast cell cancer lines, reaching the overall minimum value of -1. The interquartile range of CERES scores for both MYCBP and PARP10, are the lowest, indicating a consistent impact of gene knockouts on cell sample survival. Also interesting is the large interquartile range of the PIK3CA mutation, with data points found in two clusters, one around -0.15 and the other between -0.5 and -0.9. 
 
 While the ERBB2 driver mutation was found to have the lowest essentiallity for cell survival on average, mean TPM values are shown to be highest, suggesting overexpression. Once again TPM values for this mutation have the largest spread, reaching more than 11.5 TPM. This implies the greatest variation overall in data for the ERBB2 driver mutation. Like for the CERES scores, both MYCBP and PIK3CA have a small interquartile range, while ranges for PARP10 are markedly larger. Further, it is interesting to note despite two CERES score data clusters for PIK3CA, TPM values show little variation around the mean. 
+
+## Identification of second-site targets
 
 ### Spotting genetic interactions: the Wilcoxon test
 
@@ -466,9 +527,9 @@ names(SST_Data) <- driver_mut
 head(SST_Data)
 ```
 
-## Verification of SST candidates by assigned k means cluster number 
+### Verification of SST candidates by assigned k means cluster number 
 
-After selection of the SST candidates stored in `SST_cand_x`,loops were installed to verify the coexistance of SST candidates and driver mutations in the same k means cluster. An assignment to the same cluster would confirm a possible cooperation of gene pairs due to similar CERES scores. For this, new dataframes were created  before a separate loop was installed for each driver mutation. By comparing each rowname of the `SST_cand_X` dataframes to all possible  `data_clus_3e` rownames, a coexistance of genes in the 3rd k means cluster was identified, leading to the labelling of `SST X`  in a new separate column. Otherwise no match led to the `No SST`entry. In order to combine all four dataframes with the `rbind`command, the first columns were all renamed to "p_values". Finally all confirmed SSTs were ordered alphabetically, with no gene identified twice for a different driver mutation. 
+After selection of the SST candidates stored in `SST_Data` the coexsitance of SST candidates and driver mutation in the same k means cluster was verified. An assignment to the same cluster would confirm a possible cooperation of gene pairs due to similar CERES scores. For this, the lapply function was used to chose each dataframe and thus driver mutation in turn from the list using the seq_along command.A further loop was installed such that for each driver mutation dataframes, the rownames of the `DvPicker` were compared to all possible  `data_clus_3e` rownames. If a coexistance of genes in the 3rd k means cluster was identified, genes were labelled as `verified` in a new column entitled "classifier". No match between rownames led to the `not verified`entry.
 
 ```{r SST Cluster Check}
 SST_Data <- lapply(seq_along(SST_Data), function(a) { # pick one dataframe from list
@@ -486,7 +547,7 @@ SST_Data <- lapply(seq_along(SST_Data), function(a) { # pick one dataframe from 
 names(SST_Data) <- driver_mut
 ```
 
-## Characterization of second-site targets
+### Characterization of second-site targets
 
 In order to characterize the SSTs, additional information on each SST was retrieved from the original data set and added to the data frames in `SST_Data`.
 
@@ -533,13 +594,13 @@ show(SST_Data$PARP10)
 show(SST_Data$PIK3CA)
 ```
 
-# Regression analysis to predict ceres scores of driver mutation
+## Exploiting interactions: Regression analysis to predict CERES scores of driver mutation
 
   + For the regression model, we want to predict the CERES score of the driver mutation (dependent variable) based on the CERES score of the SST candidates (independent variables).
   + A multilinear regression will be designed:
 
+### Conditioning the dataset
 
-## Construct datasets for Regression
   + Multilinear regression, we 
     1. reform the BCCL CERES matrix
       + By transponing and format change, we obtain a matrix with colnames = Gene names and rownames = Cell line indices (equal to tPatients_ID)
@@ -562,7 +623,6 @@ data_regression <- list(linRegData_ERBB2, linRegData_MYCBP, linRegData_PARP10, l
 head(data_regression) #take a look at the data
 ```
 
-## Step 2: qqplot
   + Check Normality with a qqPlot
     + Using the aes-function of the ggplt package for _aesthetic_ plots.
     
@@ -574,7 +634,8 @@ create_qqplot <- function(a){
 lapply(seq_along(data_regression), create_qqplot)
 ```
 
-## Multilinear Regression: Data split, Model calculation, Return correlation data for evaluation
+### Design of the multilinear regression
+
 To run the Multilinear Regression, it is advised to create a long function which
   1. Splits the dataset in 75:25 training:test data
     + Previous installation of the "caTools" package is necessary
@@ -605,22 +666,18 @@ lapply(seq_along(input_data), function(a) {
 })
 ```
 
-## Interpretation of Spearman correlation coefficient
-
-### Revision: Meaning of the correlation coefficient rho
   + the rank-correlation coefficient can take values from +1 to -1
     + rho ~ 1: perfect positive association of ranks
     + rho ~ 0: no association of ranks
     + rho ~ -1: perfect negative association of ranks
 
-### Revision: Adding a statistical parameter
   + To further interprete the p-value, we construct a H0 / H1 hypothesis:
     + H0: There is no association between the predicted and observed variable.
     + H1: There is an association between the predicted and observed variable.
   + Most importantly, it is not possible to assess the strength of the correlation based on the p-value. It rather judges the statistical test than the resulting value.
     + as a standard, we set the significance level to 0.05
 
-### Objective
+
  + We will the compare this values for the different models
   + For a positive correlation, two variables move in the same direction.
     + For a well-designed model, we expect the precicted and observed CERES scores being approx. even
@@ -629,9 +686,7 @@ lapply(seq_along(input_data), function(a) {
       + the p-value < 0.05
     
 
-## Results
-
-We obtained the followwing p-values and correlation coefficients:
+We obtained the following p-values and correlation coefficients:
 
 Model     | p-value     | rho      | 
 ----------|-------------|----------|
@@ -642,7 +697,7 @@ PIK3CA    | 0.7131      |-0.1786   |
 
 *How about doing a linear regression model and comparing the F-statistic values?*
 
-## Discussion
+### Evaluating the fit of the regression model
 
   + ERBB2-model:
     + Shows the highest rho value of all four models, but ~ 0.1 is a rather weak positive relationship
@@ -669,9 +724,6 @@ PIK3CA    | 0.7131      |-0.1786   |
 + The PARP10 model resulted in a moderate negative relationship, which is not of relevance for our objective.
 + The ERBB2 model did not deliver a significant p-value, but indeed contains at least a weak positive correlation.
 
-### Discussing possible Reasons for the unsatisfying results
-## Possible causes in the Regression model
-#Sample Size
 
 It seems possible that the small sample size for the regression model lead to the lack of significant results, with only 28 events (CERES score observed in cell line) per predicting variable (SST gene).
 
@@ -684,7 +736,7 @@ But, a common thumb-rule for building a regression model is to calculate the _li
 If this equation is fulfilled, the model is supposed to be reliable.(Harrell 2001)
 In fact, this condition is true for all four models.
 
-# Distribution
+# Distribution *perhaps we could get rid of this and the following title*
 
 Checking distributional assumptions (= normal distribution) is also important and a different model should be chosen if needed. (Harrell 2001)
   + As shown in the qq-Plots, normal distribution does only apply to the models of MYCBP and PARP10
@@ -699,6 +751,7 @@ Our data seems to have an appropriate size for a basic regression model.
 On the other hand, for the supervised machine learning process of the regression, sample sizes up to n = 50,000 are reported.(Libbrecht and Noble 2015) 
 In general, more data will lead to improved data quality. Generally, scientists are advised to focus on obtaining and analyzing larger data sets instead of comparing different learning techniques on small training sets.(Banko and Brill 2001)
 
+# Results and Discussion
 
 --------------------
 
