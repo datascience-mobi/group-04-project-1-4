@@ -1,6 +1,6 @@
 ---
 title: "Final Report: Identification of SSTs"
-author: "ELias Farr, Lennart Linke, Lisa Marie Milchsack, Salome Steinke"
+author: "Elias Benjamin Farr, Lennart Linke, Lisa Marie Milchsack, Salome Steinke"
 date: "17. Juli 2019"
 output: 
   html_document:
@@ -225,7 +225,7 @@ We made a heatmap of expression values as well as CERES scores and found a diver
 ```{r echo=TRUE, fig.align= "center"}
 #Create a heatmap for all Genes and their CERES score
 CERES50 <- as.matrix(BCCL_kd.ceres[c(1:nrow(BCCL_kd.ceres)),c(1:28)])
-col <- colorRampPalette(c("green", "white", "red"))(n = 1000) #defining the colours for the heatmap
+col <- colorRampPalette(c("seagreen3", "white", "red2"))(n = 1000) #defining the colours for the heatmap
 CERESHeatmap <- heatmap.2(CERES50, scale = "none", col = col, 
           trace = "none", density.info = "none", dendrogram = c("none"), labRow = FALSE, labCol = FALSE, main = "CERES scores of all BCCLs", xlab = "Breast cancer cell lines (BCCL)", ylab = "Genes, ordered by hierarchical clustering")
 ```
@@ -669,8 +669,9 @@ head(data_regression) #take a look at the data
     + Using the aes-function of the ggplt package for _aesthetic_ plots.
     
 ```{r}
+
 create_qqplot <- function(a){  
-  p <- ggplot(data_regression[[a]], aes(sample=data_regression[[a]][,ncol(data_regression[[a]])])) + stat_qq()+ stat_qq_line() 
+  p <- ggplot(data_regression[[a]], aes(sample=data_regression[[a]][,ncol(data_regression[[a]])], col = "red")) + stat_qq()+ stat_qq_line() 
   p + labs(title = "QQ-Plot", subtitle = "Check if data is approx. normally distributed") 
    }
 lapply(seq_along(data_regression), create_qqplot)
