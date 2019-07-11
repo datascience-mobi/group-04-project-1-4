@@ -109,7 +109,29 @@ View(BCCl_Copynumber["MYC",])
 ```{r echo=TRUE}
 tBCCL_Expression <- t(BCCL_Expression)
 boxplot(tBCCL_Expression[, c("MYC", "PTEN", "TP53", "PIK3CA", "GATA3", "BRCA1", "BRCA2", "RB1", "GANAB", "PRKCSH", "RNF43")], xlab = "Suggested driver mutations", ylab ="Transcripts per million")
+```
 
+```{r echo=TRUE}
+
+GOI_Exp_lit <- BCCL_Expression[c("MYC", "PTEN", "TP53", "PIK3CA", "GATA3", "BRCA1", "BRCA2", "RB1", "GANAB", "PRKCSH", "RNF43"),]
+Exp_lit_driver_mut= melt(GOI_Exp_lit)
+Exp_lit_driver_mut$variable=rep(c("MYC", "PTEN", "TP53", "PIK3CA", "GATA3", "BRCA1", "BRCA2", "RB1", "GANAB", "PRKCSH", "RNF43"), ncol(GOI_Exp_lit))
+
+Exp_lit_boxplot = ggplot(Exp_lit_driver_mut, aes(x = variable, y = value)) +
+     geom_boxplot(aes(fill=variable), outlier.alpha = 0.7,
+                  outlier.colour = "grey", outlier.shape = 20, outlier.size = 2) +
+     labs(title = 'Expression values of driver mutations from literature', x = 'The eleven most prevalent driver mutations in   BC', y = 'Expression [TPM]') +
+     theme_minimal() +
+     geom_jitter(width = 0.2) +
+     scale_fill_brewer(palette = "Paired") +
+     theme(legend.position ='none',
+           plot.title = element_text(hjust = 0.4),
+           axis.text.x = element_text(angle = 0, vjust = 0, hjust=0.5),
+           legend.title= element_blank(),
+           axis.title.x = element_blank(),
+           strip.text.y = element_text(angle = 0))
+
+Exp_lit_boxplot
 ```
 
 
