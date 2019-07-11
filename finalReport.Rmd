@@ -713,7 +713,40 @@ correlations <- lapply(seq_along(plottingData), function(a) {
 names(correlations) <- driver_mut
 correlations #look at the dat
 ```
+
+*How about doing a linear regression model and comparing the F-statistic values?*
+
+#Checking assumptions
+All four models were tested on the assumptions. The following table provides a quick overview if our constructed assumptions was met (yes) or not (no). For multicollinarity, all models met the condition r < 0.8 for all variables.
+
+Model     | Data distribution | Residual distribution| Homoscedastity |Spearman correlation |
+----------|-------------------|----------------------|----------------|---------------------|
+ERBB2     | no                | yes                  | no             | no                  |
+MCYBP     | yes               | no                   | yes            | no                  |
+PARP      | yes               | no                   | yes            | no                  |
+PIK3CA    | no                | yes                  | no             | no                  |
+
+Checking distributional assumptions (= normal distribution) is also important and a different model should be chosen if needed. (Harrell 2001). 
+As shown in the qq-Plots, normal distribution does only apply to the models of MYCBP and PARP10. ERBB2 on the other hand, delivers the highest rho, but is in no way approx. normal distributed.The PIK3CA model also does not fulfill the condition of normal distribution.
+
+The normal distribution does not lead to higher correlation coefficients. But not satisfying distribution assumptions should be treated as a red flag; and the model is not suited for further use.
+
+The residual distribution of ERBB2 was closest to normal distribution. The PIK3CA residuals showed still acceptable approximation of normal distribution.
+MYCBP and PARP10 failed to shoe approx. normal residual distribution.
+
+Also known as homogeneity of variance, this condition is met if random variables have similar variance. Also, there is no pattern of variance change if the random variables in- or decrease. #citation
+ERBB2 and PIK3CA violate the condition, while MYCBP and PARP10 show homoscedasticity.
+
 # Interpreation
+We obtained the following p-values and correlation coefficients:
+
+Model     | p-value     | rho      | 
+----------|-------------|----------|
+ERBB2     | 0.8397      | 0.1071   |
+MCYBP     | 0.7825      |-0.1429   |
+PARP      | 0.1095      |-0.6786   |
+PIK3CA    | 0.7131      |-0.1786   |
+
 The rank-correlation coefficient can take values from +1 to -1
     + rho ~ 1: perfect positive association of ranks
     + rho ~ 0: no association of ranks
@@ -724,36 +757,23 @@ To further interprete the p-value, we construct a H0 / H1 hypothesis:
     + H1: There is an association between the predicted and observed variable.
 Most importantly, it is not possible to assess the strength of the correlation based on the p-value. It rather judges the statistical test than the resulting value. As default, we set the significance level to 0.05.
 
+We will the compare this values for the different models. For a positive correlation, two variables move in the same direction. For a well-designed model, we expect the precicted and observed CERES scores being approx. even. Thus, optimal model design is achieved if the correlation coefficient is close to 1 and the p-value p < 0.05.
 
-We will the compare this values for the different models. For a positive correlation, two variables move in the same direction. For a well-designed model, we expect the precicted and observed CERES scores being approx. even. Thus, optimal model design is achieved if the correlation coefficient is close to 1 and the p-value p < 0.05
+ The ERBB2-model shows the highest rho value of all four models, but ~ 0.1 is a rather weak positive relationship, but the p-value leads to __acceptance of H0_.
+
+The rho value of the MYCBP-model leads to very weak negative correlation. A p-value of ~ 0.78 leads to condifent acceptance of H0.
+
+For the PARP10-model, the rho value of ~ -0.67 is a moderate negative relationship. The p-value leads to acceptance of H0. The p-value is the lowest with ~ 0.11. But even if we would raise the confidence level to 0.10 (which would be a questionable move in statistics), the result wouldn´t be significant to accept H1.
     
+The rho value of the PIK3CA-model leads to very weak negative correlation. A p-value of ~ 0.78  leads to condifent acceptance of H0.
 
-We obtained the following p-values and correlation coefficients:
-
-Model     | p-value     | rho      | 
-----------|-------------|----------|
-ERBB2     | 0.8397      | 0.1071   |
-MCYBP     | 0.7825      |-0.1429   |
-PARP      | 0.1095      |-0.6786   |
-PIK3CA    | 0.7131      |-0.1786   |
-
-*How about doing a linear regression model and comparing the F-statistic values?*
-
-# Discussing p-Values and correlation coefficients
- The ERBB2-model shows the highest rho value of all four models, but ~ 0.1 is a rather weak positive relationship, but the p-value leads to __acceptance of H0_. Plus, the data is not even approx. normal distributed.
-
-The rho value of the MYCBP-model leads to very weak negative correlation. A p-value of ~ 0.78 leads to condifent acceptance of H0. The condition of Data normal distribution is met.
-
-For the PARP10-model, the rho value of ~ -0.67 is a moderate negative relationship. The p-value leads to acceptance of H0. The p-value is the lowest with ~ 0.11. But even if we would raise the confidence level to 0.10 (which would be a questionable move in statistics), the result wouldn´t be significant to accept H1.The condition of Data normal distribution is met.
-    
-The rho value of the PIK3CA-model leads to very weak negative correlation. A p-value of ~ 0.78  leads to condifent acceptance of H0. Plus, the data is not even approx. normal distributed.
-
-__All in all, all multilinear regression models failed to deliver a p-value of significant relevance. Thus, they should not be used for further predictions.__
 The models for MYCBP and PIK3CA only showed weak, negative correlation, which is not useful for further work with this model.
 The PARP10 model resulted in a moderate negative relationship, which is not of relevance for our objective.
 The ERBB2 model did not deliver a significant p-value, but indeed contains at least a weak positive correlation.
 
-
+#Discussion
+__All in all, all multilinear regression models failed to meet all regression assumptions deliver a p-value of significant relevance for the correlation. Thus, they should not be used for further predictions.__
+Especially the models for ERBB2 and PIK3CA should have been discarted, since not even the basic sample distribution is normallyn distributed.
 It seems possible that the small sample size for the regression model lead to the lack of significant results, with only 28 events (CERES score observed in cell line) per predicting variable (SST gene).
 
 But, a common thumb-rule for building a regression model is to calculate the _limiting sample size_:
@@ -765,21 +785,6 @@ But, a common thumb-rule for building a regression model is to calculate the _li
 
 If this equation is fulfilled, the model is supposed to be reliable.(Harrell 2001)
 In fact, this condition is true for all four models.
-
-Checking distributional assumptions (= normal distribution) is also important and a different model should be chosen if needed. (Harrell 2001)
-  + As shown in the qq-Plots, normal distribution does only apply to the models of MYCBP and PARP10
-  + ERBB2 on the other hand, delivers the highest rho, but is in no way approx. normal distributed.
-  + The PIK3CA model also does not fulfill the condition of normal distribution.
-
-The normal distribution does not lead to higher correlation coefficients. But not satisfying distribution assumptions should be treated as a red flag; and the model is not suited for further use.
-
-There was no multicollinearity detected. The condition r < 0.8 was met for all variables.
-
-The residual distribution of ERBB2 was closest to normal distribution. The PIK3CA residuals showed still acceptable approximation of normal distribution.
-MYCBP and PARP10 failed to shoe approx. normal residual distribution.
-
-Also known as homogeneity of variance, this condition is met if random variables have similar variance. Also, there is no pattern of variance change if the random variables in- or decrease. #citation
-ERBB2 and PIK3CA violate the condition, while MYCBP and PARP10 show homoscedasticity.
 
 Our data seems to have an appropriate size for a basic regression model.
 On the other hand, for the supervised machine learning process of the regression, sample sizes up to n = 50,000 are reported.(Libbrecht and Noble 2015) 
