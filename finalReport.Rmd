@@ -596,16 +596,12 @@ show(SST_Data$PIK3CA)
 
 ## Exploiting interactions: Regression analysis to predict CERES scores of driver mutation
 
-  + For the regression model, we want to predict the CERES score of the driver mutation (dependent variable) based on the CERES score of the SST candidates (independent variables).
-  + A multilinear regression will be designed:
+For the regression model, we want to predict the CERES score of the driver mutation (dependent variable) based on the CERES score of the SST candidates (independent variables).
 
 ### Conditioning the dataset
 
-  + Multilinear regression, we 
-    1. reform the BCCL CERES matrix
-      + By transponing and format change, we obtain a matrix with colnames = Gene names and rownames = Cell line indices (equal to tPatients_ID)
-    2. Collect the relevant the CERES scores for the mutations for the linear regression.
-      + All columns with the corresponding names of the SST genes plus the driver mutation will be collected and copied into a new dataframe
+To run Multilinear regression, we reform the BCCL CERES matrix. By transponing and format change, we obtain a matrix with colnames = Gene names and rownames = Cell line indices (equal to tPatients_ID). Then, we collect the relevant the CERES scores for the mutations for the linear regression.
+All columns with the corresponding names of the SST genes plus the driver mutation will be collected and copied into a new dataframe.
       
 ```{r}
 #reformat BCCL CERES matrix
@@ -620,72 +616,128 @@ linRegData_PARP10 <- BCCL_kd.ceres_df %>% select(rownames(SST_Data$PARP10), "PAR
 linRegData_PIK3CA <- BCCL_kd.ceres_df %>% select(rownames(SST_Data$PIK3CA), "PIK3CA")
 
 data_regression <- list(linRegData_ERBB2, linRegData_MYCBP, linRegData_PARP10, linRegData_PIK3CA)
-head(data_regression) #take a look at the data
+names(data_regression) <- c("ERBB2", "MYCBP", "PARP10", "PIK3CA")
 ```
 
-  + Check Normality with a qqPlot
-    + Using the aes-function of the ggplt package for _aesthetic_ plots.
-    
+To run regression, certain conditions must be fulfilled:
+Normal distribution, checked with a qqPlot:Using the aes-function for aesthetic plots, provided by the "ggplot2" package.
+Multicollinearity, which is given if two dependent variables are strongly correlated, which can lead to difficulties in further analysis.
+    + As rule of thumb, the Pearson correlation coefficient should be lower than 0.8:
+      $r < 0.80$
+If this requirement is not met, one of the correlated variables should be deleted as it is seen as redundant.
+
 ```{r}
-create_qqplot <- function(a){  
-  p <- ggplot(data_regression[[a]], aes(sample=data_regression[[a]][,ncol(data_regression[[a]])])) + stat_qq()+ stat_qq_line()
+lapply(seq_along(data_regression), function(a){  
+  p <- ggplot(data_regression[[a]], aes(sample=data_regression[[a]][,ncol(data_regression[[a]])])) + stat_qq()+ stat_qq_line() #create qq-Plot with line for comparison to normal distribution
    p + labs(title = "QQ-Plot", subtitle = "Check if data is approx. normally distributed")
-}
-lapply(seq_along(data_regression), create_qqplot)
+  
+  r <-  round(cor(data_regression[[a]]),2) #create table with correlation values between all SSTs; the values are rounded to two decimal places [,2)]
+  
+  return(list(p,r))
+   })
 ```
-
+Quick Results: The Data of MYCBP and PARP10 is approx. normally distributed; ERBB2 and PIK3CA not. No multicollinearity detected, all 0.80 > x
+  
 ### Design of the multilinear regression
 
-To run the Multilinear Regression, it is advised to create a long function which
-  1. Splits the dataset in 75:25 training:test data
-    + Previous installation of the "caTools" package is necessary
-  2. Conducts Training of Regression model with training data
-    + predict Driver mutation CERES (y; dep.variable) from SST CERES scores (x1 ... xn; indep.variables)
-  3. Runs Test Data on model for performance evaluation
-  4. Calculates Spearman correlation to further asess model performance
-  
+To run the Multilinear Regression, it is advised to create a long function which splits the dataset in __75:25__ training:test data. (Previous installation of the "caTools" package is necessary)
+Then the function conducts Training of Regression model with training data to predict Driver mutation CERES (y; dep.variable) from SST CERES scores (x1 ... xn; indep.variables)
+Followed by checking model assumptions of residual normal distribution and homoscedasticity.
+Lateron, the function runs the test Data on model for performance evaluation and finally calculates and plots Spearman correlation to further asess model performance.
 ```{r}
 input_data <- data_regression
 
-lapply(seq_along(input_data), function(a) {
-  set.seed(123) #initialize the random numbers, better reproducable
+plottingData <- lapply(seq_along(input_data), function(a) {
+  set.seed(123) #initialize the random numbers, ensures better repoducibility
   data <- input_data[[a]] #get the data
   colnames(data)[length(colnames(data))] <- "Predictor"
   
   split = sample.split(data[,ncol(data)], SplitRatio = 0.75) #split the dataset into 3/4 Training and 1/4 Testing dataset
   training_set = subset(data, split == TRUE) #use the labels to get the training data
   test_set = subset(data, split == FALSE)
-
+  
   regressor = lm(formula = Predictor ~ ., 
                  data = training_set)  #predict CERES of Driver Mutation based on all (=.) the input variables (SSTs)
   
+  pdf(paste0(root.dir, "/Resid-HomoPlot_",driver_mut[a],".pdf")) #save plots as pdf, in working directory "wd"
+  hist(resid(regressor), main = paste0('Histogram of residuals: ', driver_mut[a]),xlab='Standardised Residuals',ylab='Frequency') #plot a histogram of standardised residuals to check the assumption of normality
+  dev.off() #closing the figure file
+  
+  pdf(paste0(root.dir, "/HomoPlot_",driver_mut[a],".pdf")) #save plots as pdf, in working directory "wd"
+  plot(regressor, which = 1) #fitted values and residuals plot to check the assumption of homoscedasticity
+  dev.off() #closing the figure file
+  
   y_pred = predict(regressor, newdata = test_set) #predict the Driver mut. CERES score based on the test data
   test_set$Prediction = y_pred #adding predictions to the dataset
-  corVal <- cor.test(test_set$Predictor , test_set$Prediction, method = "spearman")#to judge model performance, calculate Spearman corr. between predicted and observed values
+  
+  df = cbind(test_set$Predictor, test_set$Prediction)
+  colnames(df) <- c("Predictor", "Prediction")
+  rownames(df) <- rownames(test_set)
+  
+  return(df) #create a dataframe with predicted and observed CERES values
+})
+
+# Plot the data external 
+plottingFunction <- function(inputData, driverMut) {
+  df = melt(inputData)
+  p <- ggplot(data = df, aes(x=value, fill=Var2)) + 
+    geom_density(alpha=.3) +
+    ggtitle(paste0("Spearman Correlation plot: ", driverMut)) +
+    ylab("Predicted score") +
+    xlab("Observed score") +
+    theme_bw(base_size = 7) + #design input
+    theme(legend.position="bottom",
+          legend.direction="horizontal",
+          plot.title = element_text(hjust = 0.5),
+          axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),#design input
+          legend.title= element_blank(),
+          axis.title.x = element_blank(),
+          strip.text.y = element_text(angle = 0))
+  
+  pdf(paste0(root.dir, "/SpearmanPlot",driverMut,".pdf"))
+  print(p)
+  dev.off()#closing the figure file
+}
+
+plottingFunction(plottingData[[1]], driver_mut[1])
+plottingFunction(plottingData[[2]], driver_mut[2])
+plottingFunction(plottingData[[3]], driver_mut[3])
+plottingFunction(plottingData[[4]], driver_mut[4])
+
+#Get the correlation values
+correlations <- lapply(seq_along(plottingData), function(a) {
+  df = plottingData[[a]]
+  corVal <- cor.test(df[,1] , df[,2], method = "spearman") #to judge model performance, calculate Spearman corr. between predicted and observed values
   return(corVal)
 })
+names(correlations) <- driver_mut
+correlations #look at the dat
 ```
 
-  + the rank-correlation coefficient can take values from +1 to -1
-    + rho ~ 1: perfect positive association of ranks
-    + rho ~ 0: no association of ranks
-    + rho ~ -1: perfect negative association of ranks
+*How about doing a linear regression model and comparing the F-statistic values?*
 
-  + To further interprete the p-value, we construct a H0 / H1 hypothesis:
-    + H0: There is no association between the predicted and observed variable.
-    + H1: There is an association between the predicted and observed variable.
-  + Most importantly, it is not possible to assess the strength of the correlation based on the p-value. It rather judges the statistical test than the resulting value.
-    + as a standard, we set the significance level to 0.05
+#Checking assumptions
+All four models were tested on the assumptions. The following table provides a quick overview if our constructed assumptions was met (yes) or not (no). For multicollinarity, all models met the condition r < 0.8 for all variables.
 
+Model     | Data distribution | Residual distribution| Homoscedastity |Spearman correlation |
+----------|-------------------|----------------------|----------------|---------------------|
+ERBB2     | no                | yes                  | no             | no                  |
+MCYBP     | yes               | no                   | yes            | no                  |
+PARP      | yes               | no                   | yes            | no                  |
+PIK3CA    | no                | yes                  | no             | no                  |
 
- + We will the compare this values for the different models
-  + For a positive correlation, two variables move in the same direction.
-    + For a well-designed model, we expect the precicted and observed CERES scores being approx. even
-  + Thus, optimal model design is achieved if:
-      + the correlation coefficient is close to 1
-      + the p-value < 0.05
-    
+Checking distributional assumptions (= normal distribution) is also important and a different model should be chosen if needed. (Harrell 2001). 
+As shown in the qq-Plots, normal distribution does only apply to the models of MYCBP and PARP10. ERBB2 on the other hand, delivers the highest rho, but is in no way approx. normal distributed.The PIK3CA model also does not fulfill the condition of normal distribution.
 
+The normal distribution does not lead to higher correlation coefficients. But not satisfying distribution assumptions should be treated as a red flag; and the model is not suited for further use.
+
+The residual distribution of ERBB2 was closest to normal distribution. The PIK3CA residuals showed still acceptable approximation of normal distribution.
+MYCBP and PARP10 failed to shoe approx. normal residual distribution.
+
+Also known as homogeneity of variance, this condition is met if random variables have similar variance. Also, there is no pattern of variance change if the random variables in- or decrease. #citation
+ERBB2 and PIK3CA violate the condition, while MYCBP and PARP10 show homoscedasticity.
+
+# Interpreation
 We obtained the following p-values and correlation coefficients:
 
 Model     | p-value     | rho      | 
@@ -695,58 +747,45 @@ MCYBP     | 0.7825      |-0.1429   |
 PARP      | 0.1095      |-0.6786   |
 PIK3CA    | 0.7131      |-0.1786   |
 
-*How about doing a linear regression model and comparing the F-statistic values?*
+The rank-correlation coefficient can take values from +1 to -1
+    + rho ~ 1: perfect positive association of ranks
+    + rho ~ 0: no association of ranks
+    + rho ~ -1: perfect negative association of ranks
 
-### Evaluating the fit of the regression model
+To further interprete the p-value, we construct a H0 / H1 hypothesis:
+    + H0: There is no association between the predicted and observed variable.
+    + H1: There is an association between the predicted and observed variable.
+Most importantly, it is not possible to assess the strength of the correlation based on the p-value. It rather judges the statistical test than the resulting value. As default, we set the significance level to 0.05.
 
-  + ERBB2-model:
-    + Shows the highest rho value of all four models, but ~ 0.1 is a rather weak positive relationship
-    + The p-value leads to __acceptance of H0__.
-    + The data is not even approx. normal distributed.
+We will the compare this values for the different models. For a positive correlation, two variables move in the same direction. For a well-designed model, we expect the precicted and observed CERES scores being approx. even. Thus, optimal model design is achieved if the correlation coefficient is close to 1 and the p-value p < 0.05.
+
+ The ERBB2-model shows the highest rho value of all four models, but ~ 0.1 is a rather weak positive relationship, but the p-value leads to __acceptance of H0_.
+
+The rho value of the MYCBP-model leads to very weak negative correlation. A p-value of ~ 0.78 leads to condifent acceptance of H0.
+
+For the PARP10-model, the rho value of ~ -0.67 is a moderate negative relationship. The p-value leads to acceptance of H0. The p-value is the lowest with ~ 0.11. But even if we would raise the confidence level to 0.10 (which would be a questionable move in statistics), the result wouldn´t be significant to accept H1.
     
-  + MYCBP-model:
-    + The rho value leads to very weak negative correlation.
-    + A p-value of ~0.78 leads to condifent acceptance of H0.
-    + Data is approx. normal distributed.
-    
-  + PARP10-model:
-    + The rho value of ~ -0.67 is a moderate negative relationship.
-    + The p-value leads to acceptance of H0. The p-value is the lowest with ~ 0.11. But even if we would raise the confidence level to 0.10 (which would be a questionable move in statistics), the result wouldn´t be significant to accept H1.
-    + Data is approx. normal distributed.
-    
-  + PIK3CA-model:
-    + The rho value leads to very weak negative correlation.
-    + A p-value of ~0.78  leads to condifent acceptance of H0.
-    + The data is not even approx. normal distributed.
+The rho value of the PIK3CA-model leads to very weak negative correlation. A p-value of ~ 0.78  leads to condifent acceptance of H0.
 
-+ __All in all, all multilinear regression models failed to deliver a p-value of significant relevance. Thus, they should not be used for further predictions.__
-+ The models for MYCBP and PIK3CA only showed weak, negative correlation, which is not useful for further work with this model.
-+ The PARP10 model resulted in a moderate negative relationship, which is not of relevance for our objective.
-+ The ERBB2 model did not deliver a significant p-value, but indeed contains at least a weak positive correlation.
+The models for MYCBP and PIK3CA only showed weak, negative correlation, which is not useful for further work with this model.
+The PARP10 model resulted in a moderate negative relationship, which is not of relevance for our objective.
+The ERBB2 model did not deliver a significant p-value, but indeed contains at least a weak positive correlation.
 
-
+#Discussion
+__All in all, all multilinear regression models failed to meet all regression assumptions deliver a p-value of significant relevance for the correlation. Thus, they should not be used for further predictions.__
+Especially the models for ERBB2 and PIK3CA should have been discarted, since not even the basic sample distribution is normallyn distributed.
 It seems possible that the small sample size for the regression model lead to the lack of significant results, with only 28 events (CERES score observed in cell line) per predicting variable (SST gene).
 
 But, a common thumb-rule for building a regression model is to calculate the _limiting sample size_:
 
  $p < \frac{m}{15}$
+ 
   + p: number of predictor variables
   + m: limiting sample size; for continuous response variables it is the  total sample size n
 
 If this equation is fulfilled, the model is supposed to be reliable.(Harrell 2001)
 In fact, this condition is true for all four models.
 
-# Distribution *perhaps we could get rid of this and the following title*
-
-Checking distributional assumptions (= normal distribution) is also important and a different model should be chosen if needed. (Harrell 2001)
-  + As shown in the qq-Plots, normal distribution does only apply to the models of MYCBP and PARP10
-  + ERBB2 on the other hand, delivers the highest rho, but is in no way approx. normal distributed.
-  + The PIK3CA model also does not fulfill the condition of normal distribution.
-
-The normal distribution does not lead to higher correlation coefficients. But not satisfying distribution assumptions should be treated as a red flag; and the model is not suited for further use.
-
-## Possible causes in the Prediction model
-# Training & prediction data size
 Our data seems to have an appropriate size for a basic regression model.
 On the other hand, for the supervised machine learning process of the regression, sample sizes up to n = 50,000 are reported.(Libbrecht and Noble 2015) 
 In general, more data will lead to improved data quality. Generally, scientists are advised to focus on obtaining and analyzing larger data sets instead of comparing different learning techniques on small training sets.(Banko and Brill 2001)
