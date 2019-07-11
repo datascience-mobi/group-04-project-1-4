@@ -220,10 +220,34 @@ tPatients_ID <- t(BCCL_Annotation[1]) #create a vector of patientIDs useful for 
 
 The next step was to undertake some experiments, in order to get a feeling for the data distribution. 
 We made a heatmap of expression values and found a very diverse an unordered expression of genes trough the 28 breast cancer cell lines. Somehow, the CERES values showed a wide variety as well, giving us a clue how useful our computer based approach might be. To make shure we can use all cell lines, we investigated if some of the cell lines shows abnormal values in comparison to others. A few boxplots prooved this is not the case. 
-Another issue was the very low level of expression of most genes. We discussed the possibility of erasing an amount of these genes and decided to not cut out any data, before we don't know  which kind of data we will need in the end. In this phase of the project is was open if a second site target will have a high expression in every case. 
+
+```{r echo=TRUE, fig.align= "center"}
+# expanding the colourpalette to 28
+nb.cols <- 28 
+newcolours <- colorRampPalette(brewer.pal(8, "Paired")) (nb.cols)
+#Plotting gene expression of all 28 BCCLs
+GeneralExp <- BCCL_Expression[c(1:28),]
+GenExmelt= melt(GeneralExp)
+GeneralExp_boxplot = ggplot(GenExmelt, aes(x = variable, y = value)) +
+     geom_boxplot(aes(fill=variable), outlier.alpha = 0.7,
+                outlier.colour = "grey", outlier.shape = 20, outlier.size = 2) +
+     labs(title = 'General expression in all 28 BCCLs', x = 'The eleven most prevalent driver mutations in   BC', y = 'Expression [TPM]') +
+     theme_minimal() +
+     geom_jitter(width = 0.15) +
+     scale_fill_manual(values = newcolours) +
+     theme(legend.position ='none',
+           plot.title = element_text(hjust = 0.4),
+           axis.text.x = element_text(angle = 0, vjust = 0, hjust=0.5),
+           legend.title= element_blank(),
+           axis.title.x = element_blank(),
+           strip.text.y = element_text(angle = 0))
+ 
+GeneralExp_boxplot
+```
+
+Another issue was the very low level of expression of most genes, seen in the graph above. We discussed the possibility of erasing an amount of these genes and decided to not cut out any data, before we don't know  which kind of data we will need in the end. In this phase of the project is was open if a second site target will have a high expression in every case. 
 As next step we made some tests, using driver mutations suggested in literature. These boxplots show the different roles of genes ending up in various expression values in a nice way. 
 *muss noch sch?n gemacht werden :)*
-
 ```{r echo=TRUE, fig.align= "center"}
 GOI_Exp_lit <- BCCL_Expression[c("MYC", "PTEN", "TP53", "PIK3CA", "GATA3", "BRCA1", "BRCA2", "RB1", "GANAB", "PRKCSH", "RNF43"),]
 Exp_lit_driver_mut= melt(GOI_Exp_lit)
@@ -638,9 +662,9 @@ head(data_regression) #take a look at the data
     
 ```{r}
 create_qqplot <- function(a){  
-  p <- ggplot(data_regression[[a]], aes(sample=data_regression[[a]][,ncol(data_regression[[a]])])) + stat_qq()+ stat_qq_line()
-   p + labs(title = "QQ-Plot", subtitle = "Check if data is approx. normally distributed")
-}
+  p <- ggplot(data_regression[[a]], aes(sample=data_regression[[a]][,ncol(data_regression[[a]])])) + stat_qq()+ stat_qq_line() 
+  p + labs(title = "QQ-Plot", subtitle = "Check if data is approx. normally distributed") 
+   }
 lapply(seq_along(data_regression), create_qqplot)
 ```
 

@@ -54,6 +54,51 @@ BCCL_Mutation <- allDepMapData$mutation[c(BCCL_Numbers)]
 boxplot(BCCL_Expression, xlab = "Genes expressed in cell", ylab ="Transcripts per million") #plot all genes against transcripts
 #i continue the work in extra file to generate less spam :)
 ```
+
+```{r}
+GeneralExp <- BCCL_Expression[c(1:28),]
+GenExmelt = melt(GeneralExp)
+GenExmelt$variable=rep(c(1:28), 28)
+
+GeneralExp_boxplot = ggplot(GenExmelt, aes(x = variable, y = value)) +
+     geom_boxplot(aes(fill=variable), outlier.alpha = 0.7,
+                  outlier.colour = "grey", outlier.shape = 20, outlier.size = 2) +
+     labs(title = 'Expression values of driver mutations from literature', x = 'The eleven most prevalent driver mutations in   BC', y = 'Expression [TPM]') +
+     theme_minimal() +
+     geom_jitter(width = 0.1) +
+     scale_fill_brewer(palette = "Paired") +
+     theme(legend.position ='none',
+           plot.title = element_text(hjust = 0.4),
+           axis.text.x = element_text(angle = 0, vjust = 0, hjust=0.5),
+           legend.title= element_blank(),
+           axis.title.x = element_blank(),
+           strip.text.y = element_text(angle = 0))
+
+GeneralExp_boxplot
+```
+```{r}
+# expanding the colourpalette to 28
+nb.cols <- 28 
+newcolours <- colorRampPalette(brewer.pal(8, "Paired")) (nb.cols)
+#Plotting gene expression of all 28 BCCLs
+GeneralExp <- BCCL_Expression[c(1:28),]
+GenExmelt= melt(GeneralExp)
+GeneralExp_boxplot = ggplot(GenExmelt, aes(x = variable, y = value)) +
+     geom_boxplot(aes(fill=variable), outlier.alpha = 0.7,
+                outlier.colour = "grey", outlier.shape = 20, outlier.size = 2) +
+     labs(title = 'General expression in all 28 BCCLs', x = 'The eleven most prevalent driver mutations in   BC', y = 'Expression [TPM]') +
+     theme_minimal() +
+     geom_jitter(width = 0.15) +
+     scale_fill_manual(values = newcolours) +
+     theme(legend.position ='none',
+           plot.title = element_text(hjust = 0.4),
+           axis.text.x = element_text(angle = 0, vjust = 0, hjust=0.5),
+           legend.title= element_blank(),
+           axis.title.x = element_blank(),
+           strip.text.y = element_text(angle = 0))
+ 
+GeneralExp_boxplot
+```
  
 
  - include patients ID as first row in BCCL dataframes
