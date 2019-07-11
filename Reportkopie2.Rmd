@@ -140,6 +140,7 @@ install.packages("wesanderson")
 install.packages("tidyverse")
 install.packages("factoextra")
 install.packages("data.table")
+install.packages("RColorBrewer")
 
 # importing libraries
 library(ggplot2)
@@ -150,6 +151,7 @@ library(caTools)
 library(tidyverse)
 library(factoextra)
 library(wesanderson)
+library(RColorBrewer)
 
 #Setting a sys-path
 root.dir = dirname(rstudioapi::getSourceEditorContext()$path)
@@ -159,15 +161,6 @@ data = readRDS(paste0(root.dir, "/DepMap19Q1_allData.RDS")) #read in the data
 ```
 
 ```{r include=FALSE}
-# importing libraries
-library(ggplot2)
-library(reshape2)
-library(data.table)
-library(cluster)
-library(caTools) 
-library(tidyverse)
-library(factoextra)
-library(wesanderson)
 
 data = readRDS("C:/Users/Salome/Documents/4.FS/Bioinfo/DepMap19Q1_allData.RDS")
 root.dir = "C:/Users/Salome/Documents/4.FS/Bioinfo/"
@@ -210,7 +203,7 @@ pdata <- lapply(1:(length(dt_new)-1), function(a) {
 })
 names(pdata) <- names(data)[which(names(data) %!in% c("mutation", "annotation"))] #rename the data
 lapply(pdata, dim) #look if the renaming worked
-lapply(pdata, head) #look if at the data
+lapply(pdata, head) #look at the data
 
 #Generating 4 dataframes, containing just breast cancer cell lines (BCCL)
 BCCL_kd.ceres = pdata$kd.ceres[,which(colnames(pdata$kd.ceres) == sample_case)]
@@ -232,8 +225,25 @@ As next step we made some tests, using driver mutations suggested in literature.
 *muss noch sch?n gemacht werden :)*
 
 ```{r echo=TRUE, fig.align= "center"}
-tBCCL_Expression <- t(BCCL_Expression)
-boxplot(tBCCL_Expression[, c("MYC", "PTEN", "TP53", "PIK3CA", "GATA3", "BRCA1", "BRCA2", "RB1", "GANAB", "PRKCSH", "RNF43")], xlab = "Suggested driver mutations", ylab ="Transcripts per million")
+GOI_Exp_lit <- BCCL_Expression[c("MYC", "PTEN", "TP53", "PIK3CA", "GATA3", "BRCA1", "BRCA2", "RB1", "GANAB", "PRKCSH", "RNF43"),]
+Exp_lit_driver_mut= melt(GOI_Exp_lit)
+Exp_lit_driver_mut$variable=rep(c("MYC", "PTEN", "TP53", "PIK3CA", "GATA3", "BRCA1", "BRCA2", "RB1", "GANAB", "PRKCSH", "RNF43"), ncol(GOI_Exp_lit))
+
+Exp_lit_boxplot = ggplot(Exp_lit_driver_mut, aes(x = variable, y = value)) +
+     geom_boxplot(aes(fill=variable), outlier.alpha = 0.7,
+                  outlier.colour = "grey", outlier.shape = 20, outlier.size = 2) +
+     labs(title = 'Expression values of driver mutations, derived from literature', x = 'The eleven most prevalent driver mutations in BC', y = 'Expression [TPM]') +
+     theme_minimal() +
+     geom_jitter(width = 0.2) +
+     scale_fill_brewer(palette = "Paired") +
+     theme(legend.position ='none',
+           plot.title = element_text(hjust = 0.4),
+           axis.text.x = element_text(angle = 0, vjust = 0, hjust=0.5),
+           legend.title= element_blank(),
+           axis.title.x = element_blank(),
+           strip.text.y = element_text(angle = 0))
+
+Exp_lit_boxplot
 ```
 
 We already discarded some of this genes, mostly because they are known as tumor suppressor genes. In our approach we looked for targets, which show similar characteristics in cell viability after a knockdown. A knockdown of a tumor supressor gene, even if it is mutated, will rarely have a negative effect on cell viability. This makes genes associated with tumor supressor genes useless for an inhibitory drug and therefore not appropriate for our analysis. 
