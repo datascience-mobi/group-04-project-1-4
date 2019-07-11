@@ -72,8 +72,13 @@ knitr::opts_chunk$set(echo = TRUE, error = FALSE)
 # Introduction
 
 ## Revision: Breast Cancer, a challenging disease
-
 > "The heterogeneity of breast cancers makes them fascinating and challenging to diagnose and treat." *Please, add whom you quoted from*
+>  "The heterogeneity of breast cancers makes them both a fascinating and challenging solid tumor to diagnose and treat." quote.footer("--- *A novel therapeutic target for triple negative breast cancer*, Raj Kumar 2016") #thats what i've found -elias
+
+If you grow up in an western country in the beginning 21th century, there are two sorts of tumor, you will definately notice before you leave high school. The first one is lung cancer, gaining its questionable fame with pictures leaping out of every box of cigarettes. The second one went famous with broadly reported stories about Angelina Jolie or famous old german universities. However, breast cancer isn't just the story of attractive women getting their breasts amputated or research institutes making themselves ridicolous, it is also a story of unthinkiable suffering and death.
+We think about breast cancer as the most prevalent tumor disease worldwide(IHME GBD). It is also one of the most deathly malignant tumors in general with far more than 600.000 deaths, reported in 2017 (same origin). 
+But there is hope. In the past decades, breast cancer therapy evolved, diminishing the death rate to ... percent and ... usw. 
+Up to a point this is satisfying, on the other hand there are still a lot of untaken possibilities and new therapies to be tested. On group of methods increasing its powers every days are computerbased methods. until now, they cover about ... percent of this research fields with a clearly uprising tendency. This makes us all excited about what comes in the future. Until this future is reality, we will focus on our project, teaching ourselves in a nice manner, how useful a fast thinking computer might be in research. 
 
 According to the latest reports of breast cancer prevalence, the current state is very serious:
 + Breast cancer ranks second in worldwide cancer case numbers (Hutchinson 2010)
