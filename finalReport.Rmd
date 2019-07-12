@@ -93,7 +93,8 @@ According to the latest reports of breast cancer prevalence, the current state i
 
 Driver mutations (DV) are what is to be seen as the ticket of admission to the different stages of cancer growth. Thus, the acquisition of driver mutations is essential for tumour initiation, transformation as well as progression and metastasis. According to Bert Vogelstein three mutations in genes displaying a crucial function in cell proliferation, DNA integrity and cellular motility are enough to drive a normal cell into aberrant growth and malignancy:
 
-> "Focusing on driver-gene mutations and the pathways they control has rendered complex cancer-genome landscapes intelligible. In solid tumors of adults, alterations in as few as three driver genes appear to suffice for a cell to evolve into an advanced cancer." quote.footer("--- *The Path to Cancer - Three Strikes and You're Out*, Bert Vogelstein 2015")
+> "Focusing on driver-gene mutations and the pathways they control has rendered complex cancer-genome landscapes intelligible. In solid tumors of adults, alterations in as few as three driver genes appear to suffice for a cell to evolve into an advanced cancer." quote.footer
+> `quote_footer('--- *The Path to Cancer - Three Strikes and You're Out*, Bert Vogelstein 2015')`
 
 These DVs comprise both gain-of-function mutations in (proto-)oncogenes which usually promote cell proliferation and loss-of-function mutations in tumour suppressor genes which usually decelerate the cell cycle as well as genes involved in DNA repair and proofreading. Thereby, the cell acquires indispensable properties in tumorigenesis such as immortality, continous proliferation, immune and apoptosis resistance and the ability to promote angiogenesis. Examples for prominent oncogenes are k-ras and b-raf encoding kinases regulating a complex network of proteins involved in cellular growth when bound to ATP or GTP, respectively. On the other hand the most illustrious tumour suppressor gene is p53 whose physiological role is to induce cell senescence and apoptosis in case of DNA damage, a condition often encountered in cancer cells.
 
@@ -114,7 +115,7 @@ Targeting and eliminating driver mutations as a part of tumor treatment is a dif
 A promising approach is targeting so-called Second Site Targets (SSTs), which are gene mutations interacting genetically with driver mutations to increase cell viability. # CITATION
 If knocking out those genes leads to cell lethality, it may lead to new treatment options.
 
-```{r SSTs, eval=FALSE, echo=FALSE, fig.cap="Concept of SSTs", out.width = '100%', fig.align = "center"}
+```{r SSTs, eval=TRUE, echo=FALSE, fig.cap="Concept of SSTs", out.width = '100%', fig.align = "center"}
 knitr::include_graphics("Concept_of_SSTs.png")
 ```
 
@@ -200,7 +201,7 @@ library(rmarkdown)
 ```
 
 <<<<<<< HEAD
-```{r Lisa, include=FALSE, eval=FALSE}
+```{r Lisa, include=FALSE, eval=TRUE}
 data = readRDS("C:/Users/lisa-/Desktop/Studium/4. FS/Bioinfo/DepMap19Q1_allData.RDS")
 root.dir = "C:/Users/lisa-/Desktop/Studium/4. FS/Bioinfo/project-01-group-04"
 ```
@@ -215,7 +216,7 @@ data = readRDS("L:/UNI/4.FS/BioStat/DepMap19Q1_allData.RDS")
 root.dir = "C:/Users/ole-l/Documents/GitHub/project-01-group-04"
 ```
 
-```{r Elias, include = FALSE, eval=TRUE}
+```{r Elias, include = FALSE, eval=FALSE}
 data = readRDS("C:/Users/Elias/Documents/Uni/4. FS/Bioinfo/DepMap19Q1_allData.RDS")
 root.dir = "C:/Users/Elias/Documents/GitHub/project-01-group-04"
 ```
@@ -257,7 +258,6 @@ pdata <- lapply(1:(length(dt_new)-1), function(a) {
 })
 names(pdata) <- names(data)[which(names(data) %!in% c("mutation", "annotation"))] #rename the data
 lapply(pdata, dim) #look if the renaming worked
-lapply(pdata, head) #look if at the data
 
 #Generating 4 dataframes, containing just breast cancer cell lines (BCCL)
 BCCL_kd.ceres = pdata$kd.ceres[,which(colnames(pdata$kd.ceres) == sample_case)]
@@ -366,7 +366,7 @@ for (j in 1:ncol(pre_mutImpact)){
 }
 
 #have a look at the mutImpact matrtix
-head(mutImpact)
+paged_table(as.data.frame(mutImpact), 1:4)
 ```
 
 ## Selection of driver mutations
@@ -831,7 +831,7 @@ MYCBP and PARP10 failed to show approx. normal residual distribution.
 Also known as homogeneity of variance, this condition is met if random variables have similar variance. Also, there is no pattern of variance change if the random variables in- or decrease. #citation
 ERBB2 and PIK3CA violate the condition, while MYCBP and PARP10 show homoscedasticity.
 
-# Interpreation
+#Interpretation
 We obtained the following p-values and correlation coefficients:
 
 Model     | p-value     | rho      | 
