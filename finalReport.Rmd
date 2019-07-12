@@ -190,6 +190,8 @@ library(caTools)
 library(tidyverse)
 library(factoextra)
 library(wesanderson)
+library(RColorBrewer)
+library("gplots")
 ```
 
 ```{r Lisa include = FALSE, eval=FALSE}
