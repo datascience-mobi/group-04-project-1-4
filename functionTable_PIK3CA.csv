@@ -1,19 +1,19 @@
-﻿;PIK3CA;mutType
-APC;0.9374815;Missense_Mutation, Silent
-ATP1B3;1;Missense_Mutation
-BRD2;0.9374815;Missense_Mutation
-CYFIP1;0.9196711;Silent
-DIMT1;0.9196711;Silent
-GABPA;0.9910601;Silent
-GAK;0.9196711;Missense_Mutation, Silent, Missense_Mutation
-GPR61;0.9374815;Missense_Mutation
-HCRTR1;0.9196711;Missense_Mutation
-HIST1H2BI;0.9731846;Silent
-MAX;0.9910601;Missense_Mutation
-NSMCE4A;1;Missense_Mutation
-POLQ;1;Missense_Mutation, Splice_Site, Silent, Missense_Mutation
-PTAR1;0.9731846;Silent
-RFC1;0.9910601;Silent, Silent
-SAMM50;0.9196711;Nonsense_Mutation
-SLC3A2;0.9374815;Missense_Mutation
-TRMT10C;0.9731846;Missense_Mutation
+﻿;PIK3CA;mutType;function;reference
+APC;0.9374815;Missense_Mutation, Silent;Adenomatous polyposis coli protein: tumour suppressor acting as a promotor of Wnt signalling and regulator of cell migration;https://www.uniprot.org/uniprot/P25054
+ATP1B3;1;Missense_Mutation;Sodium/potassium-transporting ATPase subunit beta-3: catalysis of ATP hydrolysis;https://www.uniprot.org/uniprot/P54709
+BRD2;0.9374815;Missense_Mutation;"Missense_Mutation;Bromodomain-containing protein 2: role in spermatogenesis and folliculogenesis with regulatory effect in chromatin remodelling and nucleosome assembly, transcription regulator of CCND1";https://www.uniprot.org/uniprot/P25440
+CYFIP1;0.9196711;Silent;Cytoplasmic FMR1-interacting protein 1: ediator of translational represseion, role in epithelial morphogenesis by regulation of actin remodelling and axon outgrowth (maybe tumour invasion suppresor);https://www.uniprot.org/uniprot/Q7L576
+DIMT1;0.9196711;Silent;Probable dimethyladenosine transferase: involved in RNA editing and processing of rRNA;https://www.uniprot.org/uniprot/Q9UNQ2
+GABPA;0.9910601;Silent;"Silent;GA-binding protein alpha chain: transcription factor in cell differentiation";https://www.uniprot.org/uniprot/Q06546
+GAK;0.9196711;Missense_Mutation, Silent, Missense_Mutation;"Missense_Mutation, Silent, Missense_Mutation;Cyclin-G-associated kinase: acts as an auxilin homolog uncoating clathrin vesicles, expression peaks at G1 phase";https://www.uniprot.org/uniprot/O14976
+GPR61;0.9374815;Missense_Mutation;;test
+HCRTR1;0.9196711;Missense_Mutation;;test
+HIST1H2BI;0.9731846;Silent;Histone H2B type 1-C/E/F/G/I: core component of nucleosomes;https://www.uniprot.org/uniprot/P62807
+MAX;0.9910601;Missense_Mutation;;test
+NSMCE4A;1;Missense_Mutation;;test
+POLQ;1;Missense_Mutation, Splice_Site, Silent, Missense_Mutation;;test
+PTAR1;0.9731846;Silent;;test
+RFC1;0.9910601;Silent, Silent;;test
+SAMM50;0.9196711;Nonsense_Mutation;;test
+SLC3A2;0.9374815;Missense_Mutation;;test
+TRMT10C;0.9731846;Missense_Mutation;;test
