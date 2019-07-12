@@ -16,10 +16,10 @@ output:
 <style type="text/css">
 
 body{ /* Normal  */
-      font-size: 20px;
+      font-size: 12px;
   }
 td {  /* Table  */
-  font-size: 16px;
+  font-size: 10px;
 }
 h1.title {
   font-size: 40px;
@@ -40,7 +40,7 @@ h3 { /* Header 3 */
   color: #158597;
 }
 code.r{ /* Code block */
-    font-size: 16px;
+    font-size: 10px;
 }
 pre { /* Code block - determines code spacing between lines */
     font-size: 14px;
@@ -94,7 +94,7 @@ According to the latest reports of breast cancer prevalence, the current state i
 Driver mutations (DV) are what is to be seen as the ticket of admission to the different stages of cancer growth. Thus, the acquisition of driver mutations is essential for tumour initiation, transformation as well as progression and metastasis. According to Bert Vogelstein three mutations in genes displaying a crucial function in cell proliferation, DNA integrity and cellular motility are enough to drive a normal cell into aberrant growth and malignancy:
 
 > "Focusing on driver-gene mutations and the pathways they control has rendered complex cancer-genome landscapes intelligible. In solid tumors of adults, alterations in as few as three driver genes appear to suffice for a cell to evolve into an advanced cancer." quote.footer
-> `quote_footer('--- *The Path to Cancer - Three Strikes and You're Out*, Bert Vogelstein 2015')`
+> quote_footer('--- *The Path to Cancer - Three Strikes and You're Out*, Bert Vogelstein 2015')
 
 These DVs comprise both gain-of-function mutations in (proto-)oncogenes which usually promote cell proliferation and loss-of-function mutations in tumour suppressor genes which usually decelerate the cell cycle as well as genes involved in DNA repair and proofreading. Thereby, the cell acquires indispensable properties in tumorigenesis such as immortality, continous proliferation, immune and apoptosis resistance and the ability to promote angiogenesis. Examples for prominent oncogenes are k-ras and b-raf encoding kinases regulating a complex network of proteins involved in cellular growth when bound to ATP or GTP, respectively. On the other hand the most illustrious tumour suppressor gene is p53 whose physiological role is to induce cell senescence and apoptosis in case of DNA damage, a condition often encountered in cancer cells.
 
@@ -618,7 +618,7 @@ SST_Data <- lapply(seq_along(testData), function(a) {
 names(SST_Data) <- driver_mut
 
 #have a look at the SST candidates
-head(SST_Data)
+lapply(SST_Data, function(a) paged_table(a))
 ```
 
 ### Verification of SST candidates by assigned k means cluster number 
