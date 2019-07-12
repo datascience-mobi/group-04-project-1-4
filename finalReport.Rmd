@@ -251,7 +251,6 @@ BCCL_Mutation = lapply(ids, function(a) mut[[a]])
 names(BCCL_Mutation) = samples #IDs as names are needed later
 BCCL_Annotation <- subset(data$annotation, Primary.Disease == sample_case)
 tPatients_ID <- t(BCCL_Annotation[1]) #create a vector of patientIDs useful for the MutImpact Matrix
-#Reminder to myself: create another command, to reorder rows alphabetically (for loops are not working)
 ```
 
 ### Exploring gene expression patterns 
@@ -309,7 +308,7 @@ Exp_lit_boxplot = ggplot(Exp_lit_driver_mut, aes(x = variable, y = value)) +
            plot.title = element_text(hjust = 0.4),
            axis.text.x = element_text(angle = 0, vjust = 0, hjust=0.5),
            legend.title= element_blank(),
-           axis.title.x = element_blank(),
+           axis.title.x = element_text(),
            strip.text.y = element_text(angle = 0))
 
 Exp_lit_boxplot
@@ -516,7 +515,7 @@ Expression_driver_mut$variable=rep(c("ERBB2","MYCBP", "PARP10", "PIK3CA"), ncol(
 Expression_boxplot = ggplot(Expression_driver_mut, aes(x = variable, y = value)) +
        geom_boxplot(aes(fill=variable), outlier.alpha = 0.7,
                      outlier.colour = "grey", outlier.shape = 20, outlier.size = 2) +
-        labs(title = 'Transcripts per million (TPM) of selected driver mutations', x = 'Selected driver mutations', y = 'Transcripts per million (TPM)') +
+        labs(title = 'Transcripts per million (TPM) of selected driver mutations', x = 'Selected driver mutations', y = 'Transcripts per million [TPM]') +
             theme_minimal() +
             geom_jitter(width = 0.2) +
             scale_fill_manual(values=wes_palette("Royal2", n=4)) +
