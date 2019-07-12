@@ -198,9 +198,6 @@ library("gplots")
 
 <<<<<<< HEAD
 ```{r Lisa, include=FALSE, eval=FALSE}
-=======
-```{r Lisa, include=FALSE, eval=TRUE}
->>>>>>> 0094c91d7bc3b97467aeaed4f264f7c0776af6bd
 data = readRDS("C:/Users/lisa-/Desktop/Studium/4. FS/Bioinfo/DepMap19Q1_allData.RDS")
 root.dir = "C:/Users/lisa-/Desktop/Studium/4. FS/Bioinfo/project-01-group-04"
 ```
@@ -210,7 +207,7 @@ data = readRDS("C:/Users/Salome/Documents/4.FS/Bioinfo/DepMap19Q1_allData.RDS")
 root.dir = "C:/Users/Salome/Documents/4.FS/Bioinfo/Github/project-01-group-04"
 ```
 
-```{r Lennart include = FALSE, eval=FALSE}
+```{r Lennart, include = FALSE, eval=FALSE}
 data = readRDS("L:/UNI/4.FS/BioStat/DepMap19Q1_allData.RDS")
 root.dir = "C:/Users/ole-l/Documents/GitHub/project-01-group-04"
 ```
