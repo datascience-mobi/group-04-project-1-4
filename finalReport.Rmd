@@ -215,10 +215,16 @@ root.dir = "C:/Users/Salome/Documents/4.FS/Bioinfo/Github/project-01-group-04"
 data = readRDS("L:/UNI/4.FS/BioStat/DepMap19Q1_allData.RDS")
 root.dir = "C:/Users/ole-l/Documents/GitHub/project-01-group-04"
 ```
+
+```{r Elias, include = FALSE, eval=TRUE}
+data = readRDS("C:/Users/Elias/Documents/Uni/4. FS/Bioinfo/DepMap19Q1_allData.RDS")
+root.dir = "C:/Users/Elias/Documents/GitHub/project-01-group-04"
+```
+
 To get a feeling for the dataset we will have a look at the given data structure.  
 
 ```{r include=FALSE}
-length(data) #get some info about the data (the dimensions here)
+length(data) #get some information about the data (the dimensions here)
 lapply(data, dim) #get an impression on the data
 #View(data$mutation) #closer look because data$mutation returns NULL in the command above
 lapply(data, function(a) head(a)) #look at the data 
@@ -411,7 +417,7 @@ BCCL_kd.ceres_optKS <- CERES_Optimal_K(BCCL_kd.ceresKS, "CERES Optimal Clusters 
 To enable the plotting of within sum square (WSS) values for clusters from 2 to 15 for each breast cancer cell, each vector was individually picked and formatted into a dataframe. The cell sample name was then added as a label in a new column "Cell_Sample" and the cluster numbers from 2 to 15 in the column "OptimalK".
 The output of this lapply function (`optimalKprocessedData`), a list of 28 dataframes, was then combined into one and columns renamed accordingly. Subsequently, the ggplot function was used to plot all data stored in `optimalKprocessedData` in one plot. 
 
-```{r warning=FLASE, fig.align="center"}
+```{r warning=FALSE, fig.align="center"}
 # plotting wss function 
 optimalKprocessedData <- lapply(seq_along(BCCL_kd.ceres_optKS), function(a){
   dtPicker <- as.data.frame(BCCL_kd.ceres_optKS[[a]]) # one vector picked and formatted into dataframe
@@ -691,7 +697,7 @@ For the regression model, we want to predict the CERES score of the driver mutat
 To run Multilinear regression, we reform the `BCCL_kd.ceres` matrix. By transponing and format change, we obtain a matrix with colnames = Gene names and rownames = Cell line indices (equal to tPatients_ID). Then, we collect the relevant the CERES scores for the mutations for the linear regression.
 All columns with the corresponding names of the SST genes plus the driver mutation will be collected and copied into a new dataframe.
       
-```{r Regression sample construction fig.align = 'center', warning=FALSE}
+```{r Regression sample construction, fig.align = 'center', warning=FALSE}
 #reformat BCCL CERES matrix
 BCCL_kd.ceres_df <- as.data.frame(t(BCCL_kd.ceres))
 rownames(BCCL_kd.ceres_df) <- tPatients_ID
@@ -714,7 +720,7 @@ Multicollinearity, which is given if two dependent variables are strongly correl
       $r < 0.80$
 If this requirement is not met, one of the correlated variables should be deleted as it is seen as redundant.
 
-```{r Regression sample distribution fig.align = 'center', warning=FALSE}
+```{r Regression sample distribution, fig.align = 'center', warning=FALSE}
 lapply(seq_along(data_regression), function(a){  
   p <- ggplot(data_regression[[a]], aes(sample=data_regression[[a]][,ncol(data_regression[[a]])], col = "red")) + stat_qq()+ stat_qq_line() #create qq-Plot with line for comparison to normal distribution
    p + labs(title = "QQ-Plot", subtitle = "Check if data is approx. normally distributed")
@@ -732,7 +738,7 @@ To run the Multilinear Regression, it is advised to create a long function which
 Then the function conducts Training of Regression model with training data to predict Driver mutation CERES (y; dep.variable) from SST CERES scores (x1 ... xn; indep.variables)
 Followed by checking model assumptions of residual normal distribution and homoscedasticity.
 Later on, the function runs the test Data on model for performance evaluation and finally calculates and plots Spearman correlation to further asses model performance.
-```{r Multiple Regression function fig.align = 'center', warning=FALSE}
+```{r Multiple Regression function, fig.align = 'center', warning=FALSE}
 input_data <- data_regression
 
 plottingData <- lapply(seq_along(input_data), function(a) {
@@ -825,7 +831,7 @@ MYCBP and PARP10 failed to show approx. normal residual distribution.
 Also known as homogeneity of variance, this condition is met if random variables have similar variance. Also, there is no pattern of variance change if the random variables in- or decrease. #citation
 ERBB2 and PIK3CA violate the condition, while MYCBP and PARP10 show homoscedasticity.
 
-# Interpreation
+#Interpretation
 We obtained the following p-values and correlation coefficients:
 
 Model     | p-value     | rho      | 

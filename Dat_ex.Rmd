@@ -199,10 +199,12 @@ boxplot(BCCL_Expressionfresh) #-> stupid
 ```
 *Ranking top expression genes
 ```{r}
-wss = sapply(2:7, function(k) {
-    kmeans(x = t(BCCL_Expression), centers = k)$tot.withinss
-})
-plot(2:7, wss, type = "b", pch = 19, xlab = "Number of clusters K", ylab = "Total within-clusters sum of squares")
+#install.packages("gplots")
+library("gplots")
+CERES50 <- as.matrix(BCCL_kd.ceres[c(1:nrow(BCCL_kd.ceres)),c(1:28)])
+col <- colorRampPalette(c("green", "white", "red"))(n = 1000) #defining the colours for the heatmap
+CERESHeatmap <- heatmap.2(CERES50, scale = "none", col = col, 
+          trace = "none", density.info = "none", dendrogram = c("none"), labRow = FALSE, labCol = FALSE, main = "CERES scores of all BCCLs", xlab = "Breast cancer cell lines (BCCL)", ylab = "Genes, ordered by hierarchical clustering")
 
 ```
 
