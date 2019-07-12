@@ -94,7 +94,7 @@ According to the latest reports of breast cancer prevalence, the current state i
 Driver mutations (DV) are what is to be seen as the ticket of admission to the different stages of cancer growth. Thus, the acquisition of driver mutations is essential for tumour initiation, transformation as well as progression and metastasis. According to Bert Vogelstein three mutations in genes displaying a crucial function in cell proliferation, DNA integrity and cellular motility are enough to drive a normal cell into aberrant growth and malignancy:
 
 > "Focusing on driver-gene mutations and the pathways they control has rendered complex cancer-genome landscapes intelligible. In solid tumors of adults, alterations in as few as three driver genes appear to suffice for a cell to evolve into an advanced cancer." quote.footer
-> `r tufte::quote_footer('--- *The Path to Cancer - Three Strikes and You're Out*, Bert Vogelstein 2015')`
+> `quote_footer('--- *The Path to Cancer - Three Strikes and You're Out*, Bert Vogelstein 2015')`
 
 These DVs comprise both gain-of-function mutations in (proto-)oncogenes which usually promote cell proliferation and loss-of-function mutations in tumour suppressor genes which usually decelerate the cell cycle as well as genes involved in DNA repair and proofreading. Thereby, the cell acquires indispensable properties in tumorigenesis such as immortality, continous proliferation, immune and apoptosis resistance and the ability to promote angiogenesis. Examples for prominent oncogenes are k-ras and b-raf encoding kinases regulating a complex network of proteins involved in cellular growth when bound to ATP or GTP, respectively. On the other hand the most illustrious tumour suppressor gene is p53 whose physiological role is to induce cell senescence and apoptosis in case of DNA damage, a condition often encountered in cancer cells.
 
@@ -201,7 +201,7 @@ library(rmarkdown)
 ```
 
 <<<<<<< HEAD
-```{r Lisa, include=FALSE, eval=FALSE}
+```{r Lisa, include=FALSE, eval=TRUE}
 data = readRDS("C:/Users/lisa-/Desktop/Studium/4. FS/Bioinfo/DepMap19Q1_allData.RDS")
 root.dir = "C:/Users/lisa-/Desktop/Studium/4. FS/Bioinfo/project-01-group-04"
 ```
@@ -216,7 +216,7 @@ data = readRDS("L:/UNI/4.FS/BioStat/DepMap19Q1_allData.RDS")
 root.dir = "C:/Users/ole-l/Documents/GitHub/project-01-group-04"
 ```
 
-```{r Elias, include = FALSE, eval=TRUE}
+```{r Elias, include = FALSE, eval=FALSE}
 data = readRDS("C:/Users/Elias/Documents/Uni/4. FS/Bioinfo/DepMap19Q1_allData.RDS")
 root.dir = "C:/Users/Elias/Documents/GitHub/project-01-group-04"
 ```
@@ -366,7 +366,7 @@ for (j in 1:ncol(pre_mutImpact)){
 }
 
 #have a look at the mutImpact matrtix
-paged_table(head(mutImpact))
+paged_table(as.data.frame(mutImpact), 1:4)
 ```
 
 ## Selection of driver mutations
