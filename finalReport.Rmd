@@ -159,6 +159,7 @@ install.packages("factoextra")
 install.packages("RColorBrewer")
 install.packages("gplots")
 install.packages("data.table")
+install.packages("ggpubr")
 
 
 # importing libraries
@@ -172,6 +173,7 @@ library(factoextra)
 library(wesanderson)
 library(RColorBrewer)
 library("gplots")
+library("ggpubr")
 
 #Setting a sys-path
 root.dir = dirname(rstudioapi::getSourceEditorContext()$path)
@@ -204,6 +206,10 @@ data = readRDS("C:/Users/Salome/Documents/4.FS/Bioinfo/DepMap19Q1_allData.RDS")
 root.dir = "C:/Users/Salome/Documents/4.FS/Bioinfo/Github/project-01-group-04"
 ```
 
+```{r Lennart include = FALSE, eval=FALSE}
+data = readRDS("L:/UNI/4.FS/BioStat/DepMap19Q1_allData.RDS")
+root.dir = "C:/Users/ole-l/Documents/GitHub/project-01-group-04"
+```
 To get a feeling for the dataset we will have a look at the given data structure.  
 
 ```{r include=FALSE}
@@ -681,7 +687,7 @@ For the regression model, we want to predict the CERES score of the driver mutat
 To run Multilinear regression, we reform the `BCCL_kd.ceres` matrix. By transponing and format change, we obtain a matrix with colnames = Gene names and rownames = Cell line indices (equal to tPatients_ID). Then, we collect the relevant the CERES scores for the mutations for the linear regression.
 All columns with the corresponding names of the SST genes plus the driver mutation will be collected and copied into a new dataframe.
       
-```{r}
+```{r Regression sample construction fig.align = 'center', warning=FALSE}
 #reformat BCCL CERES matrix
 BCCL_kd.ceres_df <- as.data.frame(t(BCCL_kd.ceres))
 rownames(BCCL_kd.ceres_df) <- tPatients_ID
@@ -704,7 +710,7 @@ Multicollinearity, which is given if two dependent variables are strongly correl
       $r < 0.80$
 If this requirement is not met, one of the correlated variables should be deleted as it is seen as redundant.
 
-```{r}
+```{r Regression sample distribution fig.align = 'center', warning=FALSE}
 lapply(seq_along(data_regression), function(a){  
   p <- ggplot(data_regression[[a]], aes(sample=data_regression[[a]][,ncol(data_regression[[a]])], col = "red")) + stat_qq()+ stat_qq_line() #create qq-Plot with line for comparison to normal distribution
    p + labs(title = "QQ-Plot", subtitle = "Check if data is approx. normally distributed")
@@ -722,7 +728,7 @@ To run the Multilinear Regression, it is advised to create a long function which
 Then the function conducts Training of Regression model with training data to predict Driver mutation CERES (y; dep.variable) from SST CERES scores (x1 ... xn; indep.variables)
 Followed by checking model assumptions of residual normal distribution and homoscedasticity.
 Later on, the function runs the test Data on model for performance evaluation and finally calculates and plots Spearman correlation to further asses model performance.
-```{r}
+```{r Multiple Regression function fig.align = 'center', warning=FALSE}
 input_data <- data_regression
 
 plottingData <- lapply(seq_along(input_data), function(a) {
