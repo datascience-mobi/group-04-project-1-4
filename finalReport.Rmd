@@ -721,13 +721,22 @@ Multicollinearity, which is given if two dependent variables are strongly correl
 If this requirement is not met, one of the correlated variables should be deleted as it is seen as redundant.
 
 ```{r Regression sample distribution, fig.align = 'center', warning=FALSE}
+
 lapply(seq_along(data_regression), function(a){  
-  p <- ggplot(data_regression[[a]], aes(sample=data_regression[[a]][,ncol(data_regression[[a]])], col = "red")) + stat_qq()+ stat_qq_line() #create qq-Plot with line for comparison to normal distribution
-   p + labs(title = "QQ-Plot", subtitle = "Check if data is approx. normally distributed")
-  
+  par(mfrow=c(1,2)) #hmmm should show them beneath .... 
+  p <- ggplot(data_regression[[a]], aes(sample=data_regression[[a]][,ncol(data_regression[[a]])], col = "cyl")) + stat_qq() +           stat_qq_line() #create qq-Plot with line for comparison to normal distribution +
+        labs(title = "QQ-Plot", subtitle = "Check if data is approx. normally distributed") +
+          theme(legend.position ="none",
+            plot.title = element_text(hjust = 0.4),
+            axis.text.x = element_text(angle = 0, vjust = 0, hjust=0.5),
+            legend.title= element_blank(),
+            axis.title.x = element_text(),
+            strip.text.y = element_text(angle = 0))
   r <-  round(cor(data_regression[[a]]),2) #create table with correlation values between all SSTs; the values are rounded to two decimal places [,2)]
-  
-  return(list(p,r))
+  col <- colorRampPalette(c("magenta", "white", "blue1"))(n = 1000)
+  cormap <- heatmap.2(r, scale = "none", col = col, 
+          trace = "none", density.info = "none", dendrogram = c("both"), main = "Correlation of ... and ...")
+  return(list(p))
    })
 ```
 Quick Results: The Data of MYCBP and PARP10 is approx. normally distributed; ERBB2 and PIK3CA not. No multicollinearity detected, all 0.80 > x
