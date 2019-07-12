@@ -831,7 +831,7 @@ MYCBP and PARP10 failed to show approx. normal residual distribution.
 Also known as homogeneity of variance, this condition is met if random variables have similar variance. Also, there is no pattern of variance change if the random variables in- or decrease. #citation
 ERBB2 and PIK3CA violate the condition, while MYCBP and PARP10 show homoscedasticity.
 
-# Interpreation
+#Interpretation
 We obtained the following p-values and correlation coefficients:
 
 Model     | p-value     | rho      | 
