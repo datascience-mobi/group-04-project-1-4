@@ -8,6 +8,7 @@ output:
     number_sections: yes
     theme: lumen
     toc: yes
+    df_print: paged
   word_document:
     toc: yes
 ---
@@ -23,6 +24,7 @@ td {  /* Table  */
 h1.title {
   font-size: 40px;
   color: Red;
+  font-family: "Segoe UI"";
 }
 h1 { /* Header 1 */
   font-size: 28px;
@@ -102,7 +104,11 @@ In our project, we first focus on driver mutations, which can be imagined as the
 + Leading to positive selection in microenvironment
 Furthermore, driver mutations are also often required for tumor maintenance. (Stratton, Campbell et al. 2009)
 
-## Second Site Targets: secret co-operators in tumorigenesis
+## Second-site targets: secret co-operators in tumorigenesis
+
+Driver mutations are not the only genetic factors involved in cancer development. Moreover, tumorigenesis derives from a complex genetic programme comprising several minor and major alterations in gene expression patterns as well as protein regulation. As these factors act synergistically in promoting tumour growth disturbing their interaction might provide another method of inhibiting cancer proliferation. 
+
+The considered factors supporting the effect of driver mutations are often referred to as second-site targets (SSTs) as they do not necessarily confer a growth advantage to the tumour when mutated alone but by genetic interaction with other mutations. Thus, SSTs constitute promising targets in cancer therapy as they are meant to have a less significant effect on the viability of healthy cells because they do not display central regulatory functions. However, identification of these secret co-operators demands the analysis of several parameters reflecting their relevance and function in proliferation such as RNAseq data, data from gene knockouts and mutational analyses.  
 
 Targeting and eliminating driver mutations as a part of tumor treatment is a difficult procedure, since those genes are also essential for survival of non-mutated cells. A differentiation between normal and tumor cell is not possible, thus targeting leads to adverse effects. Plus, high dosages need to be applied. #CITATION
 A promising approach is targeting so-called Second Site Targets (SSTs), which are gene mutations interacting genetically with driver mutations to increase cell viability. # CITATION
@@ -137,6 +143,7 @@ PIK3CA    | ~ 30 - 48%          |Interaction with AKT and mTOR pathway   |(Alesk
 ```{r driver mutations, eval=FALSE, echo=FALSE, fig.cap="Possible_Driver_Mutations", out.width = '100%', fig.align = "center"}
 knitr::include_graphics("Possible_Driver_Mutations.png")
 ```
+
 # Methods
 
 ## Data cleanup and exploration
@@ -183,7 +190,14 @@ library(caTools)
 library(tidyverse)
 library(factoextra)
 library(wesanderson)
+```
 
+```{r Lisa include = FALSE, eval=FALSE}
+data = readRDS("C:/Users/lisa-/Desktop/Studium/4. FS/Bioinfo/DepMap19Q1_allData.RDS")
+root.dir = "C:/Users/lisa-/Desktop/Studium/4. FS/Bioinfo/project-01-group-04"
+```
+
+```{r Salome include=FALSE, eval=FALSE}
 data = readRDS("C:/Users/Salome/Documents/4.FS/Bioinfo/DepMap19Q1_allData.RDS")
 root.dir = "C:/Users/Salome/Documents/4.FS/Bioinfo/Github/project-01-group-04"
 ```
