@@ -192,6 +192,11 @@ data = readRDS("C:/Users/lisa-/Desktop/Studium/4. FS/Bioinfo/DepMap19Q1_allData.
 root.dir = "C:/Users/lisa-/Desktop/Studium/4. FS/Bioinfo/project-01-group-04"
 ```
 
+```{r Salome include=FALSE, eval=FALSE}
+data = readRDS("C:/Users/Salome/Documents/4.FS/Bioinfo/DepMap19Q1_allData.RDS")
+root.dir = "C:/Users/Salome/Documents/4.FS/Bioinfo/Github/project-01-group-04"
+```
+
 To get a feeling for the dataset we will have a look at the given data structure.  
 
 ```{r include=FALSE}
