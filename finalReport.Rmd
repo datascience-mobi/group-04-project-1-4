@@ -159,6 +159,7 @@ install.packages("factoextra")
 install.packages("RColorBrewer")
 install.packages("gplots")
 install.packages("data.table")
+install.packages("rmarkdown")
 install.packages("ggpubr")
 
 
@@ -172,7 +173,8 @@ library(tidyverse)
 library(factoextra)
 library(wesanderson)
 library(RColorBrewer)
-library("gplots")
+library(gplots)
+library(rmarkdown)
 library("ggpubr")
 
 #Setting a sys-path
@@ -193,7 +195,8 @@ library(tidyverse)
 library(factoextra)
 library(wesanderson)
 library(RColorBrewer)
-library("gplots")
+library(gplots)
+library(rmarkdown)
 ```
 
 <<<<<<< HEAD
@@ -679,10 +682,10 @@ SST_Data <- lapply(seq_along(SST_Data), function(a) {
 
 names(SST_Data) <- driver_mut #regenerate names
 
-show(SST_Data$ERBB2)
-show(SST_Data$MYCBP)
-show(SST_Data$PARP10)
-show(SST_Data$PIK3CA)
+paged_table(SST_Data$ERBB2)
+paged_table(SST_Data$MYCBP)
+paged_table(SST_Data$PARP10)
+paged_table(SST_Data$PIK3CA)
 ```
 
 ## Exploiting interactions: Regression analysis to predict CERES scores of driver mutation
