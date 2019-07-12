@@ -159,6 +159,7 @@ install.packages("factoextra")
 install.packages("RColorBrewer")
 install.packages("gplots")
 install.packages("data.table")
+install.packages("rmarkdown")
 install.packages("ggpubr")
 
 
@@ -172,7 +173,8 @@ library(tidyverse)
 library(factoextra)
 library(wesanderson)
 library(RColorBrewer)
-library("gplots")
+library(gplots)
+library(rmarkdown)
 library("ggpubr")
 
 #Setting a sys-path
@@ -193,7 +195,8 @@ library(tidyverse)
 library(factoextra)
 library(wesanderson)
 library(RColorBrewer)
-library("gplots")
+library(gplots)
+library(rmarkdown)
 ```
 
 <<<<<<< HEAD
@@ -211,10 +214,16 @@ root.dir = "C:/Users/Salome/Documents/4.FS/Bioinfo/Github/project-01-group-04"
 data = readRDS("L:/UNI/4.FS/BioStat/DepMap19Q1_allData.RDS")
 root.dir = "C:/Users/ole-l/Documents/GitHub/project-01-group-04"
 ```
+
+```{r Elias, include = FALSE, eval=FALSE}
+data = readRDS("C:/Users/Elias/Documents/Uni/4. FS/Bioinfo/DepMap19Q1_allData.RDS")
+root.dir = "C:/Users/Elias/Documents/GitHub/project-01-group-04"
+```
+
 To get a feeling for the dataset we will have a look at the given data structure.  
 
 ```{r include=FALSE}
-length(data) #get some info about the data (the dimensions here)
+length(data) #get some information about the data (the dimensions here)
 lapply(data, dim) #get an impression on the data
 #View(data$mutation) #closer look because data$mutation returns NULL in the command above
 lapply(data, function(a) head(a)) #look at the data 
@@ -673,10 +682,10 @@ SST_Data <- lapply(seq_along(SST_Data), function(a) {
 
 names(SST_Data) <- driver_mut #regenerate names
 
-show(SST_Data$ERBB2)
-show(SST_Data$MYCBP)
-show(SST_Data$PARP10)
-show(SST_Data$PIK3CA)
+paged_table(SST_Data$ERBB2)
+paged_table(SST_Data$MYCBP)
+paged_table(SST_Data$PARP10)
+paged_table(SST_Data$PIK3CA)
 ```
 
 ## Exploiting interactions: Regression analysis to predict CERES scores of driver mutation
