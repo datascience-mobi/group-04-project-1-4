@@ -79,7 +79,7 @@ knitr::opts_chunk$set(echo = TRUE, error = FALSE)
 > "The heterogeneity of breast cancers makes them fascinating and challenging to diagnose and treat." *Please, add whom you quoted from*
 >  "The heterogeneity of breast cancers makes them both a fascinating and challenging solid tumor to diagnose and treat." quote.footer("--- *A novel therapeutic target for triple negative breast cancer*, Raj Kumar 2016") #thats what i've found -elias
 
-If you grow up in a western country in the beginning 21th century, there are two sorts of tumors, you will definately notice before you leave high school. The first one is lung cancer, gaining its questionable fame with pictures leaping out of every box of cigarettes. The second one went famous with broadly reported stories about Angelina Jolie or famous old german universities. However, breast cancer isn't just the story of attractive women or research institutes making themselves ridicolous, it is also a story of suffering and death.
+If you grow up in a western country in the beginning 21th century, there are two sorts of tumors, you will definately notice before you leave high school. The first one is lung cancer, gaining its questionable fame with pictures leaping out of every box of cigarettes. The second one went famous with broadly reported stories about Angelina Jolie or famous old german universities. However, breast cancer isn't just the story of attractive women or research institutes making themselves ridiculous, it is also a story of suffering and death.
 We think about breast cancer as the most prevalent tumor disease worldwide. It is also one of the most deathly malignant tumors, with far more than 600.000 deaths reported in 2017 (GBD 2017). Due to an increase of a sixth in percentage of world population suffering from this ilness, in the past 27 years, it is advisable to do something in the future. 
 But there is hope. In the past decades, breast cancer therapy evolved, diminishing the age standardized death rate from 15.10 to 10.00 in western europe, which is a decrease of about a third (GBD 2017). 
 Up to a point this is satisfying, on the other hand there are still a lot of challenges remaining, for example to find an effective prevention approach (Sledge et al. 2014). One group of methods increasing its powers every days are computerbased methods. Their share of ... and ... is astonishingly large . This makes us all excited about what comes in the future. Until Meanwhile, we will focus on our project, teaching ourselves in a nice manner, how useful a fast thinking computer is in research. 
@@ -539,7 +539,7 @@ Expression_boxplot = ggplot(Expression_driver_mut, aes(x = variable, y = value))
                   plot.title = element_text(hjust = 0.4),
                   axis.text.x = element_text(angle = 0, vjust = 0, hjust=0.5),
                   legend.title= element_blank(),
-                  axis.title.x = element_blank(),
+                  axis.title.x = element_text(),
                   strip.text.y = element_text(angle = 0))
 Expression_boxplot
 ```
