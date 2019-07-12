@@ -1,19 +1,19 @@
-﻿;PIK3CA;mutType;function;reference
-APC;0.9374815;Missense_Mutation, Silent;test;test
-ATP1B3;1;Missense_Mutation;test;test
-BRD2;0.9374815;Missense_Mutation;test;test
-CYFIP1;0.9196711;Silent;test;test
-DIMT1;0.9196711;Silent;test;test
-GABPA;0.9910601;Silent;test;test
-GAK;0.9196711;Missense_Mutation, Silent, Missense_Mutation;test;test
-GPR61;0.9374815;Missense_Mutation;test;test
-HCRTR1;0.9196711;Missense_Mutation;test;test
-HIST1H2BI;0.9731846;Silent;test;test
-MAX;0.9910601;Missense_Mutation;test;test
-NSMCE4A;1;Missense_Mutation;test;test
-POLQ;1;Missense_Mutation, Splice_Site, Silent, Missense_Mutation;test;test
-PTAR1;0.9731846;Silent;test;test
-RFC1;0.9910601;Silent, Silent;test;test
-SAMM50;0.9196711;Nonsense_Mutation;test;test
-SLC3A2;0.9374815;Missense_Mutation;test;test
-TRMT10C;0.9731846;Missense_Mutation;test;test
+SST;PIK3CA;mutType;function;reference
+APC;0.9374815;Missense_Mutation, Silent;Adenomatous polyposis coli protein: tumour suppressor acting as a promotor of Wnt signalling and regulator of cell migration;https://www.uniprot.org/uniprot/P25054
+ATP1B3;1;Missense_Mutation;Sodium/potassium-transporting ATPase subunit beta-3: catalysis of ATP hydrolysis;https://www.uniprot.org/uniprot/P54709
+BRD2;0.9374815;Missense_Mutation;Bromodomain-containing protein 2: role in spermatogenesis and folliculogenesis with regulatory effect in chromatin remodelling and nucleosome assembly, transcription regulator of CCND1;https://www.uniprot.org/uniprot/P25440
+CYFIP1;0.9196711;Silent;Cytoplasmic FMR1-interacting protein 1: ediator of translational represseion, role in epithelial morphogenesis by regulation of actin remodelling and axon outgrowth (maybe tumour invasion suppresor);https://www.uniprot.org/uniprot/Q7L576
+DIMT1;0.9196711;Silent;Probable dimethyladenosine transferase: involved in RNA editing and processing of rRNA;https://www.uniprot.org/uniprot/Q9UNQ2
+GABPA;0.9910601;Silent;GA-binding protein alpha chain: transcription factor in cell differentiation;https://www.uniprot.org/uniprot/Q06546
+GAK;0.9196711;Missense_Mutation, Silent, Missense_Mutation;Cyclin-G-associated kinase: acts as an auxilin homolog uncoating clathrin vesicles, expression peaks at G1 phase;https://www.uniprot.org/uniprot/O14976
+GPR61;0.9374815;Missense_Mutation;G-protein coupled receptor 61: contitutive activation aof G(s) signalling pathway, may be involved in regulation of food intake and body weight;https://www.uniprot.org/uniprot/Q9BZJ8
+HCRTR1;0.9196711;Missense_Mutation;Orexin receptor type 1: excitatory receptor regulating ERK1 and ERK2 cascade and cytosolic Calcium concentration;https://www.uniprot.org/uniprot/O43613
+HIST1H2BI;0.9731846;Silent;Histone H2B type 1-C/E/F/G/I: core component of nucleosomes;https://www.uniprot.org/uniprot/P62807
+MAX;0.9910601;Missense_Mutation;Protein max: trancription regulator eventually ivolved in chromati remodelling, repressor of MYC;https://www.uniprot.org/uniprot/P61244
+NSMCE4A;1;Missense_Mutation;Non-structural maintenance of chromosomes element 4 homolog A: part of a complex involved in homologous recombination of sister chromatids and telomere maintenance, role in response to DNA damage;https://www.uniprot.org/uniprot/Q9NXX6
+POLQ;1;Missense_Mutation, Splice_Site, Silent, Missense_Mutation;DNA polymerase theta: promotes microhomology-mediated end-joining in response to double-strand breaks;https://www.uniprot.org/uniprot/O75417
+PTAR1;0.9731846;Silent;Protein prenyltransferase alpha subunit repeat-containing protein 1;https://www.uniprot.org/uniprot/Q7Z6K3
+RFC1;0.9910601;Silent, Silent;Replication factor C subunit 1: promotes elongation of primed DNA tmeplates, eventually role in DNA replacation and/or repair;https://www.uniprot.org/uniprot/P35251
+SAMM50;0.9196711;Nonsense_Mutation;Sorting and assembly machinery component 50 homolog: role in maintenance of struture of mitochondria (especially respiratory chain complexes);https://www.uniprot.org/uniprot/Q9Y512
+SLC3A2;0.9374815;Missense_Mutation;4F2 cell-surface antigen heavy chain: component of aminp acid transporter complexes ;https://www.uniprot.org/uniprot/P08195-1
+TRMT10C;0.9731846;Missense_Mutation;tRNA methyltransferase 10 homolog C: involved in mitchondrial tRNA maturation;https://www.uniprot.org/uniprot/Q7L0Y3
