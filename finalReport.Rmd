@@ -1,6 +1,6 @@
 ---
 title: 'Final Report: Identification of SSTs'
-author: "ELias Farr, Lennart Linke, Lisa Marie Milchsack, Salome Steinke"
+author: "Elias Benjamin Farr, Lennart Linke, Lisa Marie Milchsack, Salome Steinke"
 date: "17. Juli 2019"
 output:
   html_document:
@@ -79,10 +79,10 @@ knitr::opts_chunk$set(echo = TRUE, error = FALSE)
 > "The heterogeneity of breast cancers makes them fascinating and challenging to diagnose and treat." *Please, add whom you quoted from*
 >  "The heterogeneity of breast cancers makes them both a fascinating and challenging solid tumor to diagnose and treat." quote.footer("--- *A novel therapeutic target for triple negative breast cancer*, Raj Kumar 2016") #thats what i've found -elias
 
-If you grow up in an western country in the beginning 21th century, there are two sorts of tumor, you will definately notice before you leave high school. The first one is lung cancer, gaining its questionable fame with pictures leaping out of every box of cigarettes. The second one went famous with broadly reported stories about Angelina Jolie or famous old german universities. However, breast cancer isn't just the story of attractive women getting their breasts amputated or research institutes making themselves ridicolous, it is also a story of unthinkiable suffering and death.
-We think about breast cancer as the most prevalent tumor disease worldwide(IHME GBD). It is also one of the most deathly malignant tumors in general with far more than 600.000 deaths, reported in 2017 (same origin). 
-But there is hope. In the past decades, breast cancer therapy evolved, diminishing the death rate to ... percent and ... usw. 
-Up to a point this is satisfying, on the other hand there are still a lot of untaken possibilities and new therapies to be tested. On group of methods increasing its powers every days are computerbased methods. until now, they cover about ... percent of this research fields with a clearly uprising tendency. This makes us all excited about what comes in the future. Until this future is reality, we will focus on our project, teaching ourselves in a nice manner, how useful a fast thinking computer might be in research. 
+If you grow up in a western country in the beginning 21th century, there are two sorts of tumors, you will definately notice before you leave high school. The first one is lung cancer, gaining its questionable fame with pictures leaping out of every box of cigarettes. The second one went famous with broadly reported stories about Angelina Jolie or famous old german universities. However, breast cancer isn't just the story of attractive women or research institutes making themselves ridicolous, it is also a story of suffering and death.
+We think about breast cancer as the most prevalent tumor disease worldwide. It is also one of the most deathly malignant tumors, with far more than 600.000 deaths reported in 2017 (GBD 2017). Due to an increase of a sixth in percentage of world population suffering from this ilness, in the past 27 years, it is advisable to do something in the future. 
+But there is hope. In the past decades, breast cancer therapy evolved, diminishing the age standardized death rate from 15.10 to 10.00 in western europe, which is a decrease of about a third (GBD 2017). 
+Up to a point this is satisfying, on the other hand there are still a lot of challenges remaining, for example to find an effective prevention approach (Sledge et al. 2014). One group of methods increasing its powers every days are computerbased methods. Their share of ... and ... is astonishingly large . This makes us all excited about what comes in the future. Until Meanwhile, we will focus on our project, teaching ourselves in a nice manner, how useful a fast thinking computer is in research. 
 
 According to the latest reports of breast cancer prevalence, the current state is very serious:
 + Breast cancer ranks second in worldwide cancer case numbers (Hutchinson 2010)
@@ -832,10 +832,12 @@ The final step in this project was to exploit the identified interactions and de
   + Harrell, F. E. (2001). Regression modeling strategies : with applications to linear models, logistic regression, and survival analysis. New York ; Berlin ; Heidelberg [u.a.], Springer.
   + Hutchinson, L. (2010). "Challenges, controversies, breakthroughs." Nature Reviews Clinical Oncology 7: 669.
   + Koch-Institut, R. (2017). Krebs in Deutschland für 2013/2014, Robert Koch-Institut.
+  + Kumar R (2016) A novel therapeutic target for triple negative breast cancer. Biomed Genet Genomics. 1: DOI: 10.15761/BGG.1000101.
   + Libbrecht, M. W. and W. S. Noble (2015). "Machine learning applications in genetics and genomics." Nature reviews. Genetics 16(6): 321-332.
   + Shimoi, T., A. Hamada, M. Yamagishi, M. Hirai, M. Yoshida, T. Nishikawa, K. Sudo, A. Shimomura, E. Noguchi, M. Yunokawa, K. Yonemori, C. Shimizu, T.   + Kinoshita, T. Fukuda, Y. Fujiwara and K. Tamura (2018). "PIK3CA mutation profiling in patients with breast cancer, using a highly sensitive detection system." Cancer science 109(8): 2558-2566.
   + Siraj, A. K., P. Pratheeshkumar, S. K. Parvathareddy, S. P. Divya, F. Al-Dayel, A. Tulbah, D. Ajarim and K. S. Al-Kuraya (2018). "Overexpression of PARP is an independent prognostic marker for poor survival in Middle Eastern breast cancer and its inhibition can be enhanced with embelin co-treatment." Oncotarget 9(99): 37319-37332.
   + Slamon, D., W. Godolphin, L. Jones, J. Holt, S. Wong, D. Keith, W. Levin, S. Stuart, J. Udove, A. Ullrich and a. et (1989). "Studies of the HER-2/neu proto-oncogene in human breast and ovarian cancer." Science 244(4905): 707-712.
+  + Sledge, G.W. u. a., 2014. Past, present, and future challenges in breast cancer treatment. Journal of clinical oncology???: official journal of the American Society of Clinical Oncology, 32(19), S.1979-1986.
   + Stratton, M. R., P. J. Campbell and P. A. Futreal (2009). "The cancer genome." Nature 458(7239): 719-724.
   + Xu, J., Y. Chen and O. I. Olopade (2010). "MYC and Breast Cancer." Genes & cancer 1(6): 629-640.
 
