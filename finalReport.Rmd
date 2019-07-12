@@ -697,7 +697,7 @@ For the regression model, we want to predict the CERES score of the driver mutat
 To run Multilinear regression, we reform the `BCCL_kd.ceres` matrix. By transponing and format change, we obtain a matrix with colnames = Gene names and rownames = Cell line indices (equal to tPatients_ID). Then, we collect the relevant the CERES scores for the mutations for the linear regression.
 All columns with the corresponding names of the SST genes plus the driver mutation will be collected and copied into a new dataframe.
       
-```{r Regression sample construction fig.align = 'center', warning=FALSE}
+```{r Regression sample construction, fig.align = 'center', warning=FALSE}
 #reformat BCCL CERES matrix
 BCCL_kd.ceres_df <- as.data.frame(t(BCCL_kd.ceres))
 rownames(BCCL_kd.ceres_df) <- tPatients_ID
