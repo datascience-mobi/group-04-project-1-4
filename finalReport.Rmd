@@ -85,6 +85,7 @@ But there is hope. In the past decades, breast cancer therapy evolved, diminishi
 Up to a point this is satisfying, on the other hand there are still a lot of challenges remaining, for example to find an effective prevention approach (Sledge et al. 2014). One group of methods increasing its powers every days are computerbased methods. Their share of ... and ... is astonishingly large . This makes us all excited about what comes in the future. Until Meanwhile, we will focus on our project, teaching ourselves in a nice manner, how useful a fast thinking computer is in research. 
 
 According to the latest reports of breast cancer prevalence, the current state is very serious:
+
 + Breast cancer ranks second in worldwide cancer case numbers (Hutchinson 2010)
 + In Germany there are 70,000 new cases annually. (Barnes, Kraywinkel et al. 2016)
 + This makes ~ 30% of all reported cases of tumor diseases.(Robert-Koch-Institut 2017)
@@ -851,13 +852,13 @@ PARP10    | 0.1095      |-0.6786   |
 PIK3CA    | 0.7131      |-0.1786   |
 
 The rank-correlation coefficient can take values from +1 to -1
-    + rho ~ 1: perfect positive association of ranks
-    + rho ~ 0: no association of ranks
-    + rho ~ -1: perfect negative association of ranks
++ rho ~ 1: perfect positive association of ranks
++ rho ~ 0: no association of ranks
++ rho ~ -1: perfect negative association of ranks
 
 To further interprete the p-value, we construct a H0 / H1 hypothesis:
-    + H0: There is no association between the predicted and observed variable.
-    + H1: There is an association between the predicted and observed variable.
++ H0: There is no association between the predicted and observed variable.
++ H1: There is an association between the predicted and observed variable.
 Most importantly, it is not possible to assess the strength of the correlation based on the p-value. It rather judges the statistical test than the resulting value. As default, we set the significance level to 0.05.
 
 We will the compare this values for the different models. For a positive correlation, two variables move in the same direction. For a well-designed model, we expect the predicted and observed CERES scores being approx. even. Thus, optimal model design is achieved if the correlation coefficient is close to 1 and the p-value p < 0.05.
@@ -883,8 +884,8 @@ But, a common thumb-rule for building a regression model is to calculate the _li
 
  $p < \frac{m}{15}$
  
-  + p: number of predictor variables
-  + m: limiting sample size; for continuous response variables it is the  total sample size n
++ p: number of predictor variables
++ m: limiting sample size; for continuous response variables it is the  total sample size n
 
 If this equation is fulfilled, the model is supposed to be reliable.(Harrell 2001)
 In fact, this condition is true for all four models.
