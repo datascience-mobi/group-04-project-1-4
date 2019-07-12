@@ -453,7 +453,7 @@ table(km_CERES$cluster)
 wss = sapply(2:15, function(k) {
     kmeans(x = BCCL_kd.ceres_3, centers = k)$tot.withinss
 })
-plot(2:15, wss, type = "b", pch = 19, xlab = "Number of clusters K", ylab = "Total within-clusters sum of squares") 
+plot(2:15, wss, type = "b", pch = 19, xlab = "Number of clusters K", ylab = "Total within-clusters sum of squares", main = "Within sum square test of CERES scores", col = "gray40", lwd = 3) 
 ```
 
 The optimal cluster number k was identified to be 4. Thus k means clustering of the data stored in `BCCL_kd.ceres_3` was performed with 10 iterations. The following cluster plot was generated.
