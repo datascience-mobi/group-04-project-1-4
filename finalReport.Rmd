@@ -149,7 +149,10 @@ install.packages("reshape")
 install.packages("wesanderson")
 install.packages("tidyverse")
 install.packages("factoextra")
+install.packages("RColorBrewer")
+install.packages("gplots")
 install.packages("data.table")
+
 
 # importing libraries
 library(ggplot2)
@@ -160,6 +163,8 @@ library(caTools)
 library(tidyverse)
 library(factoextra)
 library(wesanderson)
+library(RColorBrewer)
+library("gplots")
 
 #Setting a sys-path
 root.dir = dirname(rstudioapi::getSourceEditorContext()$path)
@@ -209,7 +214,7 @@ dat = lapply(ids, function(a) mut[[a]])
 
 We observe a large variety of tumor diseases being recorded by this dataset. Because we want to focus on breast cancer, we will generate data frames only containing cell lines which are referable to this specific type of tumor. To make it simple we just rename our columns after the tumor disease. After that, we can subset the dataframe easily in breast cancer dataframes.
 
-```{r include=FALSE}
+```{r echo=TRUE}
 #Changing colnames to specific type of tumor:
 pdata <- lapply(1:(length(dt_new)-1), function(a) {
   dat_picker <- dt_new[[a]] #pick one file at each iteration 
@@ -235,15 +240,63 @@ tPatients_ID <- t(BCCL_Annotation[1]) #create a vector of patientIDs useful for 
 
 ### Exploring gene expression patterns 
 
-The next step was to undertake some experiments, in order to get a feeling for the data distribution. 
-We made a heatmap of expression values *where is this heatmap?* and found a very diverse an unordered expression of genes trough the 28 breast cancer cell lines. Somehow, the CERES values showed a wide variety as well, giving us a clue how useful our computer based approach might be. To make shure we can use all cell lines, we investigated if some of the cell lines shows abnormal values in comparison to others. A few boxplots prooved this is not the case. 
-Another issue was the very low level of expression of most genes. We discussed the possibility of erasing an amount of these genes and decided to not cut out any data, before we don't know  which kind of data we will need in the end. In this phase of the project is was open if a second site target will have a high expression in every case. 
-As next step we made some tests, using driver mutations suggested in literature. These boxplots show the different roles of genes ending up in various expression values in a nice way. 
-*muss noch sch?n gemacht werden :)*
+The next step was to do some experiments, in order to get a feeling for data distribution. 
+We made a heatmap of expression values as well as CERES scores and found a diverse an unordered expression of genes trough the 28 breast cancer cell lines. Somehow, within the CERES scores were genes, a group of genes was showy, having a clear negative effect on cell viability. This group is suggested to be so called "housekeeping-genes", genes fulfilling the essential roles in cellcycle. All the other genes showed a large variety of through the cell lines, giving us a clue how useful our computer based approach might be. To make shure we can use all cell lines, we investigated if some of the cell lines shows abnormal values in comparison to others. The boxplot below proofs, this is not the case. 
 
 ```{r echo=TRUE, fig.align= "center"}
-tBCCL_Expression <- t(BCCL_Expression)
-boxplot(tBCCL_Expression[, c("MYC", "PTEN", "TP53", "PIK3CA", "GATA3", "BRCA1", "BRCA2", "RB1", "GANAB", "PRKCSH", "RNF43")], xlab = "Suggested driver mutations", ylab ="Transcripts per million")
+#Create a heatmap for all Genes and their CERES score
+CERES50 <- as.matrix(BCCL_kd.ceres[c(1:nrow(BCCL_kd.ceres)),c(1:28)])
+col <- colorRampPalette(c("seagreen3", "white", "red2"))(n = 1000) #defining the colours for the heatmap
+CERESHeatmap <- heatmap.2(CERES50, scale = "none", col = col, 
+          trace = "none", density.info = "none", dendrogram = c("none"), labRow = FALSE, labCol = FALSE, main = "CERES scores of all BCCLs", xlab = "Breast cancer cell lines (BCCL)", ylab = "Genes, ordered by hierarchical clustering")
+```
+
+```{r echo=TRUE, fig.align= "center"}
+# expanding the colourpalette to 28
+nb.cols <- 28 
+newcolours <- colorRampPalette(brewer.pal(8, "Paired")) (nb.cols)
+#Plotting gene expression of all 28 BCCLs
+GeneralExp <- BCCL_Expression[c(1:28),]
+GenExmelt= melt(GeneralExp)
+GeneralExp_boxplot = ggplot(GenExmelt, aes(x = variable, y = value)) +
+     geom_boxplot(aes(fill=variable), outlier.alpha = 0.7,
+                outlier.colour = "grey", outlier.shape = 20, outlier.size = 2) +
+     labs(title = 'General expression in all 28 BCCLs', x = 'Breast cancer cell lines', y = 'Expression [TPM]') +
+     theme_minimal() +
+     geom_jitter(width = 0.15) +
+     scale_fill_manual(values = newcolours) +
+     theme(legend.position ='none',
+           plot.title = element_text(hjust = 0.4),
+           axis.text.x = element_blank(),
+           legend.title= element_blank(),
+           axis.title.x = element_text(),
+           strip.text.y = element_text(angle = 0))
+GeneralExp_boxplot
+```
+
+An issue was the very low level of expression of most genes, seen in the graph above. We discussed the possibility of erasing an amount of these genes and decided to not cut out any data, before we don't know  which kind of data we will need in the end. In this phase of the project is was open if a second site target will have a high expression in every case. 
+As next step we made some tests, using driver mutations suggested in literature. These boxplots show the different roles of genes ending up in various expression values in a nice way. 
+
+```{r echo=TRUE, fig.align= "center"}
+GOI_Exp_lit <- BCCL_Expression[c("MYC", "PTEN", "TP53", "PIK3CA", "GATA3", "BRCA1", "BRCA2", "RB1", "GANAB", "PRKCSH", "RNF43"),]
+Exp_lit_driver_mut= melt(GOI_Exp_lit)
+Exp_lit_driver_mut$variable=rep(c("MYC", "PTEN", "TP53", "PIK3CA", "GATA3", "BRCA1", "BRCA2", "RB1", "GANAB", "PRKCSH", "RNF43"), ncol(GOI_Exp_lit))
+
+Exp_lit_boxplot = ggplot(Exp_lit_driver_mut, aes(x = variable, y = value)) +
+     geom_boxplot(aes(fill=variable), outlier.alpha = 0.7,
+                  outlier.colour = "grey", outlier.shape = 20, outlier.size = 2) +
+     labs(title = 'Expression values of driver mutations, derived from literature', x = 'The eleven most prevalent driver mutations in BC', y = 'Expression [TPM]') +
+     theme_minimal() +
+     geom_jitter(width = 0.2) +
+     scale_fill_brewer(palette = "Paired") +
+     theme(legend.position ='none',
+           plot.title = element_text(hjust = 0.4),
+           axis.text.x = element_text(angle = 0, vjust = 0, hjust=0.5),
+           legend.title= element_blank(),
+           axis.title.x = element_blank(),
+           strip.text.y = element_text(angle = 0))
+
+Exp_lit_boxplot
 ```
 
 We already discarded some of this genes, mostly because they are known as tumor suppressor genes. In our approach we looked for targets, which show similar characteristics in cell viability after a knockdown. A knockdown of a tumor supressor gene, even if it is mutated, will rarely have a negative effect on cell viability. This makes genes associated with tumor supressor genes useless for an inhibitory drug and therefore not appropriate for our analysis. 
@@ -638,7 +691,7 @@ If this requirement is not met, one of the correlated variables should be delete
 
 ```{r}
 lapply(seq_along(data_regression), function(a){  
-  p <- ggplot(data_regression[[a]], aes(sample=data_regression[[a]][,ncol(data_regression[[a]])])) + stat_qq()+ stat_qq_line() #create qq-Plot with line for comparison to normal distribution
+  p <- ggplot(data_regression[[a]], aes(sample=data_regression[[a]][,ncol(data_regression[[a]])], col = "red")) + stat_qq()+ stat_qq_line() #create qq-Plot with line for comparison to normal distribution
    p + labs(title = "QQ-Plot", subtitle = "Check if data is approx. normally distributed")
   
   r <-  round(cor(data_regression[[a]]),2) #create table with correlation values between all SSTs; the values are rounded to two decimal places [,2)]
