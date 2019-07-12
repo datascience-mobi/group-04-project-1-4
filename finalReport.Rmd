@@ -159,6 +159,7 @@ install.packages("factoextra")
 install.packages("RColorBrewer")
 install.packages("gplots")
 install.packages("data.table")
+install.packages("ggpubr")
 
 
 # importing libraries
@@ -172,6 +173,7 @@ library(factoextra)
 library(wesanderson)
 library(RColorBrewer)
 library("gplots")
+library("ggpubr")
 
 #Setting a sys-path
 root.dir = dirname(rstudioapi::getSourceEditorContext()$path)
@@ -194,7 +196,11 @@ library(RColorBrewer)
 library("gplots")
 ```
 
+<<<<<<< HEAD
 ```{r Lisa, include=FALSE, eval=FALSE}
+=======
+```{r Lisa, include=FALSE, eval=TRUE}
+>>>>>>> 0094c91d7bc3b97467aeaed4f264f7c0776af6bd
 data = readRDS("C:/Users/lisa-/Desktop/Studium/4. FS/Bioinfo/DepMap19Q1_allData.RDS")
 root.dir = "C:/Users/lisa-/Desktop/Studium/4. FS/Bioinfo/project-01-group-04"
 ```
@@ -204,6 +210,10 @@ data = readRDS("C:/Users/Salome/Documents/4.FS/Bioinfo/DepMap19Q1_allData.RDS")
 root.dir = "C:/Users/Salome/Documents/4.FS/Bioinfo/Github/project-01-group-04"
 ```
 
+```{r Lennart include = FALSE, eval=FALSE}
+data = readRDS("L:/UNI/4.FS/BioStat/DepMap19Q1_allData.RDS")
+root.dir = "C:/Users/ole-l/Documents/GitHub/project-01-group-04"
+```
 To get a feeling for the dataset we will have a look at the given data structure.  
 
 ```{r include=FALSE}
@@ -230,7 +240,7 @@ dat = lapply(ids, function(a) mut[[a]])
 
 We observe a large variety of tumor diseases being recorded by this dataset. Because we want to focus on breast cancer, we will generate data frames only containing cell lines which are referable to this specific type of tumor. To make it simple we just rename our columns after the tumor disease. After that, we can subset the dataframe easily in breast cancer dataframes.
 
-```{r echo=TRUE}
+```{r warning=FALSE, include=FALSE}
 #Changing colnames to specific type of tumor:
 pdata <- lapply(1:(length(dt_new)-1), function(a) {
   dat_picker <- dt_new[[a]] #pick one file at each iteration 
@@ -258,7 +268,7 @@ tPatients_ID <- t(BCCL_Annotation[1]) #create a vector of patientIDs useful for 
 The next step was to do some experiments, in order to get a feeling for data distribution. 
 We made a heatmap of expression values as well as CERES scores and found a diverse an unordered expression of genes trough the 28 breast cancer cell lines. Somehow, within the CERES scores were genes, a group of genes was showy, having a clear negative effect on cell viability. This group is suggested to be so called "housekeeping-genes", genes fulfilling the essential roles in cellcycle. All the other genes showed a large variety of through the cell lines, giving us a clue how useful our computer based approach might be. To make shure we can use all cell lines, we investigated if some of the cell lines shows abnormal values in comparison to others. The boxplot below proofs, this is not the case. 
 
-```{r echo=TRUE, fig.align= "center"}
+```{r warning = FALSE, echo=TRUE, fig.align= "center"}
 #Create a heatmap for all Genes and their CERES score
 CERES50 <- as.matrix(BCCL_kd.ceres[c(1:nrow(BCCL_kd.ceres)),c(1:28)])
 col <- colorRampPalette(c("seagreen3", "white", "red2"))(n = 1000) #defining the colours for the heatmap
@@ -266,7 +276,7 @@ CERESHeatmap <- heatmap.2(CERES50, scale = "none", col = col,
           trace = "none", density.info = "none", dendrogram = c("none"), labRow = FALSE, labCol = FALSE, main = "CERES scores of all BCCLs", xlab = "Breast cancer cell lines (BCCL)", ylab = "Genes, ordered by hierarchical clustering")
 ```
 
-```{r echo=TRUE, fig.align= "center"}
+```{r warning = FALSE, echo=TRUE, fig.align= "center"}
 # expanding the colourpalette to 28
 nb.cols <- 28 
 newcolours <- colorRampPalette(brewer.pal(8, "Paired")) (nb.cols)
@@ -292,7 +302,7 @@ GeneralExp_boxplot
 An issue was the very low level of expression of most genes, seen in the graph above. We discussed the possibility of erasing an amount of these genes and decided to not cut out any data, before we don't know  which kind of data we will need in the end. In this phase of the project is was open if a second site target will have a high expression in every case. 
 As next step we made some tests, using driver mutations suggested in literature. These boxplots show the different roles of genes ending up in various expression values in a nice way. 
 
-```{r echo=TRUE, fig.align= "center"}
+```{r warning = FALSE, echo=TRUE, fig.align= "center"}
 GOI_Exp_lit <- BCCL_Expression[c("MYC", "PTEN", "TP53", "PIK3CA", "GATA3", "BRCA1", "BRCA2", "RB1", "GANAB", "PRKCSH", "RNF43"),]
 Exp_lit_driver_mut= melt(GOI_Exp_lit)
 Exp_lit_driver_mut$variable=rep(c("MYC", "PTEN", "TP53", "PIK3CA", "GATA3", "BRCA1", "BRCA2", "RB1", "GANAB", "PRKCSH", "RNF43"), ncol(GOI_Exp_lit))
@@ -681,7 +691,7 @@ For the regression model, we want to predict the CERES score of the driver mutat
 To run Multilinear regression, we reform the `BCCL_kd.ceres` matrix. By transponing and format change, we obtain a matrix with colnames = Gene names and rownames = Cell line indices (equal to tPatients_ID). Then, we collect the relevant the CERES scores for the mutations for the linear regression.
 All columns with the corresponding names of the SST genes plus the driver mutation will be collected and copied into a new dataframe.
       
-```{r}
+```{r Regression sample construction fig.align = 'center', warning=FALSE}
 #reformat BCCL CERES matrix
 BCCL_kd.ceres_df <- as.data.frame(t(BCCL_kd.ceres))
 rownames(BCCL_kd.ceres_df) <- tPatients_ID
@@ -704,7 +714,7 @@ Multicollinearity, which is given if two dependent variables are strongly correl
       $r < 0.80$
 If this requirement is not met, one of the correlated variables should be deleted as it is seen as redundant.
 
-```{r}
+```{r Regression sample distribution fig.align = 'center', warning=FALSE}
 lapply(seq_along(data_regression), function(a){  
   p <- ggplot(data_regression[[a]], aes(sample=data_regression[[a]][,ncol(data_regression[[a]])], col = "red")) + stat_qq()+ stat_qq_line() #create qq-Plot with line for comparison to normal distribution
    p + labs(title = "QQ-Plot", subtitle = "Check if data is approx. normally distributed")
@@ -722,7 +732,7 @@ To run the Multilinear Regression, it is advised to create a long function which
 Then the function conducts Training of Regression model with training data to predict Driver mutation CERES (y; dep.variable) from SST CERES scores (x1 ... xn; indep.variables)
 Followed by checking model assumptions of residual normal distribution and homoscedasticity.
 Later on, the function runs the test Data on model for performance evaluation and finally calculates and plots Spearman correlation to further asses model performance.
-```{r}
+```{r Multiple Regression function fig.align = 'center', warning=FALSE}
 input_data <- data_regression
 
 plottingData <- lapply(seq_along(input_data), function(a) {
