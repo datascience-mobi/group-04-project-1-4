@@ -185,7 +185,9 @@ library(caTools)
 library(tidyverse)
 library(factoextra)
 library(wesanderson)
+```
 
+```{r Lisa include = FALSE, eval=FALSE}
 data = readRDS("C:/Users/lisa-/Desktop/Studium/4. FS/Bioinfo/DepMap19Q1_allData.RDS")
 root.dir = "C:/Users/lisa-/Desktop/Studium/4. FS/Bioinfo/project-01-group-04"
 ```
