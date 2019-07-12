@@ -411,7 +411,7 @@ BCCL_kd.ceres_optKS <- CERES_Optimal_K(BCCL_kd.ceresKS, "CERES Optimal Clusters 
 To enable the plotting of within sum square (WSS) values for clusters from 2 to 15 for each breast cancer cell, each vector was individually picked and formatted into a dataframe. The cell sample name was then added as a label in a new column "Cell_Sample" and the cluster numbers from 2 to 15 in the column "OptimalK".
 The output of this lapply function (`optimalKprocessedData`), a list of 28 dataframes, was then combined into one and columns renamed accordingly. Subsequently, the ggplot function was used to plot all data stored in `optimalKprocessedData` in one plot. 
 
-```{r fig.align="center"}
+```{r warning=FLASE, fig.align="center"}
 # plotting wss function 
 optimalKprocessedData <- lapply(seq_along(BCCL_kd.ceres_optKS), function(a){
   dtPicker <- as.data.frame(BCCL_kd.ceres_optKS[[a]]) # one vector picked and formatted into dataframe
@@ -451,7 +451,7 @@ plot(2:15, wss, type = "b", pch = 19, xlab = "Number of clusters K", ylab = "Tot
 
 The optimal cluster number k was identified to be 4. Thus k means clustering of the data stored in `BCCL_kd.ceres_3` was performed with 10 iterations. The following cluster plot was generated.
 
-```{r fig.align="center" }
+```{r warning=FALSE, fig.align="center"}
 km_CERES= kmeans(x = BCCL_kd.ceres_3, centers = 4, nstart = 10)
 table(km_CERES$cluster)
 fviz_cluster(km_CERES, data=BCCL_kd.ceres_3, labelsize = 6) # plotting clusters
