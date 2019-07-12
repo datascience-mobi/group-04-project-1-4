@@ -257,9 +257,9 @@ An issue was the very low level of expression of most genes, seen in the graph a
 As next step we made some tests, using driver mutations suggested in literature. These boxplots show the different roles of genes ending up in various expression values in a nice way. 
 *muss noch sch?n gemacht werden :)*
 ```{r echo=TRUE, fig.align= "center"}
-GOI_Exp_lit <- BCCL_Expression[c("MYC", "PTEN", "TP53", "PIK3CA", "GATA3", "BRCA1", "BRCA2", "RB1", "GANAB", "PRKCSH", "RNF43"),]
+GOI_Exp_lit <- BCCL_Expression[c("MYC", "PTEN", "TP53", "PIK3CA", "GATA3", "BRCA1", "BRCA2", "RB1", "GANAB", "PARP10", "CCND1", "ERBB2"),]
 Exp_lit_driver_mut= melt(GOI_Exp_lit)
-Exp_lit_driver_mut$variable=rep(c("MYC", "PTEN", "TP53", "PIK3CA", "GATA3", "BRCA1", "BRCA2", "RB1", "GANAB", "PRKCSH", "RNF43"), ncol(GOI_Exp_lit))
+Exp_lit_driver_mut$variable=rep(c("MYC", "PTEN", "TP53", "PIK3CA", "GATA3", "BRCA1", "BRCA2", "RB1", "GANAB","PARP10", "CCND1", "ERBB2"), ncol(GOI_Exp_lit))
 
 Exp_lit_boxplot = ggplot(Exp_lit_driver_mut, aes(x = variable, y = value)) +
      geom_boxplot(aes(fill=variable), outlier.alpha = 0.7,
