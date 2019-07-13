@@ -469,7 +469,6 @@ fviz_cluster(km_CERES, data=BCCL_kd.ceres_3, labelsize = 6) # plotting clusters
 
 In order to verify our selection of driver mutations from literature, the cluster number of each driver mutation was identified. All selected driver mutations from literature,"ERBB2", "MYCBP", "PARP10" and "PIK3CA" were colocalized in cluster 3, hence with similar CERES scores, with the exception of "CCND" and "ERBBIP". While "CCND" was removed in the filtering process and no longer found in`BCCL_kd.ceres_3`, "ERBB2IP" was found in cluster 4. For these reasons the two mentioned mutations were excluded from further analysis, to leave only "ERBB2", "MYCBP", "PARP10" and "PIK3CA" as selected driver mutations.
 
-@Salome: Please, check whether this is what you wanted to do!
 ```{r warning=FALSE}
 driver_mut <- c("ERBB2","ERBB2IP", "MYCBP", "PARP10", "PIK3CA") #enter driver mutations
 CheckKmNumber <- as.data.frame(sapply(seq_along(driver_mut), function(a){
@@ -479,15 +478,6 @@ CheckKmNumber <- as.data.frame(sapply(seq_along(driver_mut), function(a){
 
 colnames(CheckKmNumber) <- "Cluster number"
 paged_table(CheckKmNumber)
-```
-
-old:
-```{r warning=FALSE}
-km_CERES$cluster["ERBB2"] #obtaining cluster number for each driver mutation from literature # do you think it is possible to do this in a loop ?
-km_CERES$cluster["ERBB2IP"]
-km_CERES$cluster["MYCBP"]
-km_CERES$cluster["PARP10"]
-km_CERES$cluster["PIK3CA"]
 ```
 
 Since our approach defined SSTs as genes expected to interact synergistically with the corresponding driver mutation in promoting cell viability, similar CERES scores were expected. Thus all potential SSTs candidates were expected to be found in cluster 3 as well. A dataframe `data_clus_3`was subsequently generated to contain all 1148 genes colocalized with driver mutations in cluster 3. 
