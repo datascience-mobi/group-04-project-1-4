@@ -881,12 +881,12 @@ ERBB2 and PIK3CA violate the condition, while MYCBP and PARP10 show homoscedasti
 #Interpretation
 We obtained the following p-values and correlation coefficients:
 
-Model     | p-value     | rho      | 
-----------|-------------|----------|
-ERBB2     | 0.8397      | 0.1071   |
-MCYBP     | 0.7825      |-0.1429   |
-PARP10    | 0.1095      |-0.6786   |
-PIK3CA    | 0.7131      |-0.1786   |
+Model     | p-value     | accepted hypothesis | rho      | relationship type |
+----------|-------------|---------------------|----------|-------------------|
+ERBB2     | 0.8397      |         H0          |  0.1071  | weak positive     |
+MCYBP     | 0.7825      |         H0          | -0.1429  | weak negative     |
+PARP10    | 0.1095      |         H0          | -0.6786  | moderate negative |
+PIK3CA    | 0.7131      |         H0          | -0.1786  | weak negative     |
 
  The ERBB2-model shows the highest rho value of all four models, but ~ 0.1 is a rather weak positive relationship, but the p-value leads to acceptance of H0.
 
