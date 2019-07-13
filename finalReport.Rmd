@@ -474,7 +474,7 @@ In order to verify our selection of driver mutations from literature, the cluste
 ```{r warning=FALSE}
 driver_mut <- c("ERBB2","MYCBP", "PARP10", "PIK3CA") #enter driver mutations
 CheckKmNumber <- as.data.frame(sapply(seq_along(driver_mut), function(a){
-  out <- km_CERES$cluster[a]
+  out <- km_CERES$cluster[driver_mut[a]]
   return(out)
 }))
 
