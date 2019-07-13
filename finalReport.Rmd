@@ -79,7 +79,6 @@ font_import()
 # Introduction
 
 ## Breast Cancer, a challenging disease
-> "The heterogeneity of breast cancers makes them fascinating and challenging to diagnose and treat." *Please, add whom you quoted from*
 > "The heterogeneity of breast cancers makes them both a fascinating and challenging solid tumor to diagnose and treat." 
 >
 > <small>Raj Kumar (2016) in <cite title="Source Title">A novel therapeutic target for triple negative breast cancer</cite></small>
