@@ -78,7 +78,7 @@ font_import()
 ```
 # Introduction
 
-## Revision: Breast Cancer, a challenging disease
+## Breast Cancer, a challenging disease
 > "The heterogeneity of breast cancers makes them fascinating and challenging to diagnose and treat." *Please, add whom you quoted from*
 > "The heterogeneity of breast cancers makes them both a fascinating and challenging solid tumor to diagnose and treat." 
 >
