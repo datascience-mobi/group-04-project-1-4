@@ -85,7 +85,7 @@ font_import()
 > <small>Raj Kumar (2016) in <cite title="Source Title">A novel therapeutic target for triple negative breast cancer</cite></small>
 
 Breast cancer is currently known as one of the most prevalent and deathly malignant tumor types, resulting in more than 600.000 deaths worldwide in 2017 (GBD 2017). While in Germany 70,000 new cases are reported annually (Barnes, Kraywinkel et al. 2016), breast cancer makes ~30% of all reported cases of tumor diseases (Robert-Koch-Institut 2017). Over the past 27 years the prevalence of this tumor surged by one sixth in percentage of world population, calling for accelerated research into possible therapy options. 
-While in the pase decades breast cancer therapy has already evolved,reducing the age standardized death rate by one third, from 15.10 to  only 10.00 in western europe (GBD 2017), the necessity to find an effective prevention methods remains (Sledge et al. 2014). One promising method is the computerbased approach. Their share of ... and ... is astonishingly large . Excited what the future may bring, this project takes first steps into computer based analysis of genetic interactions.
+While in the pase decades breast cancer therapy has already evolved, reducing the age standardized death rate by one third, from 15.10 to  only 10.00 in western europe (GBD 2017), the necessity to find effective prevention methods remains (Sledge et al. 2014). One promising method is the computerbased approach, with possible first steps into the analysis of genetic interactions being taken in this project.
 
 
 
