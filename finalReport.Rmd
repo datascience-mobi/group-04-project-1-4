@@ -122,8 +122,6 @@ knitr::include_graphics("Concept_of_SSTs.png")
 ```
 
 
-
-
 # Project outline
 
 The aim of this project is to answer the central question: 
@@ -477,13 +475,13 @@ In order to verify our selection of driver mutations from literature, the cluste
 
 @Salome: Please, check whether this is what you wanted to do!
 ```{r warning=FALSE}
-driver_mut <- c("ERBB2","MYCBP", "PARP10", "PIK3CA") #enter driver mutations
+driver_mut <- c("ERBB2","ERBB2IP", "MYCBP", "PARP10", "PIK3CA") #enter driver mutations
 CheckKmNumber <- as.data.frame(sapply(seq_along(driver_mut), function(a){
   out <- km_CERES$cluster[a]
   return(out)
 }))
 
-colnames(CheckKmNumber) <- "Number of Cluster"
+colnames(CheckKmNumber) <- "Cluster number"
 paged_table(CheckKmNumber)
 ```
 
