@@ -84,16 +84,13 @@ font_import()
 >
 > <small>Raj Kumar (2016) in <cite title="Source Title">A novel therapeutic target for triple negative breast cancer</cite></small>
 
-If you grow up in a western country in the beginning 21th century, there are two sorts of tumors, you will definately notice before you leave high school. The first one is lung cancer, gaining its questionable fame with pictures leaping out of every box of cigarettes. The second one went famous with broadly reported stories about Angelina Jolie or famous old german universities. However, breast cancer isn't just the story of attractive women or research institutes making themselves ridiculous, it is also a story of suffering and death.
-We think about breast cancer as the most prevalent tumor disease worldwide. It is also one of the most deathly malignant tumors, with far more than 600.000 deaths reported in 2017 (GBD 2017). Due to an increase of a sixth in percentage of world population suffering from this ilness, in the past 27 years, it is advisable to do something in the future. 
-But there is hope. In the past decades, breast cancer therapy evolved, diminishing the age standardized death rate from 15.10 to 10.00 in western europe, which is a decrease of about a third (GBD 2017). 
-Up to a point this is satisfying, on the other hand there are still a lot of challenges remaining, for example to find an effective prevention approach (Sledge et al. 2014). One group of methods increasing its powers every days are computerbased methods. Their share of ... and ... is astonishingly large . This makes us all excited about what comes in the future. Until Meanwhile, we will focus on our project, teaching ourselves in a nice manner, how useful a fast thinking computer is in research. 
+Breast cancer is currently known as one of the most prevalent and deathly malignant tumor types, resulting in more than 600.000 deaths worldwide in 2017 (GBD 2017). While in Germany 70,000 new cases are reported annually (Barnes, Kraywinkel et al. 2016), breast cancer makes ~30% of all reported cases of tumor diseases (Robert-Koch-Institut 2017). Over the past 27 years the prevalence of this tumor surged by one sixth in percentage of world population, calling for accelerated research into possible therapy options. 
+While in the pase decades breast cancer therapy has already evolved, reducing the age standardized death rate by one third, from 15.10 to  only 10.00 in western europe (GBD 2017), the necessity to find effective prevention methods remains (Sledge et al. 2014). One promising method is the computerbased approach, with possible first steps into the analysis of genetic interactions being taken in this project.
 
-According to the latest reports of breast cancer prevalence, the current state is very serious:
+
 
 * Breast cancer ranks second in worldwide cancer case numbers (Hutchinson 2010)
-* In Germany there are 70,000 new cases annually. (Barnes, Kraywinkel et al. 2016)
-* This makes ~ 30% of all reported cases of tumor diseases.(Robert-Koch-Institut 2017)
+
 
 ## Driver Mutations: the driving force in tumorigenesis
 
@@ -121,14 +118,15 @@ If knocking out those genes leads to cell lethality, it may lead to new treatmen
 knitr::include_graphics("Concept_of_SSTs.png")
 ```
 
-Our central question for our project is thereby:
-> Which __second-site targets__ interact genetically with __driver mutations__ to promote cell viability and proliferation in breast cell cancers?
 
 # Project outline
 
-## Project design: Our selection of possible driver mutation
+The aim of this project is to answer the central question: 
 
-+ From literature, we selected possible driver mutations based on three main characteristics:
+> Which __second-site targets__ interact genetically with __driver mutations__ to promote cell viability and proliferation in breast cell cancers?
+
+To begin with possible driver mutations from literature research were selected based on the following three characteristics:
+
   1. overexpressed in breast cancer
   2. observed in a relevant percentage of clinical cases
   3. part of processes/pathways of tumorgenesis
@@ -143,15 +141,17 @@ MYC       | ~ 30 - 50%          |Cell cycle and apoptosis regulator      |(Gabay
 PARP10      | ~ 45%               |Regulates differentiation/proliferation |(Siraj, Pratheeshkumar et al. 2018)                          |
 PIK3CA    | ~ 30 - 48%          |Interaction with AKT and mTOR pathway   |(Aleskandarany, Rakha et al. 2010, Shimoi, Hamada et al.2018)|
 
-```{r driver mutations, eval=FALSE, echo=FALSE, fig.cap="Possible_Driver_Mutations", out.width = '100%', fig.align = "center"}
+```{r driver mutations, eval=TRUE, echo=FALSE, fig.cap="Possible_Driver_Mutations", out.width = '100%', fig.align = "center"}
 knitr::include_graphics("Possible_Driver_Mutations.png")
 ```
+
+In the following project the CERES and expression scores of these driver mutations will be analysed together with those of the remaining mutated genes to identify possible genetic interactions.
 
 # Methods
 
 ## Data cleanup and exploration
 
-Before we start our statistical part, we have to load the required packages as well as the data:
+Before the start of our analyis, the following packages need to be loaded together with the data:
 
 ```{r eval=FALSE}
 # installation of required packages
@@ -206,12 +206,12 @@ library(extrafont)
 font_import()
 ```
 
-```{r Lisa, include=FALSE, eval=TRUE}
+```{r Lisa, include=FALSE, eval=FALSE}
 data = readRDS("C:/Users/lisa-/Desktop/Studium/4. FS/Bioinfo/DepMap19Q1_allData.RDS")
 root.dir = "C:/Users/lisa-/Desktop/Studium/4. FS/Bioinfo/project-01-group-04"
 ```
 
-```{r Salome, include=FALSE, eval=FALSE}
+```{r Salome, include=FALSE, eval=TRUE}
 data = readRDS("C:/Users/Salome/Documents/4.FS/Bioinfo/DepMap19Q1_allData.RDS")
 root.dir = "C:/Users/Salome/Documents/4.FS/Bioinfo/Github/project-01-group-04"
 ```
@@ -235,7 +235,7 @@ lapply(data, dim) #get an impression on the data
 lapply(data, function(a) head(a)) #look at the data 
 ```
 
-We find a dataset containing 6 smaller datasets. Five of them are large data frames while the sixth is a list of data frames. For the extraction of this sixth variable we first separated it fom the others and gave it a new strucure, which is easier to handle.
+The dataset used contains 6 smaller datasets. Five of them are large data frames while the sixth is a list of data frames. For the extraction of this sixth variable we first separated it fom the others and gave it a new strucure, which is easier to handle.
 
 ```{r}
 #Extract the mutation data
@@ -250,7 +250,7 @@ ids = which(names(mut) %in% samples)
 dat = lapply(ids, function(a) mut[[a]])
 ```
 
-We observe a large variety of tumor diseases being recorded by this dataset. Because we want to focus on breast cancer, we will generate data frames only containing cell lines which are referable to this specific type of tumor. To make it simple we just rename our columns after the tumor disease. After that, we can subset the dataframe easily in breast cancer dataframes.
+We observe a large variety of tumor diseases being recorded by this dataset. Because we want to focus on breast cancer, we will generate data frames only containing cell lines which are referable to this specific type of tumor. To simplify, the columns were renamed to the appropriate tumor disease. Afterwards,the dataframe was subsetted easily in breast cancer dataframes.
 
 ```{r warning=FALSE, include=FALSE}
 #Changing colnames to specific type of tumor:
@@ -276,10 +276,10 @@ tPatients_ID <- t(BCCL_Annotation[1]) #create a vector of patientIDs useful for 
 
 ### Exploring gene expression patterns 
 
-The next step was to do some experiments, in order to get a feeling for data distribution. 
-We made a heatmap of expression values as well as CERES scores and found a diverse an unordered expression of genes trough the 28 breast cancer cell lines. Somehow, within the CERES scores were genes, a group of genes was showy, having a clear negative effect on cell viability. This group is suggested to be so called "housekeeping-genes", genes fulfilling the essential roles in cellcycle. All the other genes showed a large variety of through the cell lines, giving us a clue how useful our computer based approach might be. To make shure we can use all cell lines, we investigated if some of the cell lines shows abnormal values in comparison to others. The boxplot below proofs, this is not the case. 
+The next step was to do some experiments, in order to get a feeling for the distribution of data. 
+We made a heatmap of expression values as well as CERES scores and found a diverse and unordered expression of genes trough the 28 breast cancer cell lines. Within the CERES scores a group of genes showed a clear negative effect on cell viability. This group is suggested to be so called "housekeeping-genes", genes fulfilling the essential roles in the cell cycle. All the other genes showed a large variety across thee cell lines, suggesting a computer based approach to be useful. To make sure that all cell lines can be used, cell lines values were analysed whether abnormal values were found. The boxplot below proves, this not to be the case. 
 
-```{r warning = FALSE, echo=TRUE, fig.align= "center"}
+```{r warning = FALSE, echo=TRUE, fig.align= "center", fig.cap="Fig. 1 Heatmap of all BCCL CERES scores"}
 #Create a heatmap for all Genes and their CERES score
 CERES50 <- as.matrix(BCCL_kd.ceres[c(1:nrow(BCCL_kd.ceres)),c(1:28)])
 col <- colorRampPalette(c("seagreen3", "white", "red2"))(n = 1000) #defining the colours for the heatmap
@@ -287,7 +287,7 @@ CERESHeatmap <- heatmap.2(CERES50, scale = "none", col = col,
           trace = "none", density.info = "none", dendrogram = c("none"), labRow = FALSE, labCol = FALSE, main = "CERES scores of all BCCLs", xlab = "Breast cancer cell lines (BCCL)", ylab = "Genes, ordered by hierarchical clustering")
 ```
 
-```{r warning = FALSE, echo=TRUE, fig.align= "center"}
+```{r warning = FALSE, echo=TRUE, fig.align= "center", fig.cap="Fig. 2 General expression in all 28 BCCLs"}
 # expanding the colourpalette to 28
 nb.cols <- 28 
 newcolours <- colorRampPalette(brewer.pal(8, "Paired")) (nb.cols)
@@ -310,10 +310,10 @@ GeneralExp_boxplot = ggplot(GenExmelt, aes(x = variable, y = value)) +
 GeneralExp_boxplot
 ```
 
-An issue was the very low level of expression of most genes, seen in the graph above. We discussed the possibility of erasing an amount of these genes and decided to not cut out any data, before we don't know  which kind of data we will need in the end. In this phase of the project is was open if a second site target will have a high expression in every case. 
-As next step we made some tests, using driver mutations suggested in literature. These boxplots show the different roles of genes ending up in various expression values in a nice way. 
+An issue was the very low level of expression of most genes, seen in the graph above.In this phase of the project is was open if a second site target will have a high expression in every case. 
+Next, boxplots of expression values for suggested driver mutations  in literature were generated. These boxplots show the different roles of genes ending up in various expression values in a nice way. 
 
-```{r warning = FALSE, echo=TRUE, fig.align= "center"}
+```{r warning = FALSE, echo=TRUE, fig.align= "center", fig.cap="Fig. 3 Expression values 15 selected driver mutations"}
 GOI_Exp_lit <- BCCL_Expression[c("MYC", "PTEN", "TP53", "PIK3CA", "GATA3", "BRCA1", "BRCA2", "RB1", "GANAB", "PARP10", "CCND1", "ERBB2"),]
 Exp_lit_driver_mut= melt(GOI_Exp_lit)
 Exp_lit_driver_mut$variable=rep(c("MYC", "PTEN", "TP53", "PIK3CA", "GATA3", "BRCA1", "BRCA2", "RB1", "GANAB","PARP10", "CCND1", "ERBB2"), ncol(GOI_Exp_lit))
@@ -335,7 +335,7 @@ Exp_lit_boxplot = ggplot(Exp_lit_driver_mut, aes(x = variable, y = value)) +
 Exp_lit_boxplot
 ```
 
-We already discarded some of this genes, mostly because they are known as tumor suppressor genes. In our approach we looked for targets, which show similar characteristics in cell viability after a knockdown. A knockdown of a tumor supressor gene, even if it is mutated, will rarely have a negative effect on cell viability. This makes genes associated with tumor supressor genes useless for an inhibitory drug and therefore not appropriate for our analysis. 
+Some of these genes were not followed up further due to being known as tumor suppressor genes. This was because our approach looks for targets, which show similar characteristics in cell viability after a knockdown. A knockdown of a tumor supressor gene, even if it is mutated, will rarely have a negative effect on cell viability. This makes genes associated with tumor supressor genes useless for an inhibitory drug and therefore not appropriate for our analysis. 
 
 ### Generation of the mutImpact matrix
 
@@ -422,7 +422,7 @@ BCCL_kd.ceres_optKS <- CERES_Optimal_K(BCCL_kd.ceresKS, "CERES Optimal Clusters 
 To enable the plotting of within sum square (WSS) values for clusters from 2 to 15 for each breast cancer cell, each vector was individually picked and formatted into a dataframe. The cell sample name was then added as a label in a new column "Cell_Sample" and the cluster numbers from 2 to 15 in the column "OptimalK".
 The output of this lapply function (`optimalKprocessedData`), a list of 28 dataframes, was then combined into one and columns renamed accordingly. Subsequently, the ggplot function was used to plot all data stored in `optimalKprocessedData` in one plot. 
 
-```{r warning=FALSE, fig.align="center"}
+```{r warning=FALSE, fig.align="center", fig.cap="Fig. 4 Optimal number of clusters k using WSS of each BBCLs"}
 # plotting wss function 
 optimalKprocessedData <- lapply(seq_along(BCCL_kd.ceres_optKS), function(a){
   dtPicker <- as.data.frame(BCCL_kd.ceres_optKS[[a]]) # one vector picked and formatted into dataframe
@@ -449,7 +449,7 @@ ggplot(data = optimalKprocessedData, aes(x=OptimalK, y=WSS)) +
 
 From this plot it is evident that the optimal cluster number, when applying the elbow method, lies between 2 and 4. To verify this result and to determine a precise number of optimal cluster, an alternative plotting method calculating the average WSS for cluster numbers between 2 and 15 for all 28 cell samples was performed. 
 
-```{r warning=FALSE, fig.align="center"} 
+```{r warning=FALSE, fig.align="center", fig.cap="Fig. 5 Optimal cluster number k using WSS of all BCCLs combined" } 
 # Verification of optimal number of clusters k 
 
 km_CERES= kmeans(x = BCCL_kd.ceres_3, centers = 2, nstart = 10)
@@ -462,7 +462,7 @@ plot(2:15, wss, type = "b", pch = 19, xlab = "Number of clusters K", ylab = "Tot
 
 The optimal cluster number k was identified to be 4. Thus k means clustering of the data stored in `BCCL_kd.ceres_3` was performed with 10 iterations. The following cluster plot was generated.
 
-```{r warning=FALSE, fig.align="center"}
+```{r warning=FALSE, fig.align="center", fig.cap="Fig. 6 K means cluster plot"}
 km_CERES= kmeans(x = BCCL_kd.ceres_3, centers = 4, nstart = 10)
 table(km_CERES$cluster)
 fviz_cluster(km_CERES, data=BCCL_kd.ceres_3, labelsize = 6) # plotting clusters
@@ -472,13 +472,13 @@ In order to verify our selection of driver mutations from literature, the cluste
 
 @Salome: Please, check whether this is what you wanted to do!
 ```{r warning=FALSE}
-driver_mut <- c("ERBB2","MYCBP", "PARP10", "PIK3CA") #enter driver mutations
+driver_mut <- c("ERBB2","ERBB2IP", "MYCBP", "PARP10", "PIK3CA") #enter driver mutations
 CheckKmNumber <- as.data.frame(sapply(seq_along(driver_mut), function(a){
   out <- km_CERES$cluster[driver_mut[a]]
   return(out)
 }))
 
-colnames(CheckKmNumber) <- "Number of Cluster"
+colnames(CheckKmNumber) <- "Cluster number"
 paged_table(CheckKmNumber)
 ```
 
@@ -518,7 +518,7 @@ data_clus_3e["Driver mutation"] <- sapply(1:nrow(data_clus_3), function(j){
 
 CERES scores and expression in TPM values for the selected 4 driver mutations were visualised as box and whisker plots. Following the generation of the `GOI_X` dataframe containing either CERES or TPM values for the four mutations, the data was reshaped to contain two columns. One column being "variable" with the names of driver mutations, the other "value" with the corresponding CERES or TPM value. The ggplot function, part of the ggplot2 package, was used to plot the following box an whisker plots. 
 
-```{r data visualisation, fig.align = 'center', warning=FALSE}
+```{r data visualisation, fig.align = 'center', fig.cap= "Fig. 7 Boxplot of CERES and Expression values of selected driver mutations", warning=FALSE}
 
 # CERES_boxplot
 GOI= BCCL_kd.ceres[c("ERBB2","MYCBP", "PARP10", "PIK3CA"),]
@@ -745,8 +745,7 @@ Multicollinearity, which is given if two dependent variables are strongly correl
       $r < 0.80$
 If this requirement is not met, one of the correlated variables should be deleted as it is seen as redundant.
 
-```{r Regression sample distribution, fig.align = 'center', warning=FALSE}
-
+```{r Regression sample distribution, fig.align = 'center', fig.cap="Fig. 8 QQ plots for each driver mutation", warning=FALSE}
 lapply(seq_along(data_regression), function(a){  
   par(mfrow=c(1,2)) #hmmm should show them beneath .... 
   p <- ggplot(data_regression[[a]], aes(sample=data_regression[[a]][,ncol(data_regression[[a]])], col = "cyl")) + stat_qq() +           stat_qq_line() #create qq-Plot with line for comparison to normal distribution +
@@ -772,7 +771,7 @@ To run the Multilinear Regression, it is advised to create a long function which
 Then the function conducts Training of Regression model with training data to predict Driver mutation CERES (y; dep.variable) from SST CERES scores (x1 ... xn; indep.variables)
 Followed by checking model assumptions of residual normal distribution and homoscedasticity.
 Later on, the function runs the test Data on model for performance evaluation and finally calculates and plots Spearman correlation to further asses model performance.
-```{r Multiple Regression function, fig.align = 'center', warning=FALSE}
+```{r Multiple Regression function, fig.align = 'center', fig.cap=" Fig.9 Residual, Homoscedasticity and Spearman correlation plots for each driver mutation", warning=FALSE}
 input_data <- data_regression
 
 plottingData <- lapply(seq_along(input_data), function(a) {
