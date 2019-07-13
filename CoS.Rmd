@@ -17,7 +17,7 @@ POTEH: verified in PARP10 and ERBB2. showing no significant associations in data
 
 BCL9L: activates beta catenin, having 65 other associations --> in my opinion worth a try
 
-CREBP: 176 associations, 9 in BC, active compounds available, we're not the first ones here --> could be a suggestion
+CREBBP: 176 associations, 9 in BC, active compounds available, we're not the first ones here --> could be a suggestion
 
 MYL9: targeting a myosin light chain sound weird. 
 
@@ -32,6 +32,8 @@ TBL1XR1: Association with BC, TF, downreg ?? :)
 APC: TSG... no
 
 MAX: compunds available, Transcription factor, could be used ?:)
+
+My suggestion: TNS3, BCL9L, CREBBP, SLC4A7, MAX
 
 
 
