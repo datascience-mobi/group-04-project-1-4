@@ -888,7 +888,7 @@ MCYBP     | 0.7825      |-0.1429   |
 PARP10    | 0.1095      |-0.6786   |
 PIK3CA    | 0.7131      |-0.1786   |
 
- The ERBB2-model shows the highest rho value of all four models, but ~ 0.1 is a rather weak positive relationship, but the p-value leads to __acceptance of H0_.
+ The ERBB2-model shows the highest rho value of all four models, but ~ 0.1 is a rather weak positive relationship, but the p-value leads to acceptance of H0.
 
 The rho value of the MYCBP-model leads to very weak negative correlation. A p-value of ~ 0.78 leads to confident acceptance of H0.
 
