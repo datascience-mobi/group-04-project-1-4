@@ -9,4 +9,38 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-Taten sind Ameisenbären
+FANCA: in literature associated with DNA repair machinery, in our BCCLs high expressed. literate is wrong or its expression is even higher in normal cells. even though this looks mysterious, i would believe in literature, saying it is more of a Tumor suprresor gene, making it useless for inhibitors.
+
+TNS3: is a verified SSTs of ERBB2 *and* PARP10, having 47n associations in database to other tumor diseases. could be a recommendation
+
+POTEH: verified in PARP10 and ERBB2. showing no significant associations in databases
+
+BCL9L: activates beta catenin, having 65 other associations --> in my opinion worth a try
+
+CREBP: 176 associations, 9 in BC, active compounds available, we're not the first ones here --> could be a suggestion
+
+MYL9: targeting a myosin light chain sound weird. 
+
+STXBP1: some GO cell components with high confidence: should be discussed for neoplasms
+
+MAD2L1BP: has something to do with cell cycle, unspectacular
+
+SLC4A7: high association with BC, cell compounds avalable --> candidate
+
+TBL1XR1: Association with BC, TF, downreg ?? :)
+
+APC: TSG... no
+
+MAX: compunds available, Transcription factor, could be used ?:)
+
+
+
+
+
+
+
+
+
+
+
+
