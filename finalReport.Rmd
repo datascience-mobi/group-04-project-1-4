@@ -16,31 +16,32 @@ output:
 <style type="text/css">
 
 body{ /* Normal  */
-      font-size: 12px;
+    font-size: 16px;
+    font-family: "SegoeUI";
   }
 td {  /* Table  */
-  font-size: 10px;
+  font-size: 12px;
 }
 h1.title {
   font-size: 40px;
-  color: Red;
-  font-family: "Segoe UI"";
+  font-weight: 400
+  color: #013644;
+  font: "SegoeUI"";
 }
 h1 { /* Header 1 */
   font-size: 28px;
   color: #fba92e;
 }
 h2 { /* Header 2 */
-    font-size: 22px;
+  font-size: 22px;
   color: #158597;
 }
 h3 { /* Header 3 */
   font-size: 18px;
-  font-family: "Times New Roman", Times, serif;
   color: #158597;
 }
 code.r{ /* Code block */
-    font-size: 10px;
+    font-size: 14px;
 }
 pre { /* Code block - determines code spacing between lines */
     font-size: 14px;
@@ -72,12 +73,16 @@ pre { /* Code block - determines code spacing between lines */
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, error = FALSE)
+library(extrafont)
+font_import()
 ```
 # Introduction
 
 ## Revision: Breast Cancer, a challenging disease
 > "The heterogeneity of breast cancers makes them fascinating and challenging to diagnose and treat." *Please, add whom you quoted from*
->  "The heterogeneity of breast cancers makes them both a fascinating and challenging solid tumor to diagnose and treat." quote.footer("--- *A novel therapeutic target for triple negative breast cancer*, Raj Kumar 2016") #thats what i've found -elias
+> "The heterogeneity of breast cancers makes them both a fascinating and challenging solid tumor to diagnose and treat." 
+>
+> <small>Raj Kumar (2016) in <cite title="Source Title">A novel therapeutic target for triple negative breast cancer</cite></small>
 
 If you grow up in a western country in the beginning 21th century, there are two sorts of tumors, you will definately notice before you leave high school. The first one is lung cancer, gaining its questionable fame with pictures leaping out of every box of cigarettes. The second one went famous with broadly reported stories about Angelina Jolie or famous old german universities. However, breast cancer isn't just the story of attractive women or research institutes making themselves ridiculous, it is also a story of suffering and death.
 We think about breast cancer as the most prevalent tumor disease worldwide. It is also one of the most deathly malignant tumors, with far more than 600.000 deaths reported in 2017 (GBD 2017). Due to an increase of a sixth in percentage of world population suffering from this ilness, in the past 27 years, it is advisable to do something in the future. 
@@ -85,25 +90,22 @@ But there is hope. In the past decades, breast cancer therapy evolved, diminishi
 Up to a point this is satisfying, on the other hand there are still a lot of challenges remaining, for example to find an effective prevention approach (Sledge et al. 2014). One group of methods increasing its powers every days are computerbased methods. Their share of ... and ... is astonishingly large . This makes us all excited about what comes in the future. Until Meanwhile, we will focus on our project, teaching ourselves in a nice manner, how useful a fast thinking computer is in research. 
 
 According to the latest reports of breast cancer prevalence, the current state is very serious:
-+ Breast cancer ranks second in worldwide cancer case numbers (Hutchinson 2010)
-+ In Germany there are 70,000 new cases annually. (Barnes, Kraywinkel et al. 2016)
-+ This makes ~ 30% of all reported cases of tumor diseases.(Robert-Koch-Institut 2017)
+
+* Breast cancer ranks second in worldwide cancer case numbers (Hutchinson 2010)
+* In Germany there are 70,000 new cases annually. (Barnes, Kraywinkel et al. 2016)
+* This makes ~ 30% of all reported cases of tumor diseases.(Robert-Koch-Institut 2017)
 
 ## Driver Mutations: the driving force in tumorigenesis
 
 Driver mutations (DV) are what is to be seen as the ticket of admission to the different stages of cancer growth. Thus, the acquisition of driver mutations is essential for tumour initiation, transformation as well as progression and metastasis. According to Bert Vogelstein three mutations in genes displaying a crucial function in cell proliferation, DNA integrity and cellular motility are enough to drive a normal cell into aberrant growth and malignancy:
 
-> "Focusing on driver-gene mutations and the pathways they control has rendered complex cancer-genome landscapes intelligible. In solid tumors of adults, alterations in as few as three driver genes appear to suffice for a cell to evolve into an advanced cancer." quote.footer
-> quote_footer('--- *The Path to Cancer - Three Strikes and You're Out*, Bert Vogelstein 2015')
+> "Focusing on driver-gene mutations and the pathways they control has rendered complex cancer-genome landscapes intelligible. In solid tumors of adults, alterations in as few as three driver genes appear to suffice for a cell to evolve into an advanced cancer." 
+>
+> <small>Bert Vogelstein in <cite title="Source Title">The Path to Cancer - Three Strikes and You're Out</cite></small>
 
 These DVs comprise both gain-of-function mutations in (proto-)oncogenes which usually promote cell proliferation and loss-of-function mutations in tumour suppressor genes which usually decelerate the cell cycle as well as genes involved in DNA repair and proofreading. Thereby, the cell acquires indispensable properties in tumorigenesis such as immortality, continous proliferation, immune and apoptosis resistance and the ability to promote angiogenesis. Examples for prominent oncogenes are k-ras and b-raf encoding kinases regulating a complex network of proteins involved in cellular growth when bound to ATP or GTP, respectively. On the other hand the most illustrious tumour suppressor gene is p53 whose physiological role is to induce cell senescence and apoptosis in case of DNA damage, a condition often encountered in cancer cells.
 
 Due to their essential role in tumour progression DVs are predisposed targets in novel approaches in cancer therapy. For instance, trastuzumab, an antibody against HER2 which is an oncogene promoting cell growth while inhibiting apotosis launched in 1998 was proven to reduce the recurrence rate by 50% and mortality by 30%. However, targeting genes or gene products involved in vital cellular processes remains a major challenge as healthy cells expressing the same genes are often affected as well. As therapies tailored to the molecular phenotype of the tumour achieved greater successes than conventional strategies such as chemotherapy and irradiation scientists now focus on identifying other molecular targets with a negligible effect on healthy tissues.  
-
-In our project, we first focus on driver mutations, which can be imagined as the main "force" in tumorigenesis. Certain genes induce/improve tumor growth as a consequence of mutation, such as:
-+ Providing tumor cells with a growth advantage
-+ Leading to positive selection in microenvironment
-Furthermore, driver mutations are also often required for tumor maintenance. (Stratton, Campbell et al. 2009)
 
 ## Second-site targets: secret co-operators in tumorigenesis
 
@@ -167,7 +169,7 @@ install.packages("gplots")
 install.packages("data.table")
 install.packages("rmarkdown")
 install.packages("ggpubr")
-
+install.packages('extrafont')
 
 # importing libraries
 library(ggplot2)
@@ -181,7 +183,8 @@ library(wesanderson)
 library(RColorBrewer)
 library(gplots)
 library(rmarkdown)
-library("ggpubr")
+library(ggpubr)
+library(extrafont)
 
 #Setting a sys-path
 root.dir = dirname(rstudioapi::getSourceEditorContext()$path)
@@ -203,6 +206,9 @@ library(wesanderson)
 library(RColorBrewer)
 library(gplots)
 library(rmarkdown)
+library(extrafont)
+
+font_import()
 ```
 
 ```{r Lisa, include=FALSE, eval=FALSE}
@@ -313,9 +319,9 @@ An issue was the very low level of expression of most genes, seen in the graph a
 Next, boxplots of expression values for suggested driver mutations  in literature were generated. These boxplots show the different roles of genes ending up in various expression values in a nice way. 
 
 ```{r warning = FALSE, echo=TRUE, fig.align= "center", fig.cap="Fig. 3 Expression values 15 selected driver mutations"}
-GOI_Exp_lit <- BCCL_Expression[c("MYC", "PTEN", "TP53", "PIK3CA", "GATA3", "BRCA1", "BRCA2", "RB1", "GANAB", "PRKCSH", "RNF43"),]
+GOI_Exp_lit <- BCCL_Expression[c("MYC", "PTEN", "TP53", "PIK3CA", "GATA3", "BRCA1", "BRCA2", "RB1", "GANAB", "PARP10", "CCND1", "ERBB2"),]
 Exp_lit_driver_mut= melt(GOI_Exp_lit)
-Exp_lit_driver_mut$variable=rep(c("MYC", "PTEN", "TP53", "PIK3CA", "GATA3", "BRCA1", "BRCA2", "RB1", "GANAB", "PRKCSH", "RNF43"), ncol(GOI_Exp_lit))
+Exp_lit_driver_mut$variable=rep(c("MYC", "PTEN", "TP53", "PIK3CA", "GATA3", "BRCA1", "BRCA2", "RB1", "GANAB","PARP10", "CCND1", "ERBB2"), ncol(GOI_Exp_lit))
 
 Exp_lit_boxplot = ggplot(Exp_lit_driver_mut, aes(x = variable, y = value)) +
      geom_boxplot(aes(fill=variable), outlier.alpha = 0.7,
@@ -328,7 +334,7 @@ Exp_lit_boxplot = ggplot(Exp_lit_driver_mut, aes(x = variable, y = value)) +
            plot.title = element_text(hjust = 0.4),
            axis.text.x = element_text(angle = 0, vjust = 0, hjust=0.5),
            legend.title= element_blank(),
-           axis.title.x = element_text(),
+           axis.title.x = element_blank(),
            strip.text.y = element_text(angle = 0))
 
 Exp_lit_boxplot
@@ -456,7 +462,7 @@ table(km_CERES$cluster)
 wss = sapply(2:15, function(k) {
     kmeans(x = BCCL_kd.ceres_3, centers = k)$tot.withinss
 })
-plot(2:15, wss, type = "b", pch = 19, xlab = "Number of clusters K", ylab = "Total within-clusters sum of squares") 
+plot(2:15, wss, type = "b", pch = 19, xlab = "Number of clusters K", ylab = "Total within-clusters sum of squares", main = "Within sum square test of CERES scores", col = "gray40", lwd = 3) 
 ```
 
 The optimal cluster number k was identified to be 4. Thus k means clustering of the data stored in `BCCL_kd.ceres_3` was performed with 10 iterations. The following cluster plot was generated.
@@ -469,12 +475,25 @@ fviz_cluster(km_CERES, data=BCCL_kd.ceres_3, labelsize = 6) # plotting clusters
 
 In order to verify our selection of driver mutations from literature, the cluster number of each driver mutation was identified. All selected driver mutations from literature,"ERBB2", "MYCBP", "PARP10" and "PIK3CA" were colocalized in cluster 3, hence with similar CERES scores, with the exception of "CCND" and "ERBBIP". While "CCND" was removed in the filtering process and no longer found in`BCCL_kd.ceres_3`, "ERBB2IP" was found in cluster 4. For these reasons the two mentioned mutations were excluded from further analysis, to leave only "ERBB2", "MYCBP", "PARP10" and "PIK3CA" as selected driver mutations.
 
+@Salome: Please, check whether this is what you wanted to do!
+```{r warning=FALSE}
+driver_mut <- c("ERBB2","MYCBP", "PARP10", "PIK3CA") #enter driver mutations
+CheckKmNumber <- as.data.frame(sapply(seq_along(driver_mut), function(a){
+  out <- km_CERES$cluster[a]
+  return(out)
+}))
+
+colnames(CheckKmNumber) <- "Number of Cluster"
+paged_table(CheckKmNumber)
+```
+
+old:
 ```{r warning=FALSE}
 km_CERES$cluster["ERBB2"] #obtaining cluster number for each driver mutation from literature # do you think it is possible to do this in a loop ?
 km_CERES$cluster["ERBB2IP"]
 km_CERES$cluster["MYCBP"]
 km_CERES$cluster["PARP10"]
-km_CERES$cluster["PIK3CA"] 
+km_CERES$cluster["PIK3CA"]
 ```
 
 Since our approach defined SSTs as genes expected to interact synergistically with the corresponding driver mutation in promoting cell viability, similar CERES scores were expected. Thus all potential SSTs candidates were expected to be found in cluster 3 as well. A dataframe `data_clus_3`was subsequently generated to contain all 1148 genes colocalized with driver mutations in cluster 3. 
@@ -563,7 +582,6 @@ For the purpose of conducting the Wilcoxon test the data from which the CERES sc
 
 ```{r warning=FALSE}
 #preparation of the data
-driver_mut <- c("ERBB2","MYCBP", "PARP10", "PIK3CA") #enter driver mutations
 mutImpact_r <- mutImpact[rowSums(is.na(mutImpact)) != ncol(mutImpact), ] #_r=reduced: get rid of all the ONLY NA rows (this will save computation)
 mutImpact_kd.ceres <- BCCL_kd.ceres[rownames(BCCL_kd.ceres) %in% rownames(mutImpact_r),] # create matrix containing CERES scores of genes which are mutated once at minimum
 colnames(mutImpact_kd.ceres) <- tPatients_ID
@@ -594,7 +612,7 @@ testData <- lapply(seq_along(driver_mut), function(a) {
 })
 names(testData) <- driver_mut
 
-lapply(testData, function(a) head(a)) #look at the data
+lapply(testData, function(a) paged_table(a)) #look at the data
 ```
 
 As the null hypothesis claims that the CERES scores of the driver mutation and the reference genes are equal, low p-values indicate that there is no relation between the CERES scores of the driver mutation and the reference gene whereas high p-values may allude to genetic interaction of the driver mutation with an SST.
@@ -602,10 +620,21 @@ The obtained p-values were distributed as shown below. Most strinkingly, the fir
 
 ```{r warning=FALSE}
 #get summary of distribution
-summary(testData$ERBB2)
-summary(testData$MYCBP)
-summary(testData$PARP10)
-summary(testData$PIK3CA)
+testDataSummary <- c() #create empty vector to append data to
+testDataSummary <- sapply(1:length(driver_mut), function(a){
+  dvPicker <- as.vector(testData[[a]][[1]]) #select a DV
+  
+  summaryVector <- c(min(dvPicker), quantile(dvPicker, probs = 0.25), median(dvPicker), mean(dvPicker), quantile(dvPicker, probs = 0.75), max(dvPicker)) #generate vector containing summary data of the p-values generated fr the chosen DV
+  
+  testDataSummary <- cbind(testDataSummary, summaryVector) #add vector to data matrix
+})
+
+testDataSummary <- as.data.frame(testDataSummary) #transform matrix to dataframe
+
+colnames(testDataSummary) <- driver_mut
+rownames(testDataSummary) <- c("min", "1st quartile", "median", "mean", "3rd quartile", "max") #rename rows and columns
+
+paged_table(testDataSummary) #have a look at the distribution of p-values
 ```
 
 Based on the results of the Wilcoxon test, potential SSTs were chosen by means of the highest p-values. Thus, the list `SST_Data`consisting of one data frame per driver mutation was created based on the test results given in the `test_data` list. Therefore, an `lapply`command was used filtering each data frames of `test_data` by selecting the 15 reference genes which were found to have the most similar CERES scores as the driver mutation, indicated by high p-values. In this course, the rownames of the data frames had to be transferred to an extra column before selection and transferred back afterwards as otherwise the rownames would have been lost during the filtering process. Unequal numbers of SST candidates were found due to similar test results for several reference genes.
@@ -686,10 +715,7 @@ SST_Data <- lapply(seq_along(SST_Data), function(a) {
 
 names(SST_Data) <- driver_mut #regenerate names
 
-paged_table(SST_Data$ERBB2)
-paged_table(SST_Data$MYCBP)
-paged_table(SST_Data$PARP10)
-paged_table(SST_Data$PIK3CA)
+lapply(SST_Data, function(b) paged_table(b)) # have a look at the SSTs
 ```
 
 ## Exploiting interactions: Regression analysis to predict CERES scores of driver mutation
@@ -726,12 +752,20 @@ If this requirement is not met, one of the correlated variables should be delete
 
 ```{r Regression sample distribution, fig.align = 'center', fig.cap="Fig. 8 QQ plots for each driver mutation", warning=FALSE}
 lapply(seq_along(data_regression), function(a){  
-  p <- ggplot(data_regression[[a]], aes(sample=data_regression[[a]][,ncol(data_regression[[a]])], col = "red")) + stat_qq()+ stat_qq_line() #create qq-Plot with line for comparison to normal distribution
-   p + labs(title = "QQ-Plot", subtitle = "Check if data is approx. normally distributed")
-  
+  par(mfrow=c(1,2)) #hmmm should show them beneath .... 
+  p <- ggplot(data_regression[[a]], aes(sample=data_regression[[a]][,ncol(data_regression[[a]])], col = "cyl")) + stat_qq() +           stat_qq_line() #create qq-Plot with line for comparison to normal distribution +
+        labs(title = "QQ-Plot", subtitle = "Check if data is approx. normally distributed") +
+          theme(legend.position ="none",
+            plot.title = element_text(hjust = 0.4),
+            axis.text.x = element_text(angle = 0, vjust = 0, hjust=0.5),
+            legend.title= element_blank(),
+            axis.title.x = element_text(),
+            strip.text.y = element_text(angle = 0))
   r <-  round(cor(data_regression[[a]]),2) #create table with correlation values between all SSTs; the values are rounded to two decimal places [,2)]
-  
-  return(list(p,r))
+  col <- colorRampPalette(c("magenta", "white", "blue1"))(n = 1000)
+  cormap <- heatmap.2(r, scale = "none", col = col, 
+          trace = "none", density.info = "none", dendrogram = c("both"), main = "Correlation of ... and ...")
+  return(list(p))
    })
 ```
 Quick Results: The Data of MYCBP and PARP10 is approx. normally distributed; ERBB2 and PIK3CA not. No multicollinearity detected, all 0.80 > x
@@ -846,13 +880,13 @@ PARP10    | 0.1095      |-0.6786   |
 PIK3CA    | 0.7131      |-0.1786   |
 
 The rank-correlation coefficient can take values from +1 to -1
-    + rho ~ 1: perfect positive association of ranks
-    + rho ~ 0: no association of ranks
-    + rho ~ -1: perfect negative association of ranks
++ rho ~ 1: perfect positive association of ranks
++ rho ~ 0: no association of ranks
++ rho ~ -1: perfect negative association of ranks
 
 To further interprete the p-value, we construct a H0 / H1 hypothesis:
-    + H0: There is no association between the predicted and observed variable.
-    + H1: There is an association between the predicted and observed variable.
++ H0: There is no association between the predicted and observed variable.
++ H1: There is an association between the predicted and observed variable.
 Most importantly, it is not possible to assess the strength of the correlation based on the p-value. It rather judges the statistical test than the resulting value. As default, we set the significance level to 0.05.
 
 We will the compare this values for the different models. For a positive correlation, two variables move in the same direction. For a well-designed model, we expect the predicted and observed CERES scores being approx. even. Thus, optimal model design is achieved if the correlation coefficient is close to 1 and the p-value p < 0.05.
@@ -878,8 +912,8 @@ But, a common thumb-rule for building a regression model is to calculate the _li
 
  $p < \frac{m}{15}$
  
-  + p: number of predictor variables
-  + m: limiting sample size; for continuous response variables it is the  total sample size n
++ p: number of predictor variables
++ m: limiting sample size; for continuous response variables it is the  total sample size n
 
 If this equation is fulfilled, the model is supposed to be reliable.(Harrell 2001)
 In fact, this condition is true for all four models.
