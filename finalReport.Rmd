@@ -759,17 +759,32 @@ lapply(seq_along(data_regression), function(a){
   col <- colorRampPalette(c("magenta", "white", "blue1"))(n = 1000)
   cormap <- heatmap.2(r, scale = "none", col = col, 
           trace = "none", density.info = "none", dendrogram = c("both"), main = "Correlation of ... and ...")
-  return(list(p))
+  return(list(p)) #Muss hier nicht noch r rein oder funktioniert es so?
    })
 ```
-Quick Results: The Data of MYCBP and PARP10 is approx. normally distributed; ERBB2 and PIK3CA not. No multicollinearity detected, all 0.80 > x
+In the QQ-Plots, we see that the sample Data of MYCBP and PARP10 is approx. normally distributed; ERBB2 and PIK3CA do not present normal distribution.
+As one can see in the Heatmap of the Pearson correlation values, no multicollinearity was detected, all x < 0.80.
   
 ### Design of the multilinear regression
 
-To run the Multilinear Regression, it is advised to create a long function which splits the dataset in __75:25__ training:test data. (Previous installation of the "caTools" package is necessary)
+To run the Multilinear Regression, it is advised to create a long function which splits the dataset in 75:25 training:test data.
 Then the function conducts Training of Regression model with training data to predict Driver mutation CERES (y; dep.variable) from SST CERES scores (x1 ... xn; indep.variables)
 Followed by checking model assumptions of residual normal distribution and homoscedasticity.
 Later on, the function runs the test Data on model for performance evaluation and finally calculates and plots Spearman correlation to further asses model performance.
+
+For the Spearman correlation, the rank-correlation coefficient can take values from +1 to -1
++ rho ~ 1: perfect positive association of ranks
++ rho ~ 0: no association of ranks
++ rho ~ -1: perfect negative association of ranks
+
+To further interprete the p-value, we construct a H0 / H1 hypothesis:
++ H0: There is no association between the predicted and observed variable.
++ H1: There is an association between the predicted and observed variable.
+Most importantly, it is not possible to assess the strength of the correlation based on the p-value. It rather judges the statistical test than the resulting value. As default, we set the significance level to 0.05.
+
+We will the compare this values for the different models. For a positive correlation, two variables move in the same direction. For a well-designed model, we expect the predicted and observed CERES scores being approx. even. Thus, optimal model design is achieved if the correlation coefficient is close to 1 and the p-value p < 0.05.
+Additionally, we plot the distributions of predicted against observed values for each model.
+
 ```{r Multiple Regression function, fig.align = 'center', fig.cap=" Fig.9 Residual, Homoscedasticity and Spearman correlation plots for each driver mutation", warning=FALSE}
 input_data <- data_regression
 
@@ -873,18 +888,6 @@ MCYBP     | 0.7825      |-0.1429   |
 PARP10    | 0.1095      |-0.6786   |
 PIK3CA    | 0.7131      |-0.1786   |
 
-The rank-correlation coefficient can take values from +1 to -1
-+ rho ~ 1: perfect positive association of ranks
-+ rho ~ 0: no association of ranks
-+ rho ~ -1: perfect negative association of ranks
-
-To further interprete the p-value, we construct a H0 / H1 hypothesis:
-+ H0: There is no association between the predicted and observed variable.
-+ H1: There is an association between the predicted and observed variable.
-Most importantly, it is not possible to assess the strength of the correlation based on the p-value. It rather judges the statistical test than the resulting value. As default, we set the significance level to 0.05.
-
-We will the compare this values for the different models. For a positive correlation, two variables move in the same direction. For a well-designed model, we expect the predicted and observed CERES scores being approx. even. Thus, optimal model design is achieved if the correlation coefficient is close to 1 and the p-value p < 0.05.
-
  The ERBB2-model shows the highest rho value of all four models, but ~ 0.1 is a rather weak positive relationship, but the p-value leads to __acceptance of H0_.
 
 The rho value of the MYCBP-model leads to very weak negative correlation. A p-value of ~ 0.78 leads to confident acceptance of H0.
@@ -898,7 +901,7 @@ The PARP10 model resulted in a moderate negative relationship, which is not of r
 The ERBB2 model did not deliver a significant p-value, but indeed contains at least a weak positive correlation.
 
 #Discussion
-__All in all, all multilinear regression models failed to meet all regression assumptions deliver a p-value of significant relevance for the correlation. Thus, they should not be used for further predictions.__
+All in all, all multilinear regression models failed to meet all regression assumptions deliver a p-value of significant relevance for the correlation. Thus, they should not be used for further predictions.
 Especially the models for ERBB2 and PIK3CA should have been discarded, since not even the basic sample distribution is normally distributed.
 It seems possible that the small sample size for the regression model lead to the lack of significant results, with only 28 events (CERES score observed in cell line) per predicting variable (SST gene).
 
