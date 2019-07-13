@@ -84,16 +84,13 @@ font_import()
 >
 > <small>Raj Kumar (2016) in <cite title="Source Title">A novel therapeutic target for triple negative breast cancer</cite></small>
 
-If you grow up in a western country in the beginning 21th century, there are two sorts of tumors, you will definately notice before you leave high school. The first one is lung cancer, gaining its questionable fame with pictures leaping out of every box of cigarettes. The second one went famous with broadly reported stories about Angelina Jolie or famous old german universities. However, breast cancer isn't just the story of attractive women or research institutes making themselves ridiculous, it is also a story of suffering and death.
-We think about breast cancer as the most prevalent tumor disease worldwide. It is also one of the most deathly malignant tumors, with far more than 600.000 deaths reported in 2017 (GBD 2017). Due to an increase of a sixth in percentage of world population suffering from this ilness, in the past 27 years, it is advisable to do something in the future. 
-But there is hope. In the past decades, breast cancer therapy evolved, diminishing the age standardized death rate from 15.10 to 10.00 in western europe, which is a decrease of about a third (GBD 2017). 
-Up to a point this is satisfying, on the other hand there are still a lot of challenges remaining, for example to find an effective prevention approach (Sledge et al. 2014). One group of methods increasing its powers every days are computerbased methods. Their share of ... and ... is astonishingly large . This makes us all excited about what comes in the future. Until Meanwhile, we will focus on our project, teaching ourselves in a nice manner, how useful a fast thinking computer is in research. 
+Breast cancer is currently known as one of the most prevalent and deathly malignant tumor types, resulting in more than 600.000 deaths worldwide in 2017 (GBD 2017). While in Germany 70,000 new cases are reported annually (Barnes, Kraywinkel et al. 2016), breast cancer makes ~30% of all reported cases of tumor diseases (Robert-Koch-Institut 2017). Over the past 27 years the prevalence of this tumor surged by one sixth in percentage of world population, calling for accelerated research into possible therapy options. 
+While in the pase decades breast cancer therapy has already evolved,reducing the age standardized death rate by one third, from 15.10 to  only 10.00 in western europe (GBD 2017), the necessity to find an effective prevention methods remains (Sledge et al. 2014). One promising method is the computerbased approach. Their share of ... and ... is astonishingly large . Excited what the future may bring, this project takes first steps into computer based analysis of genetic interactions.
 
-According to the latest reports of breast cancer prevalence, the current state is very serious:
+
 
 * Breast cancer ranks second in worldwide cancer case numbers (Hutchinson 2010)
-* In Germany there are 70,000 new cases annually. (Barnes, Kraywinkel et al. 2016)
-* This makes ~ 30% of all reported cases of tumor diseases.(Robert-Koch-Institut 2017)
+
 
 ## Driver Mutations: the driving force in tumorigenesis
 
