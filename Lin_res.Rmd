@@ -95,7 +95,7 @@ plottingData <- lapply(seq_along(input_data), function(a) {
                  data = training_set)  #predict CERES of Driver Mutation based on all (=.) the input variables (SSTs)
 
 ++++++++++++++++++++++++++#help  
-  return(tab_model(regressor, show.aic = TRUE, title = paste0('Model Summary: ', driver_mut[a]), use.viewer = TRUE))
+  return(tab_model(regressor, title = paste0('Model Summary: ', driver_mut[a]), use.viewer = TRUE))
 ++++++++++++++++++++++++++++++
     
 hist(resid(regressor), main = paste0('Histogram of residuals: ', driver_mut[a]),xlab='Standardised Residuals',ylab='Frequency') #plot a histogram of standardised residuals to check the assumption of normality
