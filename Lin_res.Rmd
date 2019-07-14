@@ -72,6 +72,12 @@ To run the Multilinear Regression, it is advised to create a long function which
 Then the function conducts Training of Regression model with training data to predict Driver mutation CERES (y; dep.variable) from SST CERES scores (x1 ... xn; indep.variables)
 Followed by checking model assumptions of residual normal distribution and homoscedasticity.
 Lateron, the function runs the test Data on model for performance evaluation and finally calculates and plots Spearman correlation to further asess model performance
+```{r}
+install.packages("sjPlot")
+library(sjPlot)
+library(sjmisc)
+library(sjlabelled)
+```
   
 ```{r}
 input_data <- data_regression
@@ -87,14 +93,15 @@ plottingData <- lapply(seq_along(input_data), function(a) {
   
   regressor = lm(formula = Predictor ~ ., 
                  data = training_set)  #predict CERES of Driver Mutation based on all (=.) the input variables (SSTs)
+
+++++++++++++++++++++++++++#help  
+  return(tab_model(regressor, show.aic = TRUE, title = paste0('Model Summary: ', driver_mut[a]), use.viewer = TRUE))
+++++++++++++++++++++++++++++++
+    
+hist(resid(regressor), main = paste0('Histogram of residuals: ', driver_mut[a]),xlab='Standardised Residuals',ylab='Frequency') #plot a histogram of standardised residuals to check the assumption of normality
   
-  pdf(paste0(root.dir, "/Resid-HomoPlot_",driver_mut[a],".pdf")) #save plots as pdf, in working directory "wd"
-  hist(resid(regressor), main = paste0('Histogram of residuals: ', driver_mut[a]),xlab='Standardised Residuals',ylab='Frequency') #plot a histogram of standardised residuals to check the assumption of normality
-  dev.off() #closing the figure file
+plot(regressor, which = 1) #fitted values and residuals plot to check the assumption of homoscedasticity
   
-  pdf(paste0(root.dir, "/HomoPlot_",driver_mut[a],".pdf")) #save plots as pdf, in working directory "wd"
-  plot(regressor, which = 1) #fitted values and residuals plot to check the assumption of homoscedasticity
-  dev.off() #closing the figure file
   
   y_pred = predict(regressor, newdata = test_set) #predict the Driver mut. CERES score based on the test data
   test_set$Prediction = y_pred #adding predictions to the dataset
