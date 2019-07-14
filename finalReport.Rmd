@@ -755,7 +755,7 @@ If this requirement is not met, one of the correlated variables should be delete
 ```{r Regression sample distribution, fig.align = 'center', fig.cap="Fig. 8 QQ plots for each driver mutation", warning=FALSE}
 lapply(seq_along(data_regression), function(a){  
   par(mfrow=c(1,2)) #hmmm should show them beneath .... 
-  p <- ggplot(data_regression[[a]], aes(sample=data_regression[[a]][,ncol(data_regression[[a]])], col = "cyl")) + stat_qq() +           stat_qq_line() #create qq-Plot with line for comparison to normal distribution +
+  p <- ggplot(data_regression[[a]], aes(sample=data_regression[[a]][,ncol(data_regression[[a]])])) + stat_qq() +           stat_qq_line() #create qq-Plot with line for comparison to normal distribution +
         labs(title = "QQ-Plot", subtitle = "Check if data is approx. normally distributed") +
           theme(legend.position ="none",
             plot.title = element_text(hjust = 0.4),
