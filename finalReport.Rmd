@@ -858,17 +858,6 @@ table_nums("Assumption", "Summary of the Regression assumption checks for the fo
 
 table_nums("Spearman", "Summary of Spearman Correlation Test between observed and predicted values. Including p-value and the thus accepted hypothesis, as well as the correlation value rho and the corresponding strenght of the linear relationship.")
 ```
-#Discussion
-All in all, the multilinear regression models failed to meet the regression assumptions and did not deliver a p-value of significant relevance for the correlation. Thus, they should not be used for further predictions.
-Especially the models for ERBB2 and PIK3CA should have been discarded, since not even the basic sample distribution is normally distributed.
-It seems possible that the small sample size for the regression model may lead to the lack of significant results, with only 28 events (CERES score observed in cell line) per predicting variable (SST gene).A common rule of thumb for building a regression model is to calculate the _limiting sample size_:
-
- $p < \frac{m}{15}$
- 
-+ p: number of predictor variables
-+ m: limiting sample size; for continuous response variables it is the  total sample size n
-
-If this equation is fulfilled, the model is supposed to be reliable.(Harrell 2001). For our four models the condition was indeed shown to be true and thus our data seems to have an appropriate size for a basic regression model. However when the  supervised machine learning process of the regression is considered, sample sizes up to n = 50,000 are usualy reported.(Libbrecht and Noble 2015) It can thus be said that in general more data will lead to improved data quality, with a focus on obtaining and analyzing larger data sets instead of comparing different learning techniques on small training sets.(Banko and Brill 2001)
 
 # Results and Discussion
 
@@ -908,7 +897,16 @@ PIK3CA    | 0.7131      |         H0          | -0.1786  | weak negative     |
 table_nums("Spearman")
 ```
 
-In summary it can thus be argued that these multilinear regression models are not effective in predicting the impact of driver mutations on cell viability. One possible reason for unfitting regression models could be the small sample size of only 28 events (breast cancer cell lines). Calculation of the limiting sample size however suggests that our data set has the appropriate size for a basic regression model. To improve data quality, especially for the supervised machine learning process, a larger data set is necessary for the construction of an appropriate model. It should also be considered, that CERES scores of SST candidates and driver mutations may have a nonlinear correlation, requiring different prediction models. 
+In summary it can thus be argued that these multilinear regression models are not effective in predicting the impact of driver mutations on cell viability. One possible reason for unfitting regression models could be the small sample size of only 28 events (breast cancer cell lines).
+A common rule of thumb for building a regression model is to calculate the limiting sample size:
+
+ $p < \frac{m}{15}$
+ 
++ p: number of predictor variables
++ m: limiting sample size; for continuous response variables it is the  total sample size n
+
+If this equation is fulfilled, the model is supposed to be reliable.(Harrell 2001). For our four models the calculation suggests that our data set has the appropriate size for a basic regression model. To improve data quality, especially for the supervised machine learning process, a larger data set is necessary for the construction of an appropriate model and leads in general to improved results. It might be helpful to obtain and analyze larger data sets instead of comparing different learning techniques on small training sets.(Banko and Brill 2001).For expample, sample sizes up to n = 50,000 are reported for comparable tasks (Libbrecht and Noble 2015). 
+It should also be considered, that CERES scores of SST candidates and driver mutations may have a nonlinear correlation, requiring different prediction models. 
 
 ### Literature
   + Aleskandarany, M. A., E. A. Rakha, M. A. H. Ahmed, D. G. Powe, E. C. Paish, R. D. Macmillan, I. O. Ellis and A. R. Green (2010). "PIK3CA expression in invasive breast cancer: a biomarker of poor prognosis." Breast Cancer Research and Treatment 122(1): 45-53.
