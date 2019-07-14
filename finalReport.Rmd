@@ -17,7 +17,7 @@ output:
 
 body{ /* Normal  */
     font-size: 16px;
-    font-family: "SegoeUI";
+    font-family: "Segoe UI", Frutiger;
   }
 td {  /* Table  */
   font-size: 12px;
@@ -85,11 +85,6 @@ font_import()
 
 Breast cancer is currently known as one of the most prevalent and deathly malignant tumor types, resulting in more than 600.000 deaths worldwide in 2017 (GBD 2017). While in Germany 70,000 new cases are reported annually (Barnes, Kraywinkel et al. 2016), breast cancer makes ~30% of all reported cases of tumor diseases (Robert-Koch-Institut 2017). Over the past 27 years the prevalence of this tumor surged by one sixth in percentage of world population, calling for accelerated research into possible therapy options. 
 While in the pase decades breast cancer therapy has already evolved, reducing the age standardized death rate by one third, from 15.10 to  only 10.00 in western europe (GBD 2017), the necessity to find effective prevention methods remains (Sledge et al. 2014). One promising method is the computerbased approach, with possible first steps into the analysis of genetic interactions being taken in this project.
-
-
-
-* Breast cancer ranks second in worldwide cancer case numbers (Hutchinson 2010)
-
 
 ## Driver Mutations: the driving force in tumorigenesis
 
@@ -205,12 +200,12 @@ library(extrafont)
 font_import()
 ```
 
-```{r Lisa, include=FALSE, eval=FALSE}
+```{r Lisa, include=FALSE, eval=TRUE}
 data = readRDS("C:/Users/lisa-/Desktop/Studium/4. FS/Bioinfo/DepMap19Q1_allData.RDS")
 root.dir = "C:/Users/lisa-/Desktop/Studium/4. FS/Bioinfo/project-01-group-04"
 ```
 
-```{r Salome, include=FALSE, eval=TRUE}
+```{r Salome, include=FALSE, eval=FALSE}
 data = readRDS("C:/Users/Salome/Documents/4.FS/Bioinfo/DepMap19Q1_allData.RDS")
 root.dir = "C:/Users/Salome/Documents/4.FS/Bioinfo/Github/project-01-group-04"
 ```
@@ -704,8 +699,8 @@ lapply(SST_Data, function(b) paged_table(b)) # have a look at the SSTs
 
 ### Database research and outcome of analysis
 
-All 67 confirmed SSTs were investigated for already existing drugs and disease association. In genera our SSTs revealed a broad spectrum of knowledge, spreading from genes not only associated with any disease to genes with an approved drug available. We classified our SSTs in 3 classes: class 1 containing genes already associated with at least one sort of breast cancer, class 2 consisting of genes with associations at least in any cancer and class 3, genes without connection to cancer. 
-The largest group were SSTs of class 1, containing 43 genes followed bei class 2 genes with 20 members. Group was clearly the smallest one with 4, which can be seen as good because we didn't found any genes completely out of the range of research community or bad due to the will to find genes nobody ever recognized before. All of them except for one, "PDGFRA", had no drug on the marked. Just to keep our workload in limits, we proceeded our analysis with all SSTs having associations to more than 40 sort of cancer or showing interesting characteristics. Our goal was to make a recommendation for drug design of 5 SSTs out of all this knowledge.
+All 67 confirmed SSTs were investigated for already existing drugs and disease association. In general our SSTs revealed a broad spectrum of knowledge, spreading from genes not only associated with any disease to genes with an approved drug available.*verstehe den Satz hier nicht so ganz* We classified our SSTs in 3 classes: class 1 containing genes already associated with at least one sort of breast cancer, class 2 consisting of genes with associations to at least one cancer type and class 3, genes with no known connection to cancer. 
+The largest group were SSTs of class 1, containing 43 genes followed by class 2 genes with 20 members. The third class was clearly the smallest containing only 4 genes. This confirmed that only a few genes not yet known in the research community were found. All of them except for one, "PDGFRA", have no drug on the market. We decided analyse only those SSTs having associations to more than 40 types of cancer or showing interesting characteristics. From this knowledge, we aim to recommend drug design for 5 SSTs. 
 --> see CoS.Rmd and SST_funtion_and_therapy.csv for further information
 
 ## Exploiting interactions: Regression analysis to predict CERES scores of driver mutation
@@ -778,8 +773,8 @@ To further interprete the p-value, we construct a H0 / H1 hypothesis:
 + H1: There is an association between the predicted and observed variable.
 Most importantly, it is not possible to assess the strength of the correlation based on the p-value. It rather judges the statistical test than the resulting value. As default, we set the significance level to 0.05.
 
-We will the compare this values for the different models. For a positive correlation, two variables move in the same direction. For a well-designed model, we expect the predicted and observed CERES scores being approx. even. Thus, optimal model design is achieved if the correlation coefficient is close to 1 and the p-value p < 0.05.
-Additionally, we plot the distributions of predicted against observed values for each model.
+We will then compare these values for the different models. For a positive correlation, two variables move in the same direction. For a well-designed model, we expect the predicted and observed CERES scoresto be approx. even. Thus, optimal model design is achieved if the correlation coefficient is close to 1 and the p-value p < 0.05.
+Additionally, we plot the distributions of predicted values against observed values for each model.
 
 ```{r Multiple Regression function, fig.align = 'center', fig.cap=" Fig.9 Residual, Homoscedasticity and Spearman correlation plots for each driver mutation", warning=FALSE}
 input_data <- data_regression
@@ -854,7 +849,7 @@ correlations #look at the dat
 *How about doing a linear regression model and comparing the F-statistic values?*
 
 #Checking assumptions
-All four models were tested on the assumptions. The following table provides a quick overview if our constructed assumptions was met (yes) or not (no). For multicollinarity, all models met the condition r < 0.8 for all variables.
+All four models were tested on these assumptions. The following table provides a quick overview of whether constructed assumptions were met (yes) or not (no). For multicollinarity, all models met the condition r < 0.8.
 
 Model     | Data distribution | Residual distribution| Homoscedastity |Spearman correlation |
 ----------|-------------------|----------------------|----------------|---------------------|
@@ -868,8 +863,7 @@ As shown in the qq-Plots, normal distribution does only apply to the models of M
 
 The normal distribution does not lead to higher correlation coefficients. But not satisfying distribution assumptions should be treated as a red flag; and the model is not suited for further use.
 
-The residual distribution of ERBB2 was closest to normal distribution. The PIK3CA residuals showed still acceptable approximation of normal distribution.
-MYCBP and PARP10 failed to show approx. normal residual distribution.
+The residual distribution of ERBB2 was closest to normal distribution. The PIK3CA residuals showed still acceptable approximation of normal distribution.MYCBP and PARP10 however failed to show approx. normal residual distribution.
 
 Also known as homogeneity of variance, this condition is met if random variables have similar variance. Also, there is no pattern of variance change if the random variables in- or decrease. #citation
 ERBB2 and PIK3CA violate the condition, while MYCBP and PARP10 show homoscedasticity.
@@ -884,40 +878,25 @@ MCYBP     | 0.7825      |         H0          | -0.1429  | weak negative     |
 PARP10    | 0.1095      |         H0          | -0.6786  | moderate negative |
 PIK3CA    | 0.7131      |         H0          | -0.1786  | weak negative     |
 
- The ERBB2-model shows the highest rho value of all four models, but ~ 0.1 is a rather weak positive relationship, but the p-value leads to acceptance of H0.
+The ERBB2-model shows the highest rho value of all four models, but ~ 0.1 is a rather weak positive relationship, but the p-value leads to acceptance of H0. In comparison, the rho value of the MYCBP-model leads to a very weak negative correlation with a p-value of ~ 0.78. This leads to confident acceptance of H0.Further, for the PARP10-model, the rho value of ~ -0.67 is a moderate negative relationship, leading to the acceptance of H0. The p-value is the lowest with ~ 0.11. But even if we would raise the confidence level to 0.10 (which would be a questionable move in statistics), the result would not be signifcant enough in order to accept H1.Finally, the rho value of the PIK3CA-model leads to a very weak negative correlation. The according p-value of ~ 0.78  leads to confident acceptance of H0.
 
-The rho value of the MYCBP-model leads to very weak negative correlation. A p-value of ~ 0.78 leads to confident acceptance of H0.
-
-For the PARP10-model, the rho value of ~ -0.67 is a moderate negative relationship. The p-value leads to acceptance of H0. The p-value is the lowest with ~ 0.11. But even if we would raise the confidence level to 0.10 (which would be a questionable move in statistics), the result wouldn´t be significant to accept H1.
-    
-The rho value of the PIK3CA-model leads to very weak negative correlation. A p-value of ~ 0.78  leads to confident acceptance of H0.
-
-The models for MYCBP and PIK3CA only showed weak, negative correlation, which is not useful for further work with this model.
-The PARP10 model resulted in a moderate negative relationship, which is not of relevance for our objective.
-The ERBB2 model did not deliver a significant p-value, but indeed contains at least a weak positive correlation.
+The models for MYCBP and PIK3CA only showed weak, negative correlation, which is not useful for further work with this model. Equally the PARP10 model onl resulted in a moderate negative relationship, which is also not of relevance for our objective. On the contrary, while the ERBB2 model did not deliver a significant p-value, it at least showed a weak positive correlation.
 
 #Discussion
-All in all, all multilinear regression models failed to meet all regression assumptions deliver a p-value of significant relevance for the correlation. Thus, they should not be used for further predictions.
+All in all, the multilinear regression models failed to meet the regression assumptions and did not deliver a p-value of significant relevance for the correlation. Thus, they should not be used for further predictions.
 Especially the models for ERBB2 and PIK3CA should have been discarded, since not even the basic sample distribution is normally distributed.
-It seems possible that the small sample size for the regression model lead to the lack of significant results, with only 28 events (CERES score observed in cell line) per predicting variable (SST gene).
-
-But, a common thumb-rule for building a regression model is to calculate the _limiting sample size_:
+It seems possible that the small sample size for the regression model may lead to the lack of significant results, with only 28 events (CERES score observed in cell line) per predicting variable (SST gene).A common rule of thumb for building a regression model is to calculate the _limiting sample size_:
 
  $p < \frac{m}{15}$
  
 + p: number of predictor variables
 + m: limiting sample size; for continuous response variables it is the  total sample size n
 
-If this equation is fulfilled, the model is supposed to be reliable.(Harrell 2001)
-In fact, this condition is true for all four models.
-
-Our data seems to have an appropriate size for a basic regression model.
-On the other hand, for the supervised machine learning process of the regression, sample sizes up to n = 50,000 are reported.(Libbrecht and Noble 2015) 
-In general, more data will lead to improved data quality. Generally, scientists are advised to focus on obtaining and analyzing larger data sets instead of comparing different learning techniques on small training sets.(Banko and Brill 2001)
+If this equation is fulfilled, the model is supposed to be reliable.(Harrell 2001). For our four models the condition was indeed shown to be true and thus our data seems to have an appropriate size for a basic regression model. However when the  supervised machine learning process of the regression is considered, sample sizes up to n = 50,000 are usualy reported.(Libbrecht and Noble 2015) It can thus be said that in general more data will lead to improved data quality, with a focus on obtaining and analyzing larger data sets instead of comparing different learning techniques on small training sets.(Banko and Brill 2001)
 
 # Results and Discussion
 
-The aim of this project was to identify genes, so called second site targets, which interact genetically with selected driver mutations to promote cell viability and proliferation in breast cell cancers. Our hope was that these could be used as targets for more specific gene therapies. 
+The aim of this project was to identify genes, so called second site targets, which interact genetically with selected driver mutations to promote cell viability and proliferation in breast cell cancers. Our hope was that these genes could be potential new targets for more specific gene therapies. 
 
 After selection of five non-tumor suppressor gene driver mutations (CCND, ERBB2, MYC, PARP10, PIK3CA) form literature, datasets were formatted to include only breast cancer cell lines. Subsequent, general data exploration revealed a large variety of CERES scores and expression values across both selected driver mutations and remaining genes of breast cell cancer lines. This proved the need to undertake further steps of data cleanup. Thus, in order to analyze only mutated genes, the mutImpact matrix was generated, containing CERES values only of mutated genes in a given cell line, otherwise with the entry for a given cell line being “NA”. Further data cleanup was performed by removing all genes which contained all “NA” values and whose mean CERES scores were greater than zero. Through this process, 4934 possible SST genes remained, fitting the criteria of being mutated and having a positive impact on cell viability. However, in this process genes with a nonuniform distribution or of CERES scores across cell lines or unique outliers distorting mean values could have been mistakenly removed.
 
