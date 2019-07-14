@@ -851,6 +851,17 @@ correlations #look at the dat
 ```
 
 *How about doing a linear regression model and comparing the F-statistic values?*
+# Discussion of sample size
+In summary it can thus be argued that these multilinear regression models are not effective in predicting the impact of driver mutations on cell viability. One possible reason for unfitting regression models could be the small sample size of only 28 events (breast cancer cell lines).
+A common rule of thumb for building a regression model is to calculate the limiting sample size:
+
+ $p < \frac{m}{15}$
+ 
++ p: number of predictor variables
++ m: limiting sample size; for continuous response variables it is the  total sample size n
+
+If this equation is fulfilled, the model is supposed to be reliable.(Harrell 2001). For our four models the calculation suggests that our data set has the appropriate size for a basic regression model.
+
 ```{r Table Captions, include=FALSE}
 table_nums <- captioner(prefix = "Table")
 
@@ -897,15 +908,7 @@ PIK3CA    | 0.7131      |         H0          | -0.1786  | weak negative     |
 table_nums("Spearman")
 ```
 
-In summary it can thus be argued that these multilinear regression models are not effective in predicting the impact of driver mutations on cell viability. One possible reason for unfitting regression models could be the small sample size of only 28 events (breast cancer cell lines).
-A common rule of thumb for building a regression model is to calculate the limiting sample size:
-
- $p < \frac{m}{15}$
- 
-+ p: number of predictor variables
-+ m: limiting sample size; for continuous response variables it is the  total sample size n
-
-If this equation is fulfilled, the model is supposed to be reliable.(Harrell 2001). For our four models the calculation suggests that our data set has the appropriate size for a basic regression model. To improve data quality, especially for the supervised machine learning process, a larger data set is necessary for the construction of an appropriate model and leads in general to improved results. It might be helpful to obtain and analyze larger data sets instead of comparing different learning techniques on small training sets.(Banko and Brill 2001).For expample, sample sizes up to n = 50,000 are reported for comparable tasks (Libbrecht and Noble 2015). 
+ To improve data quality, especially for the supervised machine learning process, a larger data set is necessary for the construction of an appropriate model and leads in general to improved results. It might be helpful to obtain and analyze larger data sets instead of comparing different learning techniques on small training sets.(Banko and Brill 2001).For expample, sample sizes up to n = 50,000 are reported for comparable tasks (Libbrecht and Noble 2015). 
 It should also be considered, that CERES scores of SST candidates and driver mutations may have a nonlinear correlation, requiring different prediction models. 
 
 ### Literature
