@@ -851,7 +851,7 @@ correlations #look at the dat
 ```
 
 *How about doing a linear regression model and comparing the F-statistic values?*
-```{r Table Captions, echo=FALSE}
+```{r Table Captions, include=FALSE}
 table_nums <- captioner(prefix = "Table")
 
 table_nums("Assumption", "Summary of the Regression assumption checks for the four models. Conditions were met (yes) or not (no).")
