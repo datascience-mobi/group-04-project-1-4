@@ -3,12 +3,14 @@ title: 'Final Report: Identification of SSTs'
 author: "Elias Benjamin Farr, Lennart Linke, Lisa Marie Milchsack, Salome Steinke"
 date: "17. Juli 2019"
 output:
+  pdf_document:
+    toc: yes
   html_document:
+    df_print: paged
     highlight: pygments
     number_sections: yes
     theme: lumen
     toc: yes
-    df_print: paged
   word_document:
     toc: yes
 ---
@@ -209,7 +211,7 @@ data = readRDS("C:/Users/lisa-/Desktop/Studium/4. FS/Bioinfo/DepMap19Q1_allData.
 root.dir = "C:/Users/lisa-/Desktop/Studium/4. FS/Bioinfo/project-01-group-04"
 ```
 
-```{r Salome, include=FALSE, eval=TRUE}
+```{r Salome, include=FALSE, eval=FALSE}
 data = readRDS("C:/Users/Salome/Documents/4.FS/Bioinfo/DepMap19Q1_allData.RDS")
 root.dir = "C:/Users/Salome/Documents/4.FS/Bioinfo/Github/project-01-group-04"
 ```
@@ -219,7 +221,7 @@ data = readRDS("L:/UNI/4.FS/BioStat/DepMap19Q1_allData.RDS")
 root.dir = "C:/Users/ole-l/Documents/GitHub/project-01-group-04"
 ```
 
-```{r Elias, include = FALSE, eval=FALSE}
+```{r Elias, include = FALSE, eval=TRUE}
 data = readRDS("C:/Users/Elias/Documents/Uni/4. FS/Bioinfo/DepMap19Q1_allData.RDS")
 root.dir = "C:/Users/Elias/Documents/GitHub/project-01-group-04"
 ```
