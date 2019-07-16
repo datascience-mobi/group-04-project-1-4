@@ -354,6 +354,7 @@ Therefore, the BCCL_kd.ceres matrix containing CERES scores for all genes in bre
 Subsequently, CERES scores of genes, which were not mutated in a given cell line, were replaced with "NA" by implementing an "if statement". This statement included the enquiry whether the gene ID is present in the list of mutated genes of a considered cell line as and in case the condition was met the CERES score was maintained. If "FALSE" was returned, the CERES score of the gene was replaced with "NA" for the considered cell line.
 
 ```{r, warning=FALSE}
+
 #Generate pre_mutImpact matrix containing all CERES values and with IDs as colnames
 pre_mutImpact <- BCCL_kd.ceres
 colnames(pre_mutImpact)<-tPatients_ID
@@ -630,7 +631,6 @@ Based on the results of the Wilcoxon test, potential SSTs were chosen by means o
 
 ```{r warning=FALSE}
 #Select 15 most promising SST candidates based on highest p-values
-
 SST_Data <- lapply(seq_along(testData), function(a) {
   data <- as.data.frame(testData[[a]], col.names = names(testData[[a]])) #Create new data frame containing testData for each SST
   colnames(data) = drivermut[a] #Rename columns
