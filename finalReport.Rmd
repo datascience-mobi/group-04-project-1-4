@@ -3,13 +3,13 @@ title: 'Final Report: Identification of SSTs'
 author: "Elias Benjamin Farr, Lennart Linke, Lisa Marie Milchsack, Salome Steinke"
 date: "17. Juli 2019"
 output:
-  pdf_document:
-    toc: yes
   html_document:
     df_print: paged
     highlight: pygments
     number_sections: yes
     theme: lumen
+    toc: yes
+  pdf_document:
     toc: yes
   word_document:
     toc: yes
@@ -689,6 +689,8 @@ Furthermore, the physiological gene function of every SST candidate was investig
 Most strikingly, many of the SST gene functions comprise proteins contributing to cell cycle progression, cell motility and polarity as well as transcriptional regulators affecting cell metabolism. This supports the hypothesis that alterations in gene activity of the SSTs promote cancer progression.
 
 ```{r warning=FALSE, error=FALSE}
+SST_Data <- SST_Data[c(1, 3, 4, 5)] # just a solution for a mistake we are still looking for, appeared after everything was okay :( 
+driver_mut <- c("ERBB2", "MYCBP", "PARP10", "PIK3CA")
 functionTable <- list(
 read_delim(paste0(root.dir,"/functionTable_ERBB2.csv"), ";", escape_double = FALSE, col_names = TRUE, trim_ws = TRUE),  read_delim(paste0(root.dir,"/functionTable_MYCBP.csv"), ";", escape_double = FALSE, col_names = TRUE, trim_ws = TRUE), read_delim(paste0(root.dir,"/functionTable_PARP10.csv"), ";", escape_double = FALSE, col_names = TRUE, trim_ws = TRUE), read_delim(paste0(root.dir,"/functionTable_PIK3CA.csv"), ";", escape_double = FALSE, col_names = TRUE, trim_ws = TRUE)) #create list of data frames containing the data of the Excel files (e.g. gene function, references)
 
@@ -767,8 +769,8 @@ lapply(seq_along(data_regression), function(a){
   r <-  round(cor(data_regression[[a]]),2) #create table with correlation values between all SSTs; the values are rounded to two decimal places [,2)]
   col <- colorRampPalette(c("magenta", "white", "blue1"))(n = 1000)
   cormap <- heatmap.2(r, scale = "none", col = col, 
-          trace = "none", density.info = "none", dendrogram = c("both"), main = "Correlation of ... and ...")
-  return(list(p)) #Muss hier nicht noch r rein oder funktioniert es so?
+          trace = "none", density.info = "none", dendrogram = c("both"), main = "Correlation of driver mutations")
+  return(list(p,r)) #Muss hier nicht noch r rein oder funktioniert es so?
    })
 ```
 The QQ-Plots show that the sample Data of MYCBP and PARP10 is approx. normally distributed; ERBB2 and PIK3CA do not present normal distribution.
@@ -877,6 +879,7 @@ A common rule of thumb for building a regression model is to calculate the limit
 If this equation is fulfilled, the model is supposed to be reliable.(Harrell 2001). For our four models the calculation suggests that our data set has the appropriate size for a basic regression model.
 
 ```{r Table Captions, include=FALSE}
+library(captioner)#another temporary "bugfix"
 table_nums <- captioner(prefix = "Table")
 
 table_nums("Assumption", "Summary of the Regression assumption checks for the four models. Conditions were met (yes) or not (no).")
