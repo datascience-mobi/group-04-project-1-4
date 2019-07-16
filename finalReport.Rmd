@@ -26,7 +26,7 @@ h1.title {
   font-size: 40px;
   font-weight: 400
   color: #013644;
-  font: "SegoeUI"";
+  font: "SegoeUI";
 }
 h1 { /* Header 1 */
   font-size: 28px;
@@ -85,6 +85,11 @@ font_import()
 
 Breast cancer is currently known as one of the most prevalent and deathly malignant tumor types, resulting in more than 600.000 deaths worldwide in 2017 (GBD 2017). While in Germany 70,000 new cases are reported annually (Barnes, Kraywinkel et al. 2016), breast cancer makes ~30% of all reported cases of tumor diseases (Robert-Koch-Institut 2017). Over the past 27 years the prevalence of this tumor surged by one sixth in percentage of world population, calling for accelerated research into possible therapy options. 
 While in the pase decades breast cancer therapy has already evolved, reducing the age standardized death rate by one third, from 15.10 to  only 10.00 in western europe (GBD 2017), the necessity to find effective prevention methods remains (Sledge et al. 2014). One promising method is the computerbased approach, with possible first steps into the analysis of genetic interactions being taken in this project.
+
+
+
+* Breast cancer ranks second in worldwide cancer case numbers (Hutchinson 2010)
+
 
 ## Driver Mutations: the driving force in tumorigenesis
 
@@ -789,8 +794,8 @@ To further interprete the p-value, we construct a H0 / H1 hypothesis:
 + H1: There is an association between the predicted and observed variable.
 Most importantly, it is not possible to assess the strength of the correlation based on the p-value. It rather judges the statistical test than the resulting value. As default, we set the significance level to 0.05.
 
-We will then compare these values for the different models. For a positive correlation, two variables move in the same direction. For a well-designed model, we expect the predicted and observed CERES scoresto be approx. even. Thus, optimal model design is achieved if the correlation coefficient is close to 1 and the p-value p < 0.05.
-Additionally, we plot the distributions of predicted values against observed values for each model.
+We will the compare this values for the different models. For a positive correlation, two variables move in the same direction. For a well-designed model, we expect the predicted and observed CERES scores being approx. even. Thus, optimal model design is achieved if the correlation coefficient is close to 1 and the p-value p < 0.05.
+Additionally, we plot the distributions of predicted against observed values for each model.
 
 ```{r Multiple Regression function, fig.align = 'center', fig.cap=" Fig.9 Residual, Homoscedasticity and Spearman correlation plots for each driver mutation", warning=FALSE}
 input_data <- data_regression
@@ -863,6 +868,56 @@ correlations #look at the dat
 ```
 
 *How about doing a linear regression model and comparing the F-statistic values?*
+
+#Checking assumptions
+All four models were tested on the assumptions. The following table provides a quick overview if our constructed assumptions was met (yes) or not (no). For multicollinarity, all models met the condition r < 0.8 for all variables.
+
+Model     | Data distribution | Residual distribution| Homoscedastity |Spearman correlation |
+----------|-------------------|----------------------|----------------|---------------------|
+ERBB2     | no                | yes                  | no             | no                  |
+MCYBP     | yes               | no                   | yes            | no                  |
+PARP      | yes               | no                   | yes            | no                  |
+PIK3CA    | no                | yes                  | no             | no                  |
+
+Checking distributional assumptions (= normal distribution) is also important and a different model should be chosen if needed. (Harrell 2001). 
+As shown in the qq-Plots, normal distribution does only apply to the models of MYCBP and PARP10. ERBB2 on the other hand, delivers the highest rho, but is in no way approx. normal distributed.The PIK3CA model also does not fulfill the condition of normal distribution.
+
+The normal distribution does not lead to higher correlation coefficients. But not satisfying distribution assumptions should be treated as a red flag; and the model is not suited for further use.
+
+The residual distribution of ERBB2 was closest to normal distribution. The PIK3CA residuals showed still acceptable approximation of normal distribution.
+MYCBP and PARP10 failed to show approx. normal residual distribution.
+
+Also known as homogeneity of variance, this condition is met if random variables have similar variance. Also, there is no pattern of variance change if the random variables in- or decrease. #citation
+ERBB2 and PIK3CA violate the condition, while MYCBP and PARP10 show homoscedasticity.
+
+#Interpretation
+We obtained the following p-values and correlation coefficients:
+
+Model     | p-value     | accepted hypothesis | rho      | relationship type |
+----------|-------------|---------------------|----------|-------------------|
+ERBB2     | 0.8397      |         H0          |  0.1071  | weak positive     |
+MCYBP     | 0.7825      |         H0          | -0.1429  | weak negative     |
+PARP10    | 0.1095      |         H0          | -0.6786  | moderate negative |
+PIK3CA    | 0.7131      |         H0          | -0.1786  | weak negative     |
+
+ The ERBB2-model shows the highest rho value of all four models, but ~ 0.1 is a rather weak positive relationship, but the p-value leads to acceptance of H0.
+
+The rho value of the MYCBP-model leads to very weak negative correlation. A p-value of ~ 0.78 leads to confident acceptance of H0.
+
+For the PARP10-model, the rho value of ~ -0.67 is a moderate negative relationship. The p-value leads to acceptance of H0. The p-value is the lowest with ~ 0.11. But even if we would raise the confidence level to 0.10 (which would be a questionable move in statistics), the result wouldn´t be significant to accept H1.
+    
+The rho value of the PIK3CA-model leads to very weak negative correlation. A p-value of ~ 0.78  leads to confident acceptance of H0.
+
+The models for MYCBP and PIK3CA only showed weak, negative correlation, which is not useful for further work with this model.
+The PARP10 model resulted in a moderate negative relationship, which is not of relevance for our objective.
+The ERBB2 model did not deliver a significant p-value, but indeed contains at least a weak positive correlation.
+
+#Discussion
+All in all, all multilinear regression models failed to meet all regression assumptions deliver a p-value of significant relevance for the correlation. Thus, they should not be used for further predictions.
+Especially the models for ERBB2 and PIK3CA should have been discarded, since not even the basic sample distribution is normally distributed.
+It seems possible that the small sample size for the regression model lead to the lack of significant results, with only 28 events (CERES score observed in cell line) per predicting variable (SST gene).
+
+But, a common thumb-rule for building a regression model is to calculate the _limiting sample size_:
 # Discussion of sample size
 In summary it can thus be argued that these multilinear regression models are not effective in predicting the impact of driver mutations on cell viability. One possible reason for unfitting regression models could be the small sample size of only 28 events (breast cancer cell lines).
 A common rule of thumb for building a regression model is to calculate the limiting sample size:
@@ -872,6 +927,16 @@ A common rule of thumb for building a regression model is to calculate the limit
 + p: number of predictor variables
 + m: limiting sample size; for continuous response variables it is the  total sample size n
 
+If this equation is fulfilled, the model is supposed to be reliable.(Harrell 2001)
+In fact, this condition is true for all four models.
+
+Our data seems to have an appropriate size for a basic regression model.
+On the other hand, for the supervised machine learning process of the regression, sample sizes up to n = 50,000 are reported.(Libbrecht and Noble 2015) 
+In general, more data will lead to improved data quality. Generally, scientists are advised to focus on obtaining and analyzing larger data sets instead of comparing different learning techniques on small training sets.(Banko and Brill 2001)
+
+# Results and Discussion
+
+The aim of this project was to identify genes, so called second site targets, which interact genetically with selected driver mutations to promote cell viability and proliferation in breast cell cancers. Our hope was that these could be used as targets for more specific gene therapies. 
 If this equation is fulfilled, the model is supposed to be reliable.(Harrell 2001). For our four models the calculation suggests that our data set has the appropriate size for a basic regression model.
 
 ```{r Table Captions, include=FALSE}
