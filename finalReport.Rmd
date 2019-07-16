@@ -388,13 +388,13 @@ K means clustering was performed with all genes mutated at least once in 28 cell
 # selecting only genes mutated at least once and with Ceres <= 0
 mutImpact_c = mutImpact[rowSums(is.na(mutImpact)) != ncol(mutImpact),]# remove all genes with all NA values
 rownamesmutImpc = rownames(mutImpact_c)
-mutImpact_c = cbind(rownamesmutImpc, mutImpact_c[,2:ncol(mutImpact_c)]) # insert new column with row names
-dim(mutImpact_c) # check gene reduction 
-rownameskdc2 = rownames(BCCL_kd.ceres) # define vector of BCCL_kd.ceres rownames 
+mutImpact_c = cbind(rownamesmutImpc, mutImpact_c[,2:ncol(mutImpact_c)]) #insert new column with row names
+dim(mutImpact_c) #check gene reduction 
+rownameskdc2 = rownames(BCCL_kd.ceres) #define vector of BCCL_kd.ceres rownames 
 
-BCCL_kd.ceres_2 = cbind(rownameskdc2, BCCL_kd.ceres[,2:ncol(BCCL_kd.ceres)]) # insert new column with row names
+BCCL_kd.ceres_2 = cbind(rownameskdc2, BCCL_kd.ceres[,2:ncol(BCCL_kd.ceres)]) #insert new column with row names
 BCCL_kd.ceres_3 = BCCL_kd.ceres_2[BCCL_kd.ceres_2[,"rownameskdc2"] %in%  mutImpact_c[,"rownamesmutImpc"],][,-c(1)]
-BCCL_kd.ceres_3 = cbind(BCCL_kd.ceres_3, rowMeans(BCCL_kd.ceres_3))[rowMeans(cbind(BCCL_kd.ceres_3, rowMeans(BCCL_kd.ceres_3)))<= 0,] # deletion of genes with CERES > 0
+BCCL_kd.ceres_3 = cbind(BCCL_kd.ceres_3, rowMeans(BCCL_kd.ceres_3))[rowMeans(cbind(BCCL_kd.ceres_3, rowMeans(BCCL_kd.ceres_3)))<= 0,] #deletion of genes with CERES > 0
 dim(BCCL_kd.ceres_3)
 ```
 
@@ -402,19 +402,19 @@ In preparation of k means clustering, the column containing average CERES scores
 
 ```{r warning=FALSE}
 #determine optimal cluster number k
-BCCL_kd.ceresKS = BCCL_kd.ceres_3[,-c(28)] # remove column of average CERES value column 
+BCCL_kd.ceresKS = BCCL_kd.ceres_3[,-c(28)] #remove column of average CERES value column 
 
 CERES_Optimal_K <- function(BCCL_kd.ceresKS, specifier) {
   output <- lapply(1:ncol(BCCL_kd.ceresKS), function(a){
-   df <- scale(BCCL_kd.ceresKS[,a]) # pick one column of input data and scale 
+   df <- scale(BCCL_kd.ceresKS[,a]) #pick one column of input data and scale 
    wss <-(nrow(df-1))*sum(apply(df,2,var)) #define method of wss computation 
-   for (i in 2:15){ # for k between 2 and 15
-     set.seed(1234) # to ensure reproducability of results 
+   for (i in 2:15){ #for k between 2 and 15
+     set.seed(1234) #to ensure reproducability of results 
      wss[i] <- sum(kmeans(df, centers = i)$withinss)
      } 
    return(wss)
   })
-names (output) <- colnames(BCCL_kd.ceresKS) # rename the output 
+names (output) <- colnames(BCCL_kd.ceresKS) #rename the output 
 return(output)
 }
 
@@ -425,7 +425,7 @@ To enable the plotting of within sum square (WSS) values for clusters from 2 to 
 The output of this lapply function (`optimalKprocessedData`), a list of 28 dataframes, was then combined into one and columns renamed accordingly. Subsequently, the ggplot function was used to plot all data stored in `optimalKprocessedData` in one plot. 
 
 ```{r warning=FALSE, fig.align="center", fig.cap="Fig. 4 Optimal number of clusters k using WSS of each BBCLs"}
-# plotting wss function 
+#plotting wss function 
 optimalKprocessedData <- lapply(seq_along(BCCL_kd.ceres_optKS), function(a){
   dtPicker <- as.data.frame(BCCL_kd.ceres_optKS[[a]]) # one vector picked and formatted into dataframe
   dtPicker$Cell_Sample <- names(BCCL_kd.ceres_optKS)[a] #sample added as label
@@ -433,10 +433,10 @@ optimalKprocessedData <- lapply(seq_along(BCCL_kd.ceres_optKS), function(a){
   return(dtPicker)
 })
 
-optimalKprocessedData <- as.data.frame(do.call("rbind",optimalKprocessedData)) # output into dataframe
-colnames(optimalKprocessedData) <- c("WSS", "Cell_Sample", "OptimalK") # renaming columns
+optimalKprocessedData <- as.data.frame(do.call("rbind",optimalKprocessedData)) #output into dataframe
+colnames(optimalKprocessedData) <- c("WSS", "Cell_Sample", "OptimalK") #renaming columns
 
-# using ggplot to plot output 
+#using ggplot to plot output 
 ggplot(data = optimalKprocessedData, aes(x=OptimalK, y=WSS)) +
   geom_line(aes(color=Cell_Sample)) +
   labs(title = 'Optimal number of clusters k', x = 'Number of clusters', y = 'WSS') +
@@ -452,7 +452,7 @@ ggplot(data = optimalKprocessedData, aes(x=OptimalK, y=WSS)) +
 From this plot it is evident that the optimal cluster number lies between 2 and 4 if elbow method is applied. To verify this result and to determine a precise number of optimal cluster, an alternative plotting method calculating the average WSS for cluster numbers between 2 and 15 for all 28 cell samples was performed. 
 
 ```{r warning=FALSE, fig.align="center", fig.cap="Fig. 5 Optimal cluster number k using WSS of all BCCLs combined" } 
-# Verification of optimal number of clusters k 
+#verification of optimal number of clusters k 
 
 km_CERES= kmeans(x = BCCL_kd.ceres_3, centers = 2, nstart = 10)
 table(km_CERES$cluster)
@@ -467,7 +467,7 @@ The optimal cluster number k was identified to be 4. Thus, k means clustering of
 ```{r warning=FALSE, fig.align="center", fig.cap="Fig. 6 K means cluster plot"}
 km_CERES= kmeans(x = BCCL_kd.ceres_3, centers = 4, nstart = 10)
 table(km_CERES$cluster)
-fviz_cluster(km_CERES, data=BCCL_kd.ceres_3, labelsize = 6) # plotting clusters
+fviz_cluster(km_CERES, data=BCCL_kd.ceres_3, labelsize = 6) #plotting clusters
 ```
 
 In order to verify our selection of driver mutations from literature, the cluster number of each driver mutation was identified. All selected driver mutations from literature,"ERBB2", "MYCBP", "PARP10" and "PIK3CA" were colocalized in cluster 3, hence with similar CERES scores, with the exception of "CCND" and "ERBBIP". While "CCND" was removed in the filtering process and no longer found in`BCCL_kd.ceres_3`, "ERBB2IP" was found in cluster 4. For these reasons the two mentioned mutations were excluded from further analysis, to leave only "ERBB2", "MYCBP", "PARP10" and "PIK3CA" as selected driver mutations.
@@ -494,7 +494,7 @@ data_clus_3 = BCCL_kd.ceres_3[data_cluster == 3,] #dataframe with all 1148 genes
 A further dataframe `data_clus_3e` was subsequently generated labelling the four driver mutations in a separate column, by implementing an "IF" loop. If the rowname of `data_clus_3e`was found in a previously created vector containing driver mutations names (`drivermut`), it was labelled as "driver mutation". Otherwise genes were labelled as "no driver mutation".
 
 ```{r Labeling driver mutations, warning=FALSE}
-drivermut =  c("ERBB2","MYCBP", "PARP10", "PIK3CA") # create vector with driver mutation names
+drivermut =  c("ERBB2","MYCBP", "PARP10", "PIK3CA") #create vector with driver mutation names
 
 data_clus_3e = data_clus_3
 data_clus_3e["Driver mutation"] <- sapply(1:nrow(data_clus_3), function(j){
@@ -503,7 +503,7 @@ data_clus_3e["Driver mutation"] <- sapply(1:nrow(data_clus_3), function(j){
      } else {
          data_clus_3e[j,1] = "no driver mutation"
      }
-  }) # labeling driver mutations with "driver mutation" in data_clus_3e 
+  }) #labeling driver mutations with "driver mutation" in data_clus_3e 
 ```
 
 ### Data visualisation of CERES and TPM values for selected driver mutations 
@@ -512,10 +512,10 @@ CERES scores and expression in TPM values for the selected 4 driver mutations we
 
 ```{r data visualisation, fig.align = 'center', fig.cap= "Fig. 7 Boxplot of CERES and Expression values of selected driver mutations", warning=FALSE}
 
-# CERES_boxplot
+#CERES_boxplot
 GOI= BCCL_kd.ceres[c("ERBB2","MYCBP", "PARP10", "PIK3CA"),]
 CERES_driver_mut= melt(GOI)
-CERES_driver_mut$variable=rep(c("ERBB2","MYCBP", "PARP10", "PIK3CA"), ncol(GOI)) # replication of driver mutation names as often as number of GOI columns
+CERES_driver_mut$variable=rep(c("ERBB2","MYCBP", "PARP10", "PIK3CA"), ncol(GOI)) #replication of driver mutation names as often as number of GOI columns
 
 CERES_boxplot = ggplot(CERES_driver_mut, aes(x = variable, y = value)) +
        geom_boxplot(aes(fill=variable), outlier.alpha = 0.7,
@@ -533,7 +533,7 @@ CERES_boxplot = ggplot(CERES_driver_mut, aes(x = variable, y = value)) +
 CERES_boxplot
 
   
-#Expression_boxplot
+#expression_boxplot
 GOI_Exp= BCCL_Expression[c("ERBB2","MYCBP", "PARP10", "PIK3CA"),]
 Expression_driver_mut= melt(GOI_Exp)
 Expression_driver_mut$variable=rep(c("ERBB2","MYCBP", "PARP10", "PIK3CA"), ncol(GOI_Exp))
@@ -570,7 +570,7 @@ For the purpose of conducting the Wilcoxon test the data from which the CERES sc
 ```{r warning=FALSE}
 #preparation of the data
 mutImpact_r <- mutImpact[rowSums(is.na(mutImpact)) != ncol(mutImpact), ] #_r=reduced: get rid of all the ONLY NA rows (this will save computation)
-mutImpact_kd.ceres <- BCCL_kd.ceres[rownames(BCCL_kd.ceres) %in% rownames(mutImpact_r),] # create matrix containing CERES scores of genes which are mutated once at minimum
+mutImpact_kd.ceres <- BCCL_kd.ceres[rownames(BCCL_kd.ceres) %in% rownames(mutImpact_r),] #create matrix containing CERES scores of genes which are mutated once at minimum
 colnames(mutImpact_kd.ceres) <- tPatients_ID
 ```
 
@@ -611,7 +611,7 @@ testDataSummary <- c() #create empty vector to append data to
 testDataSummary <- sapply(1:length(drivermut), function(a){
   dvPicker <- as.vector(testData[[a]][[1]]) #select a DV
   
-  summaryVector <- c(min(dvPicker), quantile(dvPicker, probs = 0.25), median(dvPicker), mean(dvPicker), quantile(dvPicker, probs = 0.75), max(dvPicker)) #generate vector containing summary data of the p-values generated fr the chosen DV
+  summaryVector <- c(min(dvPicker), quantile(dvPicker, probs = 0.25), median(dvPicker), mean(dvPicker), quantile(dvPicker, probs = 0.75), max(dvPicker)) #generate vector containing summary data of the p-values generated for the chosen DV
   
   testDataSummary <- cbind(testDataSummary, summaryVector) #add vector to data matrix
 })
@@ -649,8 +649,8 @@ paged_table(SST_Data$PIK3CA)
 After selection of the SST candidates stored in `SST_Data` the coexistance of SST candidates and driver mutation in the same k means cluster was verified. An assignment to the same cluster would confirm a possible cooperation of gene pairs due to similar CERES scores. For this, the lapply function was used to chose each dataframe and thus driver mutation in turn from the list using the seq_along command.A further loop was installed such that for each driver mutation dataframes, the rownames of the `DvPicker` were compared to all possible  `data_clus_3e` rownames. If a coexistance of genes in the 3rd k means cluster was identified, genes were labelled as `verified` in a new column entitled "classifier". No match between rownames led to the `not verified`entry.
 
 ```{r SST Cluster Check, warning=FALSE}
-SST_Data <- lapply(seq_along(SST_Data), function(a) { # pick one dataframe from list
-  DvPicker <- SST_Data[[a]] # choose DV 
+SST_Data <- lapply(seq_along(SST_Data), function(a) { #pick one dataframe from list
+  DvPicker <- SST_Data[[a]] #choose DV 
   
   DvPicker$classifier <- sapply(1:nrow(DvPicker), function(b) {
     if (rownames(DvPicker)[b] %in% rownames(data_clus_3e)) {
@@ -696,7 +696,7 @@ Furthermore, the physiological gene function of every SST candidate was investig
 Most strikingly, many of the SST gene functions comprise proteins contributing to cell cycle progression, cell motility and polarity as well as transcriptional regulators affecting cell metabolism. This supports the hypothesis that alterations in gene activity of the SSTs promote cancer progression.
 
 ```{r warning=FALSE, error=FALSE}
-SST_Data <- SST_Data[c(1, 3, 4, 5)] # just a solution for a mistake we are still looking for, appeared after everything was okay :( 
+SST_Data <- SST_Data[c(1, 3, 4, 5)] #just a solution for a mistake we are still looking for, appeared after everything was okay :( 
 driver_mut <- c("ERBB2", "MYCBP", "PARP10", "PIK3CA")
 functionTable <- list(
 read_delim(paste0(root.dir,"/functionTable_ERBB2.csv"), ";", escape_double = FALSE, col_names = TRUE, trim_ws = TRUE),  read_delim(paste0(root.dir,"/functionTable_MYCBP.csv"), ";", escape_double = FALSE, col_names = TRUE, trim_ws = TRUE), read_delim(paste0(root.dir,"/functionTable_PARP10.csv"), ";", escape_double = FALSE, col_names = TRUE, trim_ws = TRUE), read_delim(paste0(root.dir,"/functionTable_PIK3CA.csv"), ";", escape_double = FALSE, col_names = TRUE, trim_ws = TRUE)) #create list of data frames containing the data of the Excel files (e.g. gene function, references)
@@ -710,7 +710,7 @@ names(SST_Data) <- drivermut #regenerate names
 paged_table(SST_Data$ERBB2)
 paged_table(SST_Data$MYCBP)
 paged_table(SST_Data$PARP10)
-paged_table(SST_Data$PIK3CA) # have a look at the SSTs
+paged_table(SST_Data$PIK3CA) #have a look at the SSTs
 ```
 
 ### Database research and outcome of analysis
