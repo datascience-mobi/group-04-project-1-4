@@ -83,7 +83,7 @@ font_import()
 > <small>Raj Kumar (2016) in <cite title="Source Title">A novel therapeutic target for triple negative breast cancer</cite></small>
 
 Breast cancer is currently known as one of the most prevalent and deathly malignant tumor types, resulting in more than 600.000 deaths worldwide in 2017 (GBD 2017). While in Germany 70,000 new cases are reported annually (Barnes, Kraywinkel et al. 2016), breast cancer makes ~30% of all reported cases of tumor diseases (Robert-Koch-Institut 2017). Over the past 27 years the prevalence of this tumor surged by one sixth in percentage of world population, calling for accelerated research into possible therapy options. 
-While in the pase decades breast cancer therapy has already evolved, reducing the age standardized death rate by one third, from 15.10 to  only 10.00 in western europe (GBD 2017), the necessity to find effective prevention methods remains (Sledge et al. 2014). One promising method is the computerbased approach, with possible first steps into the analysis of genetic interactions being taken in this project.
+While in the past decades breast cancer therapy has already evolved, reducing the age standardized death rate by one third, from 15.10 to  only 10.00 in western europe (GBD 2017), the necessity to find effective prevention methods remains (Sledge et al. 2014). One promising method is the computerbased approach with possible first steps into the analysis of genetic interactions being taken in this project.
 
 
 
@@ -98,7 +98,7 @@ Driver mutations (DV) are what is to be seen as the ticket of admission to the d
 >
 > <small>Bert Vogelstein in <cite title="Source Title">The Path to Cancer - Three Strikes and You're Out</cite></small>
 
-These DVs comprise both gain-of-function mutations in (proto-)oncogenes which usually promote cell proliferation and loss-of-function mutations in tumour suppressor genes which usually decelerate the cell cycle as well as genes involved in DNA repair and proofreading. Thereby, the cell acquires indispensable properties in tumorigenesis such as immortality, continous proliferation, immune and apoptosis resistance and the ability to promote angiogenesis. Examples for prominent oncogenes are k-ras and b-raf encoding kinases regulating a complex network of proteins involved in cellular growth when bound to ATP or GTP, respectively. On the other hand the most illustrious tumour suppressor gene is p53 whose physiological role is to induce cell senescence and apoptosis in case of DNA damage, a condition often encountered in cancer cells.
+These DVs comprise both gain-of-function mutations in (proto-)oncogenes which usually promote cell proliferation and loss-of-function mutations in tumour suppressor genes which usually decelerate the cell cycle as well as genes involved in DNA repair and proofreading. Thereby, the cell acquires indispensable properties in tumorigenesis such as immortality, continous proliferation, immune and apoptosis resistance and the ability to promote angiogenesis. Examples for prominent oncogenes are k-ras and b-raf, both encoding kinases regulating a complex network of proteins involved in cellular growth when bound to ATP or GTP, respectively. On the other hand, the most illustrious tumour suppressor gene is p53 whose physiological role is to induce cell senescence and apoptosis in case of DNA damage, a condition often encountered in cancer cells.
 
 Due to their essential role in tumour progression DVs are predisposed targets in novel approaches in cancer therapy. For instance, trastuzumab, an antibody against HER2 which is an oncogene promoting cell growth while inhibiting apotosis launched in 1998 was proven to reduce the recurrence rate by 50% and mortality by 30%. However, targeting genes or gene products involved in vital cellular processes remains a major challenge as healthy cells expressing the same genes are often affected as well. As therapies tailored to the molecular phenotype of the tumour achieved greater successes than conventional strategies such as chemotherapy and irradiation scientists now focus on identifying other molecular targets with a negligible effect on healthy tissues.  
 
@@ -230,7 +230,7 @@ data = readRDS("C:/Users/Elias/Documents/Uni/4. FS/Bioinfo/DepMap19Q1_allData.RD
 root.dir = "C:/Users/Elias/Documents/GitHub/project-01-group-04"
 ```
 
-To get a feeling for the dataset we will have a look at the given data structure.  
+We had a look at the given data structure.  
 
 ```{r include=FALSE}
 length(data) #get some information about the data (the dimensions here)
@@ -254,7 +254,7 @@ ids = which(names(mut) %in% samples)
 dat = lapply(ids, function(a) mut[[a]])
 ```
 
-We observe a large variety of tumor diseases being recorded by this dataset. Because we want to focus on breast cancer, we will generate data frames only containing cell lines which are referable to this specific type of tumor. To simplify, the columns were renamed to the appropriate tumor disease. Afterwards,the dataframe could be subsetted easily in breast cancer dataframes.
+We observe a large variety of tumor diseases being recorded by this dataset. Because we want to focus on breast cancer, we will generate data frames only containing cell lines which are referable to this specific type of tumor. To simplify, the columns were renamed to the appropriate tumor disease. Afterwards, the dataframe could be subsetted easily in breast cancer dataframes.
 
 ```{r warning=FALSE, include=FALSE}
 #Changing colnames to specific type of tumor:
@@ -280,8 +280,8 @@ tPatients_ID <- t(BCCL_Annotation[1]) #create a vector of patientIDs useful for 
 
 ### Exploring gene expression patterns 
 
-The next step was to do some experiments, in order to get a feeling for data distribution. 
-We made a heatmap of expression values as well as CERES scores and found a diverse and unordered expression of genes trough the 28 breast cancer cell lines. Within the CERES scores a group of genes showed a clear negative effect on cell viability. This group is suggested to be so called "housekeeping-genes", genes fulfilling the essential roles in the cell cycle. All the other genes showed a large variety across thee cell lines, suggesting a computer based approach to be useful. To make sure that all cell lines can be used, cell lines values were analysed whether abnormal values were found. The boxplot below proves, this not to be the case. 
+The next step was undertake some broad data analysis, in order to get a feeling for data distribution. 
+We made a heatmap of expression values as well as CERES scores and found a diverse and unordered expression of genes trough the 28 breast cancer cell lines. Within the CERES scores a group of genes showed a clear negative effect on cell viability. This group is suggested to be so called "housekeeping-genes", genes fulfilling the essential roles in the cell cycle. All the other genes showed a large variety across thee cell lines, suggesting a computer based approach to be useful. To make sure that all cell lines can be used, cell lines values were analysed whether abnormal values were found. The boxplot, figure 2, below proves, this not to be the case. 
 
 ```{r warning = FALSE, echo=TRUE, fig.align= "center", fig.cap="Fig. 1 Heatmap of all BCCL CERES scores"}
 #Create a heatmap for all Genes and their CERES score
@@ -314,10 +314,10 @@ GeneralExp_boxplot = ggplot(GenExmelt, aes(x = variable, y = value)) +
 GeneralExp_boxplot
 ```
 
-An issue was the very low level of expression of most genes, seen in the graph above. In this phase of the project is was open if a second site target will have a high expression in every case. 
-Next, boxplots of expression values for driver mutations suggested in literature were generated. These boxplots show the different roles of genes ending up in various expression values in a nice way. 
+An issue was the very low level of expression of most genes, seen in the graph above. In this phase of the project it was open if a second site target will have a high expression in every case. 
+Next, boxplots of expression values for suggested driver mutations in literature were generated. These boxplots show the different roles of genes ending up in various expression values in a nice way. 
 
-```{r warning = FALSE, echo=TRUE, fig.align= "center", fig.cap="Fig. 3 Expression values 15 selected driver mutations"}
+```{r warning = FALSE, echo=TRUE, fig.align= "center", fig.cap="Fig. 3 Expression values 12 selected driver mutations"}
 GOI_Exp_lit <- BCCL_Expression[c("MYC", "PTEN", "TP53", "PIK3CA", "GATA3", "BRCA1", "BRCA2", "RB1", "GANAB", "PARP10", "CCND1", "ERBB2"),]
 Exp_lit_driver_mut= melt(GOI_Exp_lit)
 Exp_lit_driver_mut$variable=rep(c("MYC", "PTEN", "TP53", "PIK3CA", "GATA3", "BRCA1", "BRCA2", "RB1", "GANAB","PARP10", "CCND1", "ERBB2"), ncol(GOI_Exp_lit))
@@ -401,7 +401,7 @@ dim(BCCL_kd.ceres_3)
 In preparation of k means clustering, the column containing average CERES scores for each gene was removed (new dataframe `BCCL_kd.ceresKS`) and the optimal number of k clusters identified. For each column (cell sample) of the dataframe, the data values were scaled. For cluster numbers between 2 and 15 the within sum of squares for each cell sample was calculated and stored as a separate dataframe. To ensure that the same result is obtained each time the code is run, the set.seed(1234) function was used.  
 
 ```{r warning=FALSE}
-#determining optimal cluster number k
+#determine optimal cluster number k
 BCCL_kd.ceresKS = BCCL_kd.ceres_3[,-c(28)] # remove column of average CERES value column 
 
 CERES_Optimal_K <- function(BCCL_kd.ceresKS, specifier) {
@@ -441,7 +441,7 @@ ggplot(data = optimalKprocessedData, aes(x=OptimalK, y=WSS)) +
   geom_line(aes(color=Cell_Sample)) +
   labs(title = 'Optimal number of clusters k', x = 'Number of clusters', y = 'WSS') +
   theme_minimal() +
-           theme(legend.position ='bottom',
+           theme(legend.position ='none',
                   plot.title = element_text(hjust = 0.5),
                   axis.text.x = element_text(angle = 0, vjust = 0, hjust=0.5),
                   legend.title= element_blank(),
@@ -462,7 +462,7 @@ wss = sapply(2:15, function(k) {
 plot(2:15, wss, type = "b", pch = 19, xlab = "Number of clusters K", ylab = "Total within-clusters sum of squares", main = "Within sum square test of CERES scores", col = "gray40", lwd = 3) 
 ```
 
-The optimal cluster number k was identified to be 4. Thus k means clustering of the data stored in `BCCL_kd.ceres_3` was performed with 10 iterations. The following cluster plot was generated.
+The optimal cluster number k was identified to be 4. Thus, k means clustering of the data stored in `BCCL_kd.ceres_3` was performed with 10 iterations. The following cluster plot was generated.
 
 ```{r warning=FALSE, fig.align="center", fig.cap="Fig. 6 K means cluster plot"}
 km_CERES= kmeans(x = BCCL_kd.ceres_3, centers = 4, nstart = 10)
@@ -556,7 +556,7 @@ Expression_boxplot
 
 The box- and whisker plot of CERES scores reveal MYCBP as the most essential driver gene for cell survival. This gene is followed by PIK3CA and PARP10. While ERBB2 have the highest average CERES scores and hence lowest impact on cell proliferation, this driver mutation exhibits the largest spread of values across 28 breast cell cancer lines, reaching the overall minimum value of -1. The interquartile range of CERES scores for both MYCBP and PARP10 are the lowest, indicating a consistent impact of gene knockouts on cell sample survival. Also interesting is the large interquartile range of the PIK3CA CERES scores, with data points found in two clusters, one around -0.15 and the other between -0.5 and -0.9. 
 
-While the ERBB2 driver mutation was found to have the lowest essentiallity for cell survival on average, mean TPM values are shown to be highest, suggesting overexpression. Once again TPM values for this mutation have the largest spread, reaching more than 11.5 TPM. This implies the greatest variation overall in data for the ERBB2 driver mutation. Like for the CERES scores, both MYCBP and PIK3CA have a small interquartile range, while ranges for PARP10 are markedly larger. Further, it is interesting to note despite two CERES score data clusters for PIK3CA, TPM values show little variation around the mean. 
+While the ERBB2 driver mutation is found to have the lowest essentiallity for cell survival on average, mean TPM values are shown to be highest, suggesting overexpression. Once again TPM values for this mutation have the largest spread, reaching more than 11.5 TPM. This implies the greatest variation overall in data for the ERBB2 driver mutation. Like for the CERES scores, both MYCBP and PIK3CA have a small interquartile range, while ranges for PARP10 are markedly larger. Further, it is interesting to note despite two CERES score data clusters for PIK3CA, TPM values show little variation around the mean. 
 
 ## Identification of second-site targets
 
