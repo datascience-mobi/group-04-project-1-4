@@ -205,16 +205,18 @@ library(RColorBrewer)
 library(gplots)
 library(rmarkdown)
 library(extrafont)
+library(devtools)
+library(captioner)
 
 font_import()
 ```
 
-```{r Lisa, include=FALSE, eval=FALSE}
+```{r Lisa, include=FALSE, eval=TRUE}
 data = readRDS("C:/Users/lisa-/Desktop/Studium/4. FS/Bioinfo/DepMap19Q1_allData.RDS")
 root.dir = "C:/Users/lisa-/Desktop/Studium/4. FS/Bioinfo/project-01-group-04"
 ```
 
-```{r Salome, include=FALSE, eval=TRUE}
+```{r Salome, include=FALSE, eval=FALSE}
 data = readRDS("C:/Users/Salome/Documents/4.FS/Bioinfo/DepMap19Q1_allData.RDS")
 root.dir = "C:/Users/Salome/Documents/4.FS/Bioinfo/Github/project-01-group-04"
 ```
@@ -579,8 +581,8 @@ Thereupon, a loop was installed generating the output data frame for each driver
 
 ```{r warning=FALSE}
 #performance of the Wilcoxon test
-testData <- lapply(seq_along(driver_mut), function(a) {
-  driverMutPicker <- driver_mut[a] #pick a driver mutation
+testData <- lapply(seq_along(drivermut), function(a) {
+  driverMutPicker <- drivermut[a] #pick a driver mutation
   driverMutData <- mutImpact_kd.ceres[driverMutPicker,] #get CERES scores of driver mutation
   
   outputData <- sapply(1:nrow(mutImpact_kd.ceres), function(b) {
@@ -596,9 +598,9 @@ testData <- lapply(seq_along(driver_mut), function(a) {
   rownames(test) <- rownames(mutImpact_r)[which(rownames(mutImpact_r) != driverMutPicker)]
   return(test)
 })
-names(testData) <- driver_mut
+names(testData) <- drivermut
 
-lapply(testData, function(a) paged_table(a)) #look at the data
+lapply(testData, function(a) head(a)) #look at the data
 ```
 
 As the null hypothesis claims that the CERES scores of the driver mutation and the reference genes are equal, low p-values indicate that there is no relation between the CERES scores of the driver mutation and the reference gene whereas high p-values may allude to genetic interaction of the driver mutation with an SST.
@@ -607,7 +609,7 @@ The obtained p-values were distributed as shown below. Most strinkingly, the fir
 ```{r warning=FALSE}
 #get summary of distribution
 testDataSummary <- c() #create empty vector to append data to
-testDataSummary <- sapply(1:length(driver_mut), function(a){
+testDataSummary <- sapply(1:length(drivermut), function(a){
   dvPicker <- as.vector(testData[[a]][[1]]) #select a DV
   
   summaryVector <- c(min(dvPicker), quantile(dvPicker, probs = 0.25), median(dvPicker), mean(dvPicker), quantile(dvPicker, probs = 0.75), max(dvPicker)) #generate vector containing summary data of the p-values generated fr the chosen DV
@@ -617,7 +619,7 @@ testDataSummary <- sapply(1:length(driver_mut), function(a){
 
 testDataSummary <- as.data.frame(testDataSummary) #transform matrix to dataframe
 
-colnames(testDataSummary) <- driver_mut
+colnames(testDataSummary) <- drivermut
 rownames(testDataSummary) <- c("min", "1st quartile", "median", "mean", "3rd quartile", "max") #rename rows and columns
 
 paged_table(testDataSummary) #have a look at the distribution of p-values
@@ -630,14 +632,17 @@ Based on the results of the Wilcoxon test, potential SSTs were chosen by means o
 
 SST_Data <- lapply(seq_along(testData), function(a) {
   data <- as.data.frame(testData[[a]], col.names = names(testData[[a]])) #create new data frame containing testData for each SST
-  colnames(data) = driver_mut[a] #rename columns
+  colnames(data) = drivermut[a] #rename columns
   data <- data %>%rownames_to_column() %>% top_n(15, data[,1]) %>% column_to_rownames() #select 15 genes with highest p-value
   return(data)
 })
-names(SST_Data) <- driver_mut
+names(SST_Data) <- drivermut
 
 #have a look at the SST candidates
-lapply(SST_Data, function(a) paged_table(a))
+paged_table(SST_Data$ERBB2)
+paged_table(SST_Data$MYCBP)
+paged_table(SST_Data$PARP10)
+paged_table(SST_Data$PIK3CA) 
 ```
 
 ### Verification of SST candidates by assigned k means cluster number 
@@ -657,7 +662,7 @@ SST_Data <- lapply(seq_along(SST_Data), function(a) { # pick one dataframe from 
   })
   return(DvPicker)
 })
-names(SST_Data) <- driver_mut
+names(SST_Data) <- drivermut
 ```
 
 ### Characterization of second-site targets
@@ -680,11 +685,11 @@ SST_Data <- lapply(seq_along(SST_Data), function(a) {
         mutTypeData <- c(mutTypeData, out) #store type of mutation in vector
       }
     }
-    dvPicker[b, 2] <- paste(mutTypeData, collapse = ", ") #create a string of SST mutation types based on the vactor
+    dvPicker[b, 2] <- paste(mutTypeData, collapse = ", ") #create a string of SST mutation types based on the vector
   })
   return(dvPicker)
 })
-names(SST_Data) <- driver_mut
+names(SST_Data) <- drivermut
 ```
 
 Furthermore, the physiological gene function of every SST candidate was investigated using the universal protein database (UniProt). Therefore, a table was prepared for every DV using Microsoft Excel in order to document the findings from literature research and saved as a `.csv`file. Consequently, the Excel files were imported to R as data frames from which the list `functionTable` was created. This list was used as a template to add information on the gene function to `SST_Data` by iteratively appending the column `function` of the `functionTable` data frames to the corresponding data frame in the `SST_Data` list.
@@ -699,9 +704,12 @@ SST_Data <- lapply(seq_along(SST_Data), function(a) {
   SST_Data[[a]] <- cbind(SST_Data [[a]], as.data.frame(functionTable[[a]]["function"])) #add gene function for every SST of every DV
 })
 
-names(SST_Data) <- driver_mut #regenerate names
+names(SST_Data) <- drivermut #regenerate names
 
-lapply(SST_Data, function(b) paged_table(b)) # have a look at the SSTs
+paged_table(SST_Data$ERBB2)
+paged_table(SST_Data$MYCBP)
+paged_table(SST_Data$PARP10)
+paged_table(SST_Data$PIK3CA) # have a look at the SSTs
 ```
 
 ### Database research and outcome of analysis
@@ -812,11 +820,11 @@ plottingData <- lapply(seq_along(input_data), function(a) {
   regressor = lm(formula = Predictor ~ ., 
                  data = training_set)  #predict CERES of Driver Mutation based on all (=.) the input variables (SSTs)
   
-  pdf(paste0(root.dir, "/Resid-HomoPlot_",driver_mut[a],".pdf")) #save plots as pdf, in working directory "wd"
+  pdf(paste0(root.dir, "/Resid-HomoPlot_",drivermut[a],".pdf")) #save plots as pdf, in working directory "wd"
   hist(resid(regressor), main = paste0('Histogram of residuals: ', driver_mut[a]),xlab='Standardised Residuals',ylab='Frequency') #plot a histogram of standardised residuals to check the assumption of normality
   dev.off() #closing the figure file
   
-  pdf(paste0(root.dir, "/HomoPlot_",driver_mut[a],".pdf")) #save plots as pdf, in working directory "wd"
+  pdf(paste0(root.dir, "/HomoPlot_",drivermut[a],".pdf")) #save plots as pdf, in working directory "wd"
   plot(regressor, which = 1) #fitted values and residuals plot to check the assumption of homoscedasticity
   dev.off() #closing the figure file
   
@@ -852,10 +860,10 @@ plottingFunction <- function(inputData, driverMut) {
   dev.off()#closing the figure file
 }
 
-plottingFunction(plottingData[[1]], driver_mut[1])
-plottingFunction(plottingData[[2]], driver_mut[2])
-plottingFunction(plottingData[[3]], driver_mut[3])
-plottingFunction(plottingData[[4]], driver_mut[4])
+plottingFunction(plottingData[[1]], drivermut[1])
+plottingFunction(plottingData[[2]], drivermut[2])
+plottingFunction(plottingData[[3]], drivermut[3])
+plottingFunction(plottingData[[4]], drivermut[4])
 
 #Get the correlation values
 correlations <- lapply(seq_along(plottingData), function(a) {
@@ -863,7 +871,7 @@ correlations <- lapply(seq_along(plottingData), function(a) {
   corVal <- cor.test(df[,1] , df[,2], method = "spearman") #to judge model performance, calculate Spearman corr. between predicted and observed values
   return(corVal)
 })
-names(correlations) <- driver_mut
+names(correlations) <- drivermut
 correlations #look at the dat
 ```
 
