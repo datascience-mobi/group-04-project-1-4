@@ -164,6 +164,8 @@ install.packages("data.table")
 install.packages("rmarkdown")
 install.packages("ggpubr")
 install.packages('extrafont')
+install.packages("devtools")
+install.packages("captioner")
 
 # importing libraries
 library(ggplot2)
@@ -179,6 +181,8 @@ library(gplots)
 library(rmarkdown)
 library(ggpubr)
 library(extrafont)
+library(devtools)
+library(captioner)
 
 #Setting a sys-path
 root.dir = dirname(rstudioapi::getSourceEditorContext()$path)
@@ -205,12 +209,12 @@ library(extrafont)
 font_import()
 ```
 
-```{r Lisa, include=FALSE, eval=TRUE}
+```{r Lisa, include=FALSE, eval=FALSE}
 data = readRDS("C:/Users/lisa-/Desktop/Studium/4. FS/Bioinfo/DepMap19Q1_allData.RDS")
 root.dir = "C:/Users/lisa-/Desktop/Studium/4. FS/Bioinfo/project-01-group-04"
 ```
 
-```{r Salome, include=FALSE, eval=FALSE}
+```{r Salome, include=FALSE, eval=TRUE}
 data = readRDS("C:/Users/Salome/Documents/4.FS/Bioinfo/DepMap19Q1_allData.RDS")
 root.dir = "C:/Users/Salome/Documents/4.FS/Bioinfo/Github/project-01-group-04"
 ```
@@ -234,12 +238,12 @@ lapply(data, dim) #get an impression on the data
 lapply(data, function(a) head(a)) #look at the data 
 ```
 
-The dataset used contains 6 smaller datasets. Five of them are large data frames while the sixth is a list of data frames. For the extraction of this sixth variable we first separated it fom the others and gave it a new strucure, which is easier to handle.
+The dataset used contains 6 smaller datasets. Five of them are large data frames while the sixth is a list of data frames. For the extraction of this sixth variable we first separated it from the others and gave it a new strucure, which is easier to handle.
 
 ```{r}
 #Extract the mutation data
-mut <- data$mutation #pick the mutation data (this has a specific format and neets to be treated separately)
-'%!in%' <- function(x,y)!('%in%'(x,y)) #define an operator that will only pick the data that is NOT defined in the list; 
+mut <- data$mutation #pick the mutation data (list not dataframe, needs to be treated separately)
+'%!in%' <- function(x,y)!('%in%'(x,y)) #define an operator that will only pick dat NOT defined in the list; 
 dt_new <- lapply(which(names(data) %!in% "mutation"), function(a) data[[a]]) #extract only non-mutation data
 names(dt_new) <- names(data)[which(names(data) %!in% "mutation")] #rename the data with the original names
 length(dt_new) #look if it worked (now dim is 5 and NOT 6 (because mutation was removed))
@@ -249,7 +253,7 @@ ids = which(names(mut) %in% samples)
 dat = lapply(ids, function(a) mut[[a]])
 ```
 
-We observe a large variety of tumor diseases being recorded by this dataset. Because we want to focus on breast cancer, we will generate data frames only containing cell lines which are referable to this specific type of tumor. To simplify, the columns were renamed to the appropriate tumor disease. Afterwards,the dataframe was subsetted easily in breast cancer dataframes.
+We observe a large variety of tumor diseases being recorded by this dataset. Because we want to focus on breast cancer, we will generate data frames only containing cell lines which are referable to this specific type of tumor. To simplify, the columns were renamed to the appropriate tumor disease. Afterwards,the dataframe could be subsetted easily in breast cancer dataframes.
 
 ```{r warning=FALSE, include=FALSE}
 #Changing colnames to specific type of tumor:
@@ -275,7 +279,7 @@ tPatients_ID <- t(BCCL_Annotation[1]) #create a vector of patientIDs useful for 
 
 ### Exploring gene expression patterns 
 
-The next step was to do some experiments, in order to get a feeling for the distribution of data. 
+The next step was to do some experiments, in order to get a feeling for data distribution. 
 We made a heatmap of expression values as well as CERES scores and found a diverse and unordered expression of genes trough the 28 breast cancer cell lines. Within the CERES scores a group of genes showed a clear negative effect on cell viability. This group is suggested to be so called "housekeeping-genes", genes fulfilling the essential roles in the cell cycle. All the other genes showed a large variety across thee cell lines, suggesting a computer based approach to be useful. To make sure that all cell lines can be used, cell lines values were analysed whether abnormal values were found. The boxplot below proves, this not to be the case. 
 
 ```{r warning = FALSE, echo=TRUE, fig.align= "center", fig.cap="Fig. 1 Heatmap of all BCCL CERES scores"}
@@ -309,8 +313,8 @@ GeneralExp_boxplot = ggplot(GenExmelt, aes(x = variable, y = value)) +
 GeneralExp_boxplot
 ```
 
-An issue was the very low level of expression of most genes, seen in the graph above.In this phase of the project is was open if a second site target will have a high expression in every case. 
-Next, boxplots of expression values for suggested driver mutations  in literature were generated. These boxplots show the different roles of genes ending up in various expression values in a nice way. 
+An issue was the very low level of expression of most genes, seen in the graph above. In this phase of the project is was open if a second site target will have a high expression in every case. 
+Next, boxplots of expression values for driver mutations suggested in literature were generated. These boxplots show the different roles of genes ending up in various expression values in a nice way. 
 
 ```{r warning = FALSE, echo=TRUE, fig.align= "center", fig.cap="Fig. 3 Expression values 15 selected driver mutations"}
 GOI_Exp_lit <- BCCL_Expression[c("MYC", "PTEN", "TP53", "PIK3CA", "GATA3", "BRCA1", "BRCA2", "RB1", "GANAB", "PARP10", "CCND1", "ERBB2"),]
@@ -338,9 +342,7 @@ Some of these genes were not followed up further due to being known as tumor sup
 
 ### Generation of the mutImpact matrix
 
-Suggestion: Every mutation has an impact on cell viability. In our analysis we have to distinguish not only between single mutations, we also have to evaluate different mutations in our cell lines "working together" and making every cell line different in its chcaracteristics. In order to gain an overview of these characteristics, we will generate a matrix, showing the effect on viability, caused by a single mutation, in every cell line. 
-
-Erase: In order to gain an overview of the effects on viability of each mutation present in one cell line the mutImpact matrix was generated.
+Every mutation has an impact on cell viability. In our analysis we have to distinguish not only between single mutations, we also have to evaluate different mutations in our cell lines "working together" and making every cell line different in its characteristics. In order to gain an overview of these characteristics, we will generate a matrix, showing the effect on viability, caused by a single mutation, in every cell line. The generated matrix we will call "mutImpact matrix"
 
 Therefore, the BCCL_kd.ceres matrix containing CERES scores for all genes in breast cancer cell lines was used as a template and the cell line IDs were added as column names creating a pre_mutImpact matrix. An empty matrix was generated comprising 17634 rows and 28 columns matching the number of genes per cell line and the number of breast cancer cell lines, respectively. 
 
@@ -379,7 +381,7 @@ paged_table(as.data.frame(mutImpact), 1:4)
 
 In order to verify our selection of driver mutations from literature research, k means clustering of CERES scores was performed. Suitable driver mutations were expected to be found in the same cluster based on scaled CERES scores.
 
-K means clustering was performed with all genes mutated at least once in  28 cell line samples and whose CERES score is not greater than zero. For this, all genes with only NA values (hence, not mutated in the `MutImpact Matrix`) were removed. A new dataframe `BCCL_kd.ceres_2`was generated containing all 28 CERES scores for each gene, with gene names in the first column. These names were compared to the rownames of `mutImpact_c` to generate the `BCCL_kd.ceres_3` dataframe. The resulting dataframe contains CERES scores of all genes mutated at least once for each breast cell cancer lines. Subsequently, the average mean CERES score for each gene was computed using the `rowMeans` function and stored in the last column. To carry out this step, the column `rownameskdc2` was removed. Finally, all genes with CERES scores > 0 were deleted. The final `BCCL_kd.ceres_3` dataframe consisted of 4934 genes mutated at least once in the 28 breast cancer cell lines and with CERES scores equal to or below 0. 
+K means clustering was performed with all genes mutated at least once in 28 cell line samples and whose CERES score is not greater than zero. For this, all genes with only NA values (hence, not mutated in the `MutImpact Matrix`) were removed. A new dataframe `BCCL_kd.ceres_2`was generated containing all 28 CERES scores for each gene, with gene names in the first column. These names were compared to the rownames of `mutImpact_c` to generate the `BCCL_kd.ceres_3` dataframe. The resulting dataframe contains CERES scores of all genes mutated at least once for each breast cell cancer lines. Subsequently, the average mean CERES score for each gene was computed using the `rowMeans` function and stored in the last column. To carry out this step, the column `rownameskdc2` was removed. Finally, all genes with CERES scores > 0 were deleted. The final `BCCL_kd.ceres_3` dataframe consisted of 4934 genes mutated at least once in the 28 breast cancer cell lines and with CERES scores equal to or below 0. 
 
 ```{r}
 # selecting only genes mutated at least once and with Ceres <= 0
@@ -446,7 +448,7 @@ ggplot(data = optimalKprocessedData, aes(x=OptimalK, y=WSS)) +
                   strip.text.y = element_text(angle = 0))
 ```
 
-From this plot it is evident that the optimal cluster number, when applying the elbow method, lies between 2 and 4. To verify this result and to determine a precise number of optimal cluster, an alternative plotting method calculating the average WSS for cluster numbers between 2 and 15 for all 28 cell samples was performed. 
+From this plot it is evident that the optimal cluster number lies between 2 and 4 if elbow method is applied. To verify this result and to determine a precise number of optimal cluster, an alternative plotting method calculating the average WSS for cluster numbers between 2 and 15 for all 28 cell samples was performed. 
 
 ```{r warning=FALSE, fig.align="center", fig.cap="Fig. 5 Optimal cluster number k using WSS of all BCCLs combined" } 
 # Verification of optimal number of clusters k 
@@ -551,7 +553,7 @@ Expression_boxplot = ggplot(Expression_driver_mut, aes(x = variable, y = value))
 Expression_boxplot
 ```
 
-The box- and whisker plot of CERES scores reveal the MYCBP mutations as the most essential driver mutations for cell survival. This gene is followed by PIK3CA and PARP10 mutations. While ERBB2 has the highest average CERES scores and hence lowest impact on cell proliferation, this mutation exhibits the largest spread of values across 28 breast cell cancer lines, reaching the overall minimum value of -1. The interquartile range of CERES scores for both MYCBP and PARP10, are the lowest, indicating a consistent impact of gene knockouts on cell sample survival. Also interesting is the large interquartile range of the PIK3CA mutation, with data points found in two clusters, one around -0.15 and the other between -0.5 and -0.9. 
+The box- and whisker plot of CERES scores reveal MYCBP as the most essential driver gene for cell survival. This gene is followed by PIK3CA and PARP10. While ERBB2 have the highest average CERES scores and hence lowest impact on cell proliferation, this driver mutation exhibits the largest spread of values across 28 breast cell cancer lines, reaching the overall minimum value of -1. The interquartile range of CERES scores for both MYCBP and PARP10 are the lowest, indicating a consistent impact of gene knockouts on cell sample survival. Also interesting is the large interquartile range of the PIK3CA CERES scores, with data points found in two clusters, one around -0.15 and the other between -0.5 and -0.9. 
 
 While the ERBB2 driver mutation was found to have the lowest essentiallity for cell survival on average, mean TPM values are shown to be highest, suggesting overexpression. Once again TPM values for this mutation have the largest spread, reaching more than 11.5 TPM. This implies the greatest variation overall in data for the ERBB2 driver mutation. Like for the CERES scores, both MYCBP and PIK3CA have a small interquartile range, while ranges for PARP10 are markedly larger. Further, it is interesting to note despite two CERES score data clusters for PIK3CA, TPM values show little variation around the mean. 
 
@@ -559,10 +561,10 @@ While the ERBB2 driver mutation was found to have the lowest essentiallity for c
 
 ### Spotting genetic interactions: the Wilcoxon test
 
-Genetic interactions of driver mutations with other genes were examined based on a Wilcoxon signed rank test. As SSTs are expected to interact synergistically with the corresponding driver mutation in promoting cell viability similar CERES scores are suggested to infer the presence of gene interactions. Thus, high p-values are anticipated for such cooperating gene pairs when performing the Wilcoxon signed rank test. The Wilcoxon signed rank test was chosen rather than a t-test due to non-normal distribution of the data and the requirement of a paired test to compare the data of two genes per cell line. Assuming that the ranks of the CERES scores of the driver mutation and their SSTs are equa,l SST candidates were chosen by the means of the highest p-values (accepting the H0 hypothesis).
+Genetic interactions of driver mutations with other genes were examined based on a Wilcoxon signed rank test. As SSTs are expected to interact synergistically with the corresponding driver mutation in promoting cell viability similar CERES scores are suggested to infer the presence of gene interactions. Thus, high p-values are anticipated for such cooperating gene pairs when performing the Wilcoxon signed rank test. The Wilcoxon signed rank test was chosen rather than a t-test due to non-normal distribution of the data and the requirement of a paired test to compare the data of two genes per cell line. Assuming that the ranks of the CERES scores of the driver mutation and their SSTs are equal, SST candidates were chosen by the means of the highest p-values (accepting the H0 hypothesis).
 
 For the purpose of conducting the Wilcoxon test the data from which the CERES scores for the test are taken was prepared. Therefore, a vector containg the identified driver mutations was generated. Furthermore, a reduced mutImpact matrix `mutImpact_r` was created from `mutImpact`which only includes genes which are mutated and do not have `NA`values only. Based on `mutImpact_r`the `BCCL_kd.ceres` matrix was reduced resulting in the `mutImpact_kd.ceres` matrix containing the CERES scores of all genes in all cell lines if the gene is mutated in one cell line at minimum. 
-*question: I created exaclty the same matrix  little bit further up in the code. Perhaps there is no need to recreate a new dataframe here?*
+*question: I created exaclty the same matrix  little bit further up in the code. Perhaps there is no need to recreate a new dataframe here?* *in my perspective it is better to have less code.. i already discarded most of the exploratory stuff.*
 
 ```{r warning=FALSE}
 #preparation of the data
@@ -640,7 +642,7 @@ lapply(SST_Data, function(a) paged_table(a))
 
 ### Verification of SST candidates by assigned k means cluster number 
 
-After selection of the SST candidates stored in `SST_Data` the coexsitance of SST candidates and driver mutation in the same k means cluster was verified. An assignment to the same cluster would confirm a possible cooperation of gene pairs due to similar CERES scores. For this, the lapply function was used to chose each dataframe and thus driver mutation in turn from the list using the seq_along command.A further loop was installed such that for each driver mutation dataframes, the rownames of the `DvPicker` were compared to all possible  `data_clus_3e` rownames. If a coexistance of genes in the 3rd k means cluster was identified, genes were labelled as `verified` in a new column entitled "classifier". No match between rownames led to the `not verified`entry.
+After selection of the SST candidates stored in `SST_Data` the coexistance of SST candidates and driver mutation in the same k means cluster was verified. An assignment to the same cluster would confirm a possible cooperation of gene pairs due to similar CERES scores. For this, the lapply function was used to chose each dataframe and thus driver mutation in turn from the list using the seq_along command.A further loop was installed such that for each driver mutation dataframes, the rownames of the `DvPicker` were compared to all possible  `data_clus_3e` rownames. If a coexistance of genes in the 3rd k means cluster was identified, genes were labelled as `verified` in a new column entitled "classifier". No match between rownames led to the `not verified`entry.
 
 ```{r SST Cluster Check, warning=FALSE}
 SST_Data <- lapply(seq_along(SST_Data), function(a) { # pick one dataframe from list
@@ -685,9 +687,9 @@ SST_Data <- lapply(seq_along(SST_Data), function(a) {
 names(SST_Data) <- driver_mut
 ```
 
-Furthermore, the physiological gene function of every SST candidate was investigated using the universal protein database (UniProt). Therefore, a table was prepared for every DV using Microsoft Excel in order to document the findings from literature research and saved as a `.csv`file. Consequently, the Excek files were imported to R as data frames from which the list `functionTable` was created. This list was used as a template to add information on the gene function to `SST_Data` by iteratively appending the column `function` of the `functionTable` data frames to the corresponding data frame in the `SST_Data` list.
+Furthermore, the physiological gene function of every SST candidate was investigated using the universal protein database (UniProt). Therefore, a table was prepared for every DV using Microsoft Excel in order to document the findings from literature research and saved as a `.csv`file. Consequently, the Excel files were imported to R as data frames from which the list `functionTable` was created. This list was used as a template to add information on the gene function to `SST_Data` by iteratively appending the column `function` of the `functionTable` data frames to the corresponding data frame in the `SST_Data` list.
 
-Most strikingly, many of the SST gene functions comprise proteins contributing to cell cycle progression, cell motility and polarity as well as transcriptional regulators affecting cell metabolism. This supports the hypothesis that alterations in gene activity of the STTs promote cancer progression.
+Most strikingly, many of the SST gene functions comprise proteins contributing to cell cycle progression, cell motility and polarity as well as transcriptional regulators affecting cell metabolism. This supports the hypothesis that alterations in gene activity of the SSTs promote cancer progression.
 
 ```{r warning=FALSE, error=FALSE}
 functionTable <- list(
@@ -704,9 +706,23 @@ lapply(SST_Data, function(b) paged_table(b)) # have a look at the SSTs
 
 ### Database research and outcome of analysis
 
-All 67 confirmed SSTs were investigated for already existing drugs and disease association. In genera our SSTs revealed a broad spectrum of knowledge, spreading from genes not only associated with any disease to genes with an approved drug available. We classified our SSTs in 3 classes: class 1 containing genes already associated with at least one sort of breast cancer, class 2 consisting of genes with associations at least in any cancer and class 3, genes without connection to cancer. 
-The largest group were SSTs of class 1, containing 43 genes followed bei class 2 genes with 20 members. Group was clearly the smallest one with 4, which can be seen as good because we didn't found any genes completely out of the range of research community or bad due to the will to find genes nobody ever recognized before. All of them except for one, "PDGFRA", had no drug on the marked. Just to keep our workload in limits, we proceeded our analysis with all SSTs having associations to more than 40 sort of cancer or showing interesting characteristics. Our goal was to make a recommendation for drug design of 5 SSTs out of all this knowledge.
---> see CoS.Rmd and SST_funtion_and_therapy.csv for further information
+All 67 confirmed SSTs were investigated for already existing drugs and disease associations. In general our SSTs revealed a broad status of knowledge, spreading from genes not only associated with any disease to genes with an approved drug available. We classified our SSTs in 3 classes: class 1 containing genes already associated with at least one sort of breast cancer, class 2 consisting of genes with associations to at least one cancer type and class 3, genes with no known connection to cancer. 
+The largest group were SSTs of class 1, containing 43 genes followed by class 2 genes with 20 members. The third class was clearly the smallest containing only 4 genes. This confirmed that only a few genes not yet known in the research community were found. All of them except for one, "PDGFRA", are not targetable through a drug on the market. We decided to include only those SSTs in further analyis, having associations to more than 40 types of cancer or showing interesting characteristics, for example appearance in more than one driver gene. From this knowledge, we aimed to recommend experimental research for three to five SSTs.
+The last twelve candidates showed different characteristics. A few of them like APC or FANCA were known as tumorsupressor genes and therefore not further involved. Others showed activity only in neuroectodermal tumors and not in breast cancer. Therefore the following top four candidates for experimental drug research are:
+
+####TNS3: 
+- verified SST for ERBB2 and PARP10. It is suggested to play a role in actin remodeling and associated with 47 tumor diseases[^1].
+
+####BCL9L:
+- known to activate beta catenin, one of the main targets for colorectal cancer. A few other suggested functions in tumorigenesis and 65 associated neoplasms are reason enough to investigate therapeutic options[^1]. 
+
+####CREBBP: 
+- This transcriptional activator of cAMP responsive genes is a SST of ERBB2. Already known active cell compounds prove the potential research community is giving to this protein. 176 associated tumor diseases and 463 diseases in general are incentive enough to dare a try [^1].
+
+####SLC4A7:
+-strong associations to breast cancer and already known active cell compounds led our attention to this cotransporter[^1]. With a lot of knowledge inhibiting transporters in any disease, research community could find a way of inhibiting this protein.
+
+[^1]: SSTs_function_and_therapy
 
 ## Exploiting interactions: Regression analysis to predict CERES scores of driver mutation
 
@@ -714,7 +730,7 @@ For the regression model, we want to predict the CERES score of the driver mutat
 
 ### Conditioning the dataset
 
-To run Multilinear regression, we reform the `BCCL_kd.ceres` matrix. By transponing and format change, we obtain a matrix with colnames = Gene names and rownames = Cell line indices (equal to tPatients_ID). Then, we collect the relevant the CERES scores for the mutations for the linear regression.
+To run multilinear regression, we reform the `BCCL_kd.ceres` matrix. By transposings and a format change, we obtain a matrix with colnames = Gene names and rownames = Cell line indices (equal to tPatients_ID). Then, we collect the relevant the CERES scores for the mutations for the linear regression.
 All columns with the corresponding names of the SST genes plus the driver mutation will be collected and copied into a new dataframe.
       
 ```{r Regression sample construction, fig.align = 'center', warning=FALSE}
@@ -734,8 +750,8 @@ names(data_regression) <- c("ERBB2", "MYCBP", "PARP10", "PIK3CA")
 ```
 
 To run regression, certain conditions must be fulfilled:
-Normal distribution, checked with a qqPlot:Using the aes-function for aesthetic plots, provided by the "ggplot2" package.
-Multicollinearity, which is given if two dependent variables are strongly correlated, which can lead to difficulties in further analysis.
+- Normal distribution, checked with a qqPlot: Using the aes-function for aesthetic plots, provided by the "ggplot2" package.
+- Multicollinearity, which is given if two dependent variables are strongly correlated, which can lead to difficulties in further analysis.
     + As rule of thumb, the Pearson correlation coefficient should be lower than 0.8:
       $r < 0.80$
 If this requirement is not met, one of the correlated variables should be deleted as it is seen as redundant.
@@ -743,7 +759,7 @@ If this requirement is not met, one of the correlated variables should be delete
 ```{r Regression sample distribution, fig.align = 'center', fig.cap="Fig. 8 QQ plots for each driver mutation", warning=FALSE}
 lapply(seq_along(data_regression), function(a){  
   par(mfrow=c(1,2)) #hmmm should show them beneath .... 
-  p <- ggplot(data_regression[[a]], aes(sample=data_regression[[a]][,ncol(data_regression[[a]])], col = "cyl")) + stat_qq() +           stat_qq_line() #create qq-Plot with line for comparison to normal distribution +
+  p <- ggplot(data_regression[[a]], aes(sample=data_regression[[a]][,ncol(data_regression[[a]])])) + stat_qq() +           stat_qq_line() #create qq-Plot with line for comparison to normal distribution +
         labs(title = "QQ-Plot", subtitle = "Check if data is approx. normally distributed") +
           theme(legend.position ="none",
             plot.title = element_text(hjust = 0.4),
@@ -758,13 +774,13 @@ lapply(seq_along(data_regression), function(a){
   return(list(p)) #Muss hier nicht noch r rein oder funktioniert es so?
    })
 ```
-In the QQ-Plots, we see that the sample Data of MYCBP and PARP10 is approx. normally distributed; ERBB2 and PIK3CA do not present normal distribution.
-As one can see in the Heatmap of the Pearson correlation values, no multicollinearity was detected, all x < 0.80.
+The QQ-Plots show that the sample Data of MYCBP and PARP10 is approx. normally distributed; ERBB2 and PIK3CA do not present normal distribution.
+As one can see in the heatmaps of the Pearson correlation values, no multicollinearity was detected, all x < 0.80.
   
 ### Design of the multilinear regression
 
-To run the Multilinear Regression, it is advised to create a long function which splits the dataset in 75:25 training:test data.
-Then the function conducts Training of Regression model with training data to predict Driver mutation CERES (y; dep.variable) from SST CERES scores (x1 ... xn; indep.variables)
+To run the Multilinear Regression, it is advised to create a long function which splits the dataset in 75:25 training: test data.
+Then the function conducts training of regression model, with training data to predict Driver mutation CERES (y; dep.variable) from SST CERES scores (x1 ... xn; indep.variables)
 Followed by checking model assumptions of residual normal distribution and homoscedasticity.
 Later on, the function runs the test Data on model for performance evaluation and finally calculates and plots Spearman correlation to further asses model performance.
 
@@ -902,6 +918,9 @@ Especially the models for ERBB2 and PIK3CA should have been discarded, since not
 It seems possible that the small sample size for the regression model lead to the lack of significant results, with only 28 events (CERES score observed in cell line) per predicting variable (SST gene).
 
 But, a common thumb-rule for building a regression model is to calculate the _limiting sample size_:
+# Discussion of sample size
+In summary it can thus be argued that these multilinear regression models are not effective in predicting the impact of driver mutations on cell viability. One possible reason for unfitting regression models could be the small sample size of only 28 events (breast cancer cell lines).
+A common rule of thumb for building a regression model is to calculate the limiting sample size:
 
  $p < \frac{m}{15}$
  
@@ -918,18 +937,57 @@ In general, more data will lead to improved data quality. Generally, scientists 
 # Results and Discussion
 
 The aim of this project was to identify genes, so called second site targets, which interact genetically with selected driver mutations to promote cell viability and proliferation in breast cell cancers. Our hope was that these could be used as targets for more specific gene therapies. 
+If this equation is fulfilled, the model is supposed to be reliable.(Harrell 2001). For our four models the calculation suggests that our data set has the appropriate size for a basic regression model.
+
+```{r Table Captions, include=FALSE}
+table_nums <- captioner(prefix = "Table")
+
+table_nums("Assumption", "Summary of the Regression assumption checks for the four models. Conditions were met (yes) or not (no).")
+
+table_nums("Spearman", "Summary of Spearman Correlation Test between observed and predicted values. Including p-value and the thus accepted hypothesis, as well as the correlation value rho and the corresponding strenght of the linear relationship.")
+```
+
+# Results and Discussion
+
+The aim of this project was to identify genes, so called second site targets, which interact genetically with selected driver mutations to promote cell viability and proliferation in breast cell cancers. Our hope was that these genes could be potential new targets for more specific therapies. 
 
 After selection of five non-tumor suppressor gene driver mutations (CCND, ERBB2, MYC, PARP10, PIK3CA) form literature, datasets were formatted to include only breast cancer cell lines. Subsequent, general data exploration revealed a large variety of CERES scores and expression values across both selected driver mutations and remaining genes of breast cell cancer lines. This proved the need to undertake further steps of data cleanup. Thus, in order to analyze only mutated genes, the mutImpact matrix was generated, containing CERES values only of mutated genes in a given cell line, otherwise with the entry for a given cell line being “NA”. Further data cleanup was performed by removing all genes which contained all “NA” values and whose mean CERES scores were greater than zero. Through this process, 4934 possible SST genes remained, fitting the criteria of being mutated and having a positive impact on cell viability. However, in this process genes with a nonuniform distribution or of CERES scores across cell lines or unique outliers distorting mean values could have been mistakenly removed.
 
-With this foundation, the selection of driver mutations from literature research was verified by performing k means clustering of associated CERES scores. After calculation of within sum squares values for a range of cluster numbers, the optimal cluster number was identified to be four using the elbow method. Clustering revealed four out of five driver mutations to be colocalized in cluster three, hence having similar positive effects of improving the viability of breast cancer cells while not being tumor suppressor genes. These genes thus proved appropriate for further analysis. While CCND was removed early on in data clean up stages due to not being mutated in any breast cancer cell line, ERBB2IP on the other hand was found in cluster four instead. Since both genes did not match the criteria of driver mutations they were excluded from further analysis. Overall, it must however be noted that although the optimal cluster number was identified to be four, the cluster plot shows that clusters were not distinctly separated from one another. Alternative cluster numbers could therefore have resulted in a different assignment of driver mutations and consequently other results based on our selection method. 
+With this findings, the selection of driver mutations from literature research was verified by performing k means clustering of associated CERES scores. After calculation of within sum squares values for a range of cluster numbers, the optimal cluster number was identified to be four, using the elbow method. Clustering revealed four out of five driver mutations to be colocalized in cluster three, hence having similar positive effects of improving the viability of breast cancer cells while not being tumor suppressor genes. These genes thus proved appropriate for further analysis. While CCND was removed early on in data clean up stages due to not being mutated in any breast cancer cell line, ERBB2IP on the other hand was found in cluster four instead. Since both genes did not match the criteria of driver mutations they were excluded from further analysis. Overall, it must however be noted that although the optimal cluster number was identified to be four, the cluster plot shows that clusters were not distinctly separated from one another. Alternative cluster numbers could therefore have resulted in a different assignment of driver mutations and consequently other results based on our selection method. 
 
 Nevertheless ERBB2, MYCBP, PARP10 and PIK3CA were used as central driver mutations for further analysis. Box-and whisker plots of CERES scores revealed mutations of the MYCB gene to have greatest essentiality, with least variation, for cell survival. ERBB2 on the other hand had the highest average of CERES scores, greatest variation and lowest impact on cell proliferation. In contrast the ERBB2 driver mutation showed highest TPM values and hence suggested overexpression. The gene however remained the gene with greatest variation in values closely followed by PARP10. TPM expression values were lowest for PIK3CA, with little variation which was also seen for MYCBP. 
 
 Since our approach had defined SSTs to be genes expected to interact synergistically with the corresponding driver mutation in promoting cell viability, CERES values were expected to be similar to those of the corresponding driver mutations. Consequently, all 1171 genes colocalized in k means cluster 3 were regarded as potential SST candidates. In order to spot genetic interactions, the paired statistical Wilcoxon test was performed, given that data followed a non-normal distribution. As previously mentioned, SSTs were expected to have similar CERES values to driver mutations and were hence chosen by means of highest p-values (accepting the H0 hypothesis). Surprisingly, the first quantile was set at a p-value of 0.0 for each driver mutation, indicating that many genes had CERES score not relatable to the CERES cores of driver mutations. The maximum p-value of each test however constituted 1.0, suggesting that there were also genes with similar CERES scores to driver mutations. 
 
-Based on the result of the Wilcoxon test, the top 15 genes with highest p-values for each mutation were chosen.  Due to some genes having the same p-value, ERBB2 and PARP10 were each selected to have 17 potential SST candidates, PIK3CA 18 potential candidates while MYCBP had 15 candidates.In the next step all potential SST candidates were verified, by checking their cluster assignment in the previously completed k means clustering. As expected, all SST candidates were confirmed to be found in in the same cluster 3 as the driver mutations. With this verification, all SSTs were characterized and labelled with mutation type and the physiological gene function using the universal protein database (UniProt). Most strikingly, many SST gene functions comprised proteins contributing to cell cycle progression, cell motility and polarity together with transcriptional regulators affecting cell metabolism. The most common type of mutation was a missense or silent mutation for SSTs of all driver mutations. *does this part need to be in more detail?* ( i dont think so . i will add some things about the database research, than it is enough)
+Based on the result of the Wilcoxon test, the top 15 genes with highest p-values for each mutation were chosen.  Due to some genes having the same p-value, ERBB2 and PARP10 were each selected to have 17 potential SST candidates, PIK3CA 18 potential candidates while MYCBP had 15 candidates. In the next step all potential SST candidates were verified, by checking their cluster assignment in the previously completed k means clustering. As expected, all SST candidates were confirmed to be found in in the same cluster 3 as the driver mutations. With this verification, all SSTs were characterized and labelled with mutation type and the physiological gene function using the universal protein database (UniProt). Most strikingly, many SST gene functions comprised proteins contributing to cell cycle progression, cell motility and polarity together with transcriptional regulators affecting cell metabolism. The most common type of mutation was a missense or silent mutation for SSTs of all driver mutations. 
+After discovering all functions of found SSTs we investigated if there is already research, searching for their therapeutic potential. In our cohort of 67 SSTs only one SST is already targetable with a drug. While a few of them are not very present in ongoing research, most of the SSTs have be already been related to tumor diseases. Upon further investigation four SSTS, "TNS3", "BCL9L, "CREBBP" and "SLC4A7" represent the main targets for future therapy investigations. We would be thrilled to see some of them in a drug database in the future.
 
-The final step in this project was to exploit the identified interactions and design a regression model to predict CERES scores of driver mutations based on the SST candidate CERES scores. This would allow us to predict the impact of driver mutations on cell viability based on the effect of SSTs on breast cancer cell proliferation. After data preparation, the conditions of normality and multicollinearity were verified. While MYCBP and PARP10 CERES values were approximately normally distributed, ERBB2 and PIK3CA values were not, thus not meeting the criteria for a multilinear regression. Additionally, no multicollinearity was detected with all values smaller than 0.80.  Nevertheless, after training the model on 75% of the data, the multilinear regression was run and residual normal distribution and homoscedasticity, as conditions for a good model, were analyzed. While the residuals of ERBB2 were closest to a normal distribution, residuals of the PIK3CA model are still an acceptable approximate of a normal distribution. Interesting to note is that while MYCBP and PARP10, on the other hand, do not show a normal residual distribution they do meet the condition of homoscedasticity, unlike ERBB2 and PIK3CA. A further measure to evaluate the design of the model was the test of spearmen correlation. P-values of all driver mutations lead to the confident acceptance of the H0 hypothesis and hence the statement that there is no association between predicted and observed variable. Weak negative correlation was identified for the MYCBP and PIK3CA model compared to a moderate negative correlation for the PARP10-model. Surprisingly, the ERBB2-model with a rho-value of 0.1 shows a weak positive relationship. In summary it can thus be argued that these multilinear regression models are not effective in predicting the impact of driver mutations on cell viability. One possible reason for unfitting regression models could be the small sample size of only 28 events (breast cancer cell lines). Calculation of the limiting sample size however suggests that our data set has the appropriate size for a basic regression model. To improve data quality, especially for the supervised machine learning process, a larger data set is necessary for the construction of an appropriate model. It should also be considered, that CERES scores of SST candidates and driver mutations may have a nonlinear correlation, requiring different prediction models. 
+The final step in this project was to exploit the identified interactions and design a regression model to predict CERES scores of driver mutations based on the SST candidate CERES scores. This would allow us to predict the impact of driver mutations on cell viability based on the effect of SSTs on breast cancer cell proliferation. After data preparation, the conditions of normality and multicollinearity were verified. While MYCBP and PARP10 CERES values were approximately normally distributed, ERBB2 and PIK3CA values were not, thus not meeting the criteria for a multilinear regression. Additionally, no multicollinearity was detected with all values smaller than 0.80.
+
+Model     | Data distribution | Residual distribution| Homoscedastity |Spearman correlation |
+----------|-------------------|----------------------|----------------|---------------------|
+ERBB2     | no                | yes                  | no             | no                  |
+MCYBP     | yes               | no                   | yes            | no                  |
+PARP      | yes               | no                   | yes            | no                  |
+PIK3CA    | no                | yes                  | no             | no                  |
+```{r Table Caption 1, echo=FALSE}
+table_nums("Assumption")
+```
+
+Nevertheless, after training the model on 75% of the data, the multilinear regression was run and residual normal distribution and homoscedasticity, as conditions for a good model, were analyzed. While the residuals of ERBB2 were closest to a normal distribution, residuals of the PIK3CA model are still an acceptable approximate of a normal distribution. Interesting to note is that while MYCBP and PARP10, on the other hand, do not show a normal residual distribution they do meet the condition of homoscedasticity, unlike ERBB2 and PIK3CA. A further measure to evaluate the design of the model was the test of Spearman correlation. P-values of all driver mutations lead to the confident acceptance of the H0 hypothesis and hence the statement that there is no association between predicted and observed variable. Weak negative correlation was identified for the MYCBP and PIK3CA model compared to a moderate negative correlation for the PARP10-model. Surprisingly, the ERBB2-model with a rho-value of 0.1 shows a weak positive relationship.
+
+Model     | p-value     | accepted hypothesis | rho      | relationship type |
+----------|-------------|---------------------|----------|-------------------|
+ERBB2     | 0.8397      |         H0          |  0.1071  | weak positive     |
+MCYBP     | 0.7825      |         H0          | -0.1429  | weak negative     |
+PARP10    | 0.1095      |         H0          | -0.6786  | moderate negative |
+PIK3CA    | 0.7131      |         H0          | -0.1786  | weak negative     |
+```{r Table Caption 2, echo=FALSE}
+table_nums("Spearman")
+```
+
+To improve data quality, especially for the supervised machine learning process, a larger data set is necessary for the construction of an appropriate model and leads in general to improved results. It might be helpful to obtain and analyze larger data sets instead of comparing different learning techniques on small training sets.(Banko and Brill 2001).For expample, sample sizes up to n = 50,000 are reported for comparable tasks (Libbrecht and Noble 2015). 
+It should also be considered, that CERES scores of SST candidates and driver mutations may have a nonlinear correlation, requiring different prediction models. 
 
 ### Literature
   + Aleskandarany, M. A., E. A. Rakha, M. A. H. Ahmed, D. G. Powe, E. C. Paish, R. D. Macmillan, I. O. Ellis and A. R. Green (2010). "PIK3CA expression in invasive breast cancer: a biomarker of poor prognosis." Breast Cancer Research and Treatment 122(1): 45-53.
