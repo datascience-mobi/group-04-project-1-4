@@ -94,7 +94,7 @@ While in the past decades breast cancer therapy has already evolved, reducing th
 
 ## Driver Mutations: the driving force in tumorigenesis
 
-Driver mutations (DV) are what is to be seen as the ticket of admission to the different stages of cancer growth. Thus, the acquisition of driver mutations is essential for tumour initiation, transformation as well as progression and metastasis. According to Bert Vogelstein three mutations in genes displaying a crucial function in cell proliferation, DNA integrity and cellular motility are enough to drive a normal cell into aberrant growth and malignancy:
+Driver mutations (DV) are the key events in tumorigenesis leading to new functions and cell states of affected tissues. Thus, the acquisition of driver mutations is essential for tumour initiation, transformation as well as progression and metastasis. According to Bert Vogelstein three mutations in genes displaying a crucial function in cell proliferation, DNA integrity and cellular motility are enough to drive a normal cell into aberrant growth and malignancy:
 
 > "Focusing on driver-gene mutations and the pathways they control has rendered complex cancer-genome landscapes intelligible. In solid tumors of adults, alterations in as few as three driver genes appear to suffice for a cell to evolve into an advanced cancer." 
 >
@@ -111,7 +111,7 @@ Driver mutations are not the only genetic factors involved in cancer development
 The considered factors supporting the effect of driver mutations are often referred to as second-site targets (SSTs) as they do not necessarily confer a growth advantage to the tumour when mutated alone but by genetic interaction with other mutations. Thus, SSTs constitute promising targets in cancer therapy as they are meant to have a less significant effect on the viability of healthy cells because they do not display central regulatory functions. However, identification of these secret co-operators demands the analysis of several parameters reflecting their relevance and function in proliferation such as RNAseq data, data from gene knockouts and mutational analyses.  
 
 Targeting and eliminating driver mutations as a part of tumor treatment is a difficult procedure, since those genes are also essential for survival of non-mutated cells. A differentiation between normal and tumor cell is not possible, thus targeting leads to adverse effects. Plus, high dosages need to be applied. #CITATION
-A promising approach is targeting so-called Second Site Targets (SSTs), which are gene mutations interacting genetically with driver mutations to increase cell viability. # CITATION
+A promising approach is targeting SSTs, which are gene mutations interacting genetically with driver mutations to increase cell viability. # CITATION
 If knocking out those genes leads to cell lethality, it may lead to new treatment options.
 
 ```{r SSTs, eval=TRUE, echo=FALSE, fig.cap="Concept of SSTs", out.width = '100%', fig.align = "center"}
@@ -154,7 +154,7 @@ In the following project the CERES and expression scores of these driver mutatio
 Before the start of our analyis, the following packages need to be loaded together with the data:
 
 ```{r eval=FALSE, include = FALSE}
-#installation of required packages
+#Installation of required packages
 install.packages("reshape")
 install.packages("wesanderson")
 install.packages("tidyverse")
@@ -169,7 +169,7 @@ install.packages("devtools")
 install.packages("captioner")
 ```
 ```{r eval=FALSE, include = FALSE}
-#importing libraries
+#Importing libraries
 library(ggplot2)
 library(reshape2)
 library(data.table)
@@ -191,11 +191,11 @@ library(captioner)
 root.dir = dirname(rstudioapi::getSourceEditorContext()$path)
 
 #Importing the data
-data = readRDS(paste0(root.dir, "/DepMap19Q1_allData.RDS")) #read in the data 
+data = readRDS(paste0(root.dir, "/DepMap19Q1_allData.RDS")) #Read in the data 
 ```
 
 ```{r include=FALSE}
-#importing libraries
+#Importing libraries
 library(ggplot2)
 library(reshape2)
 library(data.table)
@@ -214,7 +214,7 @@ library(captioner)
 font_import()
 ```
 
-```{r Lisa, include=FALSE, eval=TRUE}
+```{r Lisa, include=FALSE, eval=FALSE}
 data = readRDS("C:/Users/lisa-/Desktop/Studium/4. FS/Bioinfo/DepMap19Q1_allData.RDS")
 root.dir = "C:/Users/lisa-/Desktop/Studium/4. FS/Bioinfo/project-01-group-04"
 ```
@@ -229,7 +229,7 @@ data = readRDS("L:/UNI/4.FS/BioStat/DepMap19Q1_allData.RDS")
 root.dir = "C:/Users/ole-l/Documents/GitHub/project-01-group-04"
 ```
 
-```{r Elias, include = FALSE, eval=FALSE}
+```{r Elias, include = FALSE, eval=TRUE}
 data = readRDS("C:/Users/Elias/Documents/Uni/4. FS/Bioinfo/DepMap19Q1_allData.RDS")
 root.dir = "C:/Users/Elias/Documents/GitHub/project-01-group-04"
 ```
@@ -237,22 +237,22 @@ root.dir = "C:/Users/Elias/Documents/GitHub/project-01-group-04"
 We had a look at the given data structure.  
 
 ```{r include=FALSE}
-length(data) #get some information about the data (the dimensions here)
-lapply(data, dim) #get an impression on the data
-#View(data$mutation) #closer look because data$mutation returns NULL in the command above
-lapply(data, function(a) head(a)) #look at the data 
+length(data) #Get some information about the data (the dimensions here)
+lapply(data, dim) #Get an impression on the data
+#View(data$mutation) #Closer look because data$mutation returns NULL in the command above
+lapply(data, function(a) head(a)) #Look at the data 
 ```
 
 The dataset used contains 6 smaller datasets. Five of them are large data frames while the sixth is a list of data frames. For the extraction of this sixth variable we first separated it from the others and gave it a new strucure, which is easier to handle.
 
 ```{r}
 #Extract the mutation data
-mut <- data$mutation #pick the mutation data (list not dataframe, needs to be treated separately)
-'%!in%' <- function(x,y)!('%in%'(x,y)) #define an operator that will only pick dat NOT defined in the list; 
-dt_new <- lapply(which(names(data) %!in% "mutation"), function(a) data[[a]]) #extract only non-mutation data
-names(dt_new) <- names(data)[which(names(data) %!in% "mutation")] #rename the data with the original names
-length(dt_new) #look if it worked (now dim is 5 and NOT 6 (because mutation was removed))
-sample_case = c("Breast Cancer") #gives us the opportunity to analyse other groups of cells
+mut <- data$mutation #Pick the mutation data (list not dataframe, needs to be treated separately)
+'%!in%' <- function(x,y)!('%in%'(x,y)) #Define an operator that will only pick dat NOT defined in the list; 
+dt_new <- lapply(which(names(data) %!in% "mutation"), function(a) data[[a]]) #Extract only non-mutation data
+names(dt_new) <- names(data)[which(names(data) %!in% "mutation")] #Rename the data with the original names
+length(dt_new) #Look if it worked (now dim is 5 and NOT 6 (because mutation was removed))
+sample_case = c("Breast Cancer") #Gives us the opportunity to analyse other groups of cells
 samples = data$annotation$DepMap_ID[which(data$annotation$Primary.Disease == sample_case)]
 ids = which(names(mut) %in% samples)
 dat = lapply(ids, function(a) mut[[a]])
@@ -263,14 +263,14 @@ We observe a large variety of tumor diseases being recorded by this dataset. Bec
 ```{r warning=FALSE, include=FALSE}
 #Changing colnames to specific type of tumor:
 pdata <- lapply(1:(length(dt_new)-1), function(a) {
-  dat_picker <- dt_new[[a]] #pick one file at each iteration 
-  col_names <- colnames(dat_picker) #extract the original column names
-  annotation_new <- data$annotation[which(col_names %in% data$annotation$DepMap_ID),4] #get sample names in the order of the col_names list
+  dat_picker <- dt_new[[a]] #Pick one file at each iteration 
+  col_names <- colnames(dat_picker) #Extract the original column names
+  annotation_new <- data$annotation[which(col_names %in% data$annotation$DepMap_ID),4] #Get sample names in the order of the col_names list
   colnames(dat_picker) = annotation_new #rename the columns
   return(dat_picker)
 })
-names(pdata) <- names(data)[which(names(data) %!in% c("mutation", "annotation"))] #rename the data
-lapply(pdata, dim) #look if the renaming worked
+names(pdata) <- names(data)[which(names(data) %!in% c("mutation", "annotation"))] #Rename the data
+lapply(pdata, dim) #Look if the renaming worked
 
 #Generating 4 dataframes, containing just breast cancer cell lines (BCCL)
 BCCL_kd.ceres = pdata$kd.ceres[,which(colnames(pdata$kd.ceres) == sample_case)]
@@ -279,7 +279,7 @@ colnames(BCCL_Expression) <- samples #IDs as colnames are needed later
 BCCL_Mutation = lapply(ids, function(a) mut[[a]])
 names(BCCL_Mutation) = samples #IDs as names are needed later
 BCCL_Annotation <- subset(data$annotation, Primary.Disease == sample_case)
-tPatients_ID <- t(BCCL_Annotation[1]) #create a vector of patientIDs useful for the MutImpact Matrix
+tPatients_ID <- t(BCCL_Annotation[1]) #Create a vector of patientIDs useful for the MutImpact Matrix
 ```
 
 ### Exploring gene expression patterns 
@@ -290,13 +290,13 @@ We made a heatmap of expression values as well as CERES scores and found a diver
 ```{r warning = FALSE, echo=TRUE, fig.align= "center", fig.cap="Fig. 1 Heatmap of all BCCL CERES scores", eval=FALSE}
 #Create a heatmap for all Genes and their CERES score
 CERES50 <- as.matrix(BCCL_kd.ceres[c(1:nrow(BCCL_kd.ceres)),c(1:28)])
-col <- colorRampPalette(c("seagreen3", "white", "red2"))(n = 1000) #defining the colours for the heatmap
+col <- colorRampPalette(c("seagreen3", "white", "red2"))(n = 1000) #Defining the colours for the heatmap
 CERESHeatmap <- heatmap.2(CERES50, scale = "none", col = col, 
           trace = "none", density.info = "none", dendrogram = c("none"), labRow = FALSE, labCol = FALSE, main = "CERES scores of all BCCLs", xlab = "Breast cancer cell lines (BCCL)", ylab = "Genes, ordered by hierarchical clustering")
 ```
 
 ```{r warning = FALSE, echo=TRUE, fig.align= "center", fig.cap="Fig. 2 General expression in all 28 BCCLs"}
-# expanding the colourpalette to 28
+#Expanding the colourpalette to 28
 nb.cols <- 28 
 newcolours <- colorRampPalette(brewer.pal(8, "Paired")) (nb.cols)
 #Plotting gene expression of all 28 BCCLs
@@ -358,25 +358,25 @@ Subsequently, CERES scores of genes, which were not mutated in a given cell line
 pre_mutImpact <- BCCL_kd.ceres
 colnames(pre_mutImpact)<-tPatients_ID
 
-#generate empty mutImpact matrix
+#Generate empty mutImpact matrix
 mutImpact <- matrix(, nrow = 17634, ncol = 28)
 colnames(mutImpact)<-colnames(pre_mutImpact)
 rownames(mutImpact)<-rownames(pre_mutImpact)
 
-#fill mutImpact matrix with values
+#Fill mutImpact matrix with values
 for (j in 1:ncol(pre_mutImpact)){
-  lineID <- colnames(pre_mutImpact)[j] #select a column-name = cell line
+  lineID <- colnames(pre_mutImpact)[j] #Select a column-name = cell line
   for (i in 1:nrow(pre_mutImpact)){
-    GOI <- rownames(pre_mutImpact)[i] #select a gene
+    GOI <- rownames(pre_mutImpact)[i] #Select a gene
     if (GOI %in% BCCL_Mutation[[lineID]]$Hugo_Symbol){
       mutImpact[i, j] <- pre_mutImpact[i, j]
     } else {
       mutImpact[i, j] <- NA
-    }#replace CERES value with NA in case the gene is not mutated
+    }#Replace CERES value with NA in case the gene is not mutated
   }
 }
 
-#have a look at the mutImpact matrtix
+#Have a look at the mutImpact matrtix
 paged_table(as.data.frame(mutImpact))
 ```
 
@@ -389,36 +389,36 @@ In order to verify our selection of driver mutations from literature research, k
 K means clustering was performed with all genes mutated at least once in 28 cell line samples and whose CERES score is not greater than zero. For this, all genes with only NA values (hence, not mutated in the `MutImpact Matrix`) were removed. A new dataframe `BCCL_kd.ceres_2`was generated containing all 28 CERES scores for each gene, with gene names in the first column. These names were compared to the rownames of `mutImpact_c` to generate the `BCCL_kd.ceres_3` dataframe. The resulting dataframe contains CERES scores of all genes mutated at least once for each breast cell cancer lines. Subsequently, the average mean CERES score for each gene was computed using the `rowMeans` function and stored in the last column. To carry out this step, the column `rownameskdc2` was removed. Finally, all genes with CERES scores > 0 were deleted. The final `BCCL_kd.ceres_3` dataframe consisted of 4934 genes mutated at least once in the 28 breast cancer cell lines and with CERES scores equal to or below 0. 
 
 ```{r}
-#selecting only genes mutated at least once and with Ceres <= 0
-mutImpact_c = mutImpact[rowSums(is.na(mutImpact)) != ncol(mutImpact),]#remove all genes with all NA values
+#Selecting only genes mutated at least once and with Ceres <= 0
+mutImpact_c = mutImpact[rowSums(is.na(mutImpact)) != ncol(mutImpact),] #Remove all genes with all NA values
 rownamesmutImpc = rownames(mutImpact_c)
-mutImpact_c = cbind(rownamesmutImpc, mutImpact_c[,2:ncol(mutImpact_c)]) #insert new column with row names
-dim(mutImpact_c) #check gene reduction 
-rownameskdc2 = rownames(BCCL_kd.ceres) #define vector of BCCL_kd.ceres rownames 
+mutImpact_c = cbind(rownamesmutImpc, mutImpact_c[,2:ncol(mutImpact_c)]) #Insert new column with row names
+dim(mutImpact_c) #Check gene reduction 
+rownameskdc2 = rownames(BCCL_kd.ceres) #Define vector of BCCL_kd.ceres rownames 
 
-BCCL_kd.ceres_2 = cbind(rownameskdc2, BCCL_kd.ceres[,2:ncol(BCCL_kd.ceres)]) #insert new column with row names
+BCCL_kd.ceres_2 = cbind(rownameskdc2, BCCL_kd.ceres[,2:ncol(BCCL_kd.ceres)]) #Insert new column with row names
 BCCL_kd.ceres_3 = BCCL_kd.ceres_2[BCCL_kd.ceres_2[,"rownameskdc2"] %in%  mutImpact_c[,"rownamesmutImpc"],][,-c(1)]
-BCCL_kd.ceres_3 = cbind(BCCL_kd.ceres_3, rowMeans(BCCL_kd.ceres_3))[rowMeans(cbind(BCCL_kd.ceres_3, rowMeans(BCCL_kd.ceres_3)))<= 0,] #deletion of genes with CERES > 0
+BCCL_kd.ceres_3 = cbind(BCCL_kd.ceres_3, rowMeans(BCCL_kd.ceres_3))[rowMeans(cbind(BCCL_kd.ceres_3, rowMeans(BCCL_kd.ceres_3)))<= 0,] #Deletion of genes with CERES > 0
 dim(BCCL_kd.ceres_3)
 ```
 
 In preparation of k means clustering, the column containing average CERES scores for each gene was removed (new dataframe `BCCL_kd.ceresKS`) and the optimal number of k clusters identified. For each column (cell sample) of the dataframe, the data values were scaled. For cluster numbers between 2 and 15 the within sum of squares for each cell sample was calculated and stored as a separate dataframe. To ensure that the same result is obtained each time the code is run, the set.seed(1234) function was used.  
 
 ```{r warning=FALSE}
-#determine optimal cluster number k
-BCCL_kd.ceresKS = BCCL_kd.ceres_3[,-c(28)] #remove column of average CERES value column 
+#Determine optimal cluster number k
+BCCL_kd.ceresKS = BCCL_kd.ceres_3[,-c(28)] #Remove column of average CERES value column 
 
 CERES_Optimal_K <- function(BCCL_kd.ceresKS, specifier) {
   output <- lapply(1:ncol(BCCL_kd.ceresKS), function(a){
-   df <- scale(BCCL_kd.ceresKS[,a]) #pick one column of input data and scale 
-   wss <-(nrow(df-1))*sum(apply(df,2,var)) #define method of wss computation 
-   for (i in 2:15){ #for k between 2 and 15
-     set.seed(1234) #to ensure reproducability of results 
+   df <- scale(BCCL_kd.ceresKS[,a]) #Pick one column of input data and scale 
+   wss <-(nrow(df-1))*sum(apply(df,2,var)) #Define method of wss computation 
+   for (i in 2:15){ #For k between 2 and 15
+     set.seed(1234) #To ensure reproducability of results 
      wss[i] <- sum(kmeans(df, centers = i)$withinss)
      } 
    return(wss)
   })
-names (output) <- colnames(BCCL_kd.ceresKS) #rename the output 
+names (output) <- colnames(BCCL_kd.ceresKS) #Rename the output 
 return(output)
 }
 
@@ -429,18 +429,18 @@ To enable the plotting of within sum square (WSS) values for clusters from 2 to 
 The output of this lapply function (`optimalKprocessedData`), a list of 28 dataframes, was then combined into one and columns renamed accordingly. Subsequently, the ggplot function was used to plot all data stored in `optimalKprocessedData` in one plot. 
 
 ```{r warning=FALSE, fig.align="center", fig.cap="Fig. 4 Optimal number of clusters k using WSS of each BBCLs"}
-#plotting wss function 
+#Plotting wss function 
 optimalKprocessedData <- lapply(seq_along(BCCL_kd.ceres_optKS), function(a){
-  dtPicker <- as.data.frame(BCCL_kd.ceres_optKS[[a]]) #one vector picked and formatted into dataframe
-  dtPicker$Cell_Sample <- names(BCCL_kd.ceres_optKS)[a] #sample added as label
+  dtPicker <- as.data.frame(BCCL_kd.ceres_optKS[[a]]) #One vector picked and formatted into dataframe
+  dtPicker$Cell_Sample <- names(BCCL_kd.ceres_optKS)[a] #Sample added as label
   dtPicker$OptimalK <- 1:nrow(dtPicker) 
   return(dtPicker)
 })
 
-optimalKprocessedData <- as.data.frame(do.call("rbind",optimalKprocessedData)) #output into dataframe
-colnames(optimalKprocessedData) <- c("WSS", "Cell_Sample", "OptimalK") #renaming columns
+optimalKprocessedData <- as.data.frame(do.call("rbind",optimalKprocessedData)) #Output into dataframe
+colnames(optimalKprocessedData) <- c("WSS", "Cell_Sample", "OptimalK") #Renaming columns
 
-#using ggplot to plot output 
+#Using ggplot to plot output 
 ggplot(data = optimalKprocessedData, aes(x=OptimalK, y=WSS)) +
   geom_line(aes(color=Cell_Sample)) +
   labs(title = 'Optimal number of clusters k', x = 'Number of clusters', y = 'WSS') +
@@ -457,7 +457,6 @@ From this plot it is evident that the optimal cluster number lies between 2 and 
 
 ```{r warning=FALSE, fig.align="center", fig.cap="Fig. 5 Optimal cluster number k using WSS of all BCCLs combined" } 
 #Verification of optimal number of clusters k 
-
 km_CERES= kmeans(x = BCCL_kd.ceres_3, centers = 2, nstart = 10)
 table(km_CERES$cluster)
 wss = sapply(2:15, function(k) {
@@ -471,13 +470,13 @@ The optimal cluster number k was identified to be 4. Thus, k means clustering of
 ```{r warning=FALSE, fig.align="center", fig.cap="Fig. 6 K means cluster plot"}
 km_CERES= kmeans(x = BCCL_kd.ceres_3, centers = 4, nstart = 10)
 table(km_CERES$cluster)
-fviz_cluster(km_CERES, data=BCCL_kd.ceres_3, labelsize = 6) #plotting clusters
+fviz_cluster(km_CERES, data=BCCL_kd.ceres_3, labelsize = 6) #Plotting clusters
 ```
 
 In order to verify our selection of driver mutations from literature, the cluster number of each driver mutation was identified. All selected driver mutations from literature,"ERBB2", "MYCBP", "PARP10" and "PIK3CA" were colocalized in cluster 3, hence with similar CERES scores, with the exception of "CCND" and "ERBBIP". While "CCND" was removed in the filtering process and no longer found in`BCCL_kd.ceres_3`, "ERBB2IP" was found in cluster 4. For these reasons the two mentioned mutations were excluded from further analysis, to leave only "ERBB2", "MYCBP", "PARP10" and "PIK3CA" as selected driver mutations.
 
 ```{r warning=FALSE}
-driver_mut <- c("ERBB2","ERBB2IP", "MYCBP", "PARP10", "PIK3CA") #enter driver mutations
+driver_mut <- c("ERBB2","ERBB2IP", "MYCBP", "PARP10", "PIK3CA") #Enter driver mutations
 CheckKmNumber <- as.data.frame(sapply(seq_along(driver_mut), function(a){
   out <- km_CERES$cluster[driver_mut[a]]
   return(out)
@@ -492,13 +491,13 @@ Since our approach defined SSTs as genes expected to interact synergistically wi
 ```{r warning=FALSE}
 data_cluster = as.data.frame(km_CERES$cluster)
 rownames(data_cluster) = rownames(BCCL_kd.ceres_3)
-data_clus_3 = BCCL_kd.ceres_3[data_cluster == 3,] #dataframe with all 1148 genes in same cluster as driver mutations 
+data_clus_3 = BCCL_kd.ceres_3[data_cluster == 3,] #Dataframe with all 1148 genes in same cluster as driver mutations 
 ```
 
 A further dataframe `data_clus_3e` was subsequently generated labelling the four driver mutations in a separate column, by implementing an "IF" loop. If the rowname of `data_clus_3e`was found in a previously created vector containing driver mutations names (`drivermut`), it was labelled as "driver mutation". Otherwise genes were labelled as "no driver mutation".
 
 ```{r Labeling driver mutations, warning=FALSE}
-drivermut =  c("ERBB2","MYCBP", "PARP10", "PIK3CA") #create vector with driver mutation names
+drivermut =  c("ERBB2","MYCBP", "PARP10", "PIK3CA") #Create vector with driver mutation names
 
 data_clus_3e = data_clus_3
 data_clus_3e["Driver mutation"] <- sapply(1:nrow(data_clus_3), function(j){
@@ -507,7 +506,7 @@ data_clus_3e["Driver mutation"] <- sapply(1:nrow(data_clus_3), function(j){
      } else {
          data_clus_3e[j,1] = "no driver mutation"
      }
-  }) #labelling driver mutations with "driver mutation" in data_clus_3e 
+  }) #Labelling driver mutations with "driver mutation" in data_clus_3e 
 ```
 
 ### Data visualisation of CERES and TPM values for selected driver mutations 
@@ -571,9 +570,9 @@ Genetic interactions of driver mutations with other genes were examined based on
 For the purpose of conducting the Wilcoxon test the data from which the CERES scores for the test are taken was prepared. Therefore, a vector containg the identified driver mutations was generated. Furthermore, a reduced mutImpact matrix `mutImpact_r` was created from `mutImpact`which only includes genes which are mutated and do not have `NA`values only. Based on `mutImpact_r`the `BCCL_kd.ceres` matrix was reduced resulting in the `mutImpact_kd.ceres` matrix containing the CERES scores of all genes in all cell lines if the gene is mutated in one cell line at minimum. 
 
 ```{r warning=FALSE}
-#preparation of the data
+#Preparation of the data
 mutImpact_r <- mutImpact[rowSums(is.na(mutImpact)) != ncol(mutImpact), ] #_r=reduced: get rid of all the ONLY NA rows (this will save computation)
-mutImpact_kd.ceres <- BCCL_kd.ceres[rownames(BCCL_kd.ceres) %in% rownames(mutImpact_r),] # create matrix containing CERES scores of genes which are mutated once at minimum
+mutImpact_kd.ceres <- BCCL_kd.ceres[rownames(BCCL_kd.ceres) %in% rownames(mutImpact_r),] #Create matrix containing CERES scores of genes which are mutated once at minimum
 colnames(mutImpact_kd.ceres) <- tPatients_ID
 ```
 
@@ -582,16 +581,16 @@ A Wilcoxon signed rank test was performed for every driver mutation with all oth
 Thereupon, a loop was installed generating the output data frame for each driver mutation. At first the driver mutation to be examined was selected and the corresponding CERES values retrieved from `mutImpact_kd.ceres` being saved in the temporary variable `driverMutData`. Consequently, a reference gene was chosen and the CERES scores of the reference gene was stored in another temporary vector `refGeneData`. In case the selected reference gene was not the driver mutation itself the Wilcoxon test was performed. The p-value of each gene pair was saved in the data frame of the considered driver mutation.
 
 ```{r warning=FALSE}
-#performance of the Wilcoxon test
+#Performance of the Wilcoxon test
 testData <- lapply(seq_along(drivermut), function(a) {
-  driverMutPicker <- drivermut[a] #pick a DV
-  driverMutData <- mutImpact_kd.ceres[driverMutPicker,] #get CERES scores of DV
+  driverMutPicker <- drivermut[a] #Pick a DV
+  driverMutData <- mutImpact_kd.ceres[driverMutPicker,] #Get CERES scores of DV
   
   outputData <- sapply(1:nrow(mutImpact_kd.ceres), function(b) {
-    refGeneData <- mutImpact_kd.ceres[b,] #get CERES scores of reference gene (potential SST)
+    refGeneData <- mutImpact_kd.ceres[b,] #Get CERES scores of reference gene (potential SST)
     
     if (rownames(refGeneData) != driverMutPicker) {
-      out <- wilcox.test(as.numeric(driverMutData), as.numeric(refGeneData), paired = TRUE)$p.value #get p-value of wilcoxon signed-rank test
+      out <- wilcox.test(as.numeric(driverMutData), as.numeric(refGeneData), paired = TRUE)$p.value #Get p-value of wilcoxon signed-rank test
       out <- as.data.frame(out, rownames(mutImpact_r)[b]) 
       return(out)
     }
@@ -602,45 +601,45 @@ testData <- lapply(seq_along(drivermut), function(a) {
 })
 names(testData) <- drivermut
 
-lapply(testData, function(a) head(a)) #look at the data
+lapply(testData, function(a) head(a)) #Look at the data
 ```
 
 As the null hypothesis claims that the CERES scores of the driver mutation and the reference genes are equal, low p-values indicate that there is no relation between the CERES scores of the driver mutation and the reference gene whereas high p-values may allude to genetic interaction of the driver mutation with an SST.
 The obtained p-values were distributed as shown below. Most strinkingly, the first quantile was set at a p-value of 0.0 for each driver mutation, indicating that there are many genes with CERES scores which are not relatable to the CERES scores of the driver mutations. However, the maximum p-value of each test constituted 1.0 suggesting that there are also genes with similar CERES scores as the driver mutations which are supposed to be the SSTs. 
 
 ```{r warning=FALSE}
-#get summary of distribution
-testDataSummary <- c() #create empty vector to append data to
+#Get summary of distribution
+testDataSummary <- c() #Create empty vector to append data to
 testDataSummary <- sapply(1:length(drivermut), function(a){
-  dvPicker <- as.vector(testData[[a]][[1]]) #select a DV
+  dvPicker <- as.vector(testData[[a]][[1]]) #Select a DV
   
-  summaryVector <- c(min(dvPicker), quantile(dvPicker, probs = 0.25), median(dvPicker), mean(dvPicker), quantile(dvPicker, probs = 0.75), max(dvPicker)) #generate vector containing summary data of the p-values generated fr the chosen DV
+  summaryVector <- c(min(dvPicker), quantile(dvPicker, probs = 0.25), median(dvPicker), mean(dvPicker), quantile(dvPicker, probs = 0.75), max(dvPicker)) #Generate vector containing summary data of the p-values generated fr the chosen DV
   
-  testDataSummary <- cbind(testDataSummary, summaryVector) #add vector to data matrix
+  testDataSummary <- cbind(testDataSummary, summaryVector) #Add vector to data matrix
 })
 
-testDataSummary <- as.data.frame(testDataSummary) #transform matrix to dataframe
+testDataSummary <- as.data.frame(testDataSummary) #Transform matrix to dataframe
 
 colnames(testDataSummary) <- drivermut
-rownames(testDataSummary) <- c("min", "1st quartile", "median", "mean", "3rd quartile", "max") #rename rows and columns
+rownames(testDataSummary) <- c("min", "1st quartile", "median", "mean", "3rd quartile", "max") #Rename rows and columns
 
-paged_table(testDataSummary) #have a look at the distribution of p-values
+paged_table(testDataSummary) #Have a look at the distribution of p-values
 ```
 
 Based on the results of the Wilcoxon test, potential SSTs were chosen by means of the highest p-values. Thus, the list `SST_Data`consisting of one data frame per driver mutation was created based on the test results given in the `test_data` list. Therefore, an `lapply`command was used filtering each data frames of `test_data` by selecting the 15 reference genes which were found to have the most similar CERES scores as the driver mutation, indicated by high p-values. In this course, the rownames of the data frames had to be transferred to an extra column before selection and transferred back afterwards as otherwise the rownames would have been lost during the filtering process. Unequal numbers of SST candidates were found due to similar test results for several reference genes.
 
 ```{r warning=FALSE}
-#select 15 most promising SST candidates based on highest p-values
+#Select 15 most promising SST candidates based on highest p-values
 
 SST_Data <- lapply(seq_along(testData), function(a) {
-  data <- as.data.frame(testData[[a]], col.names = names(testData[[a]])) #create new data frame containing testData for each SST
-  colnames(data) = drivermut[a] #rename columns
-  data <- data %>%rownames_to_column() %>% top_n(15, data[,1]) %>% column_to_rownames() #select 15 genes with highest p-value
+  data <- as.data.frame(testData[[a]], col.names = names(testData[[a]])) #Create new data frame containing testData for each SST
+  colnames(data) = drivermut[a] #Rename columns
+  data <- data %>%rownames_to_column() %>% top_n(15, data[,1]) %>% column_to_rownames() #Select 15 genes with highest p-value
   return(data)
 })
 names(SST_Data) <- drivermut
 
-#have a look at the SST candidates
+#Have a look at the SST candidates
 paged_table(SST_Data$ERBB2)
 paged_table(SST_Data$MYCBP)
 paged_table(SST_Data$PARP10)
@@ -652,8 +651,8 @@ paged_table(SST_Data$PIK3CA)
 After selection of the SST candidates stored in `SST_Data` the coexistance of SST candidates and driver mutation in the same k means cluster was verified. An assignment to the same cluster would confirm a possible cooperation of gene pairs due to similar CERES scores. For this, the lapply function was used to chose each dataframe and thus driver mutation in turn from the list using the seq_along command.A further loop was installed such that for each driver mutation dataframes, the rownames of the `DvPicker` were compared to all possible  `data_clus_3e` rownames. If a coexistance of genes in the 3rd k means cluster was identified, genes were labelled as `verified` in a new column entitled "classifier". No match between rownames led to the `not verified`entry.
 
 ```{r SST Cluster Check, warning=FALSE}
-SST_Data <- lapply(seq_along(SST_Data), function(a) { # pick one dataframe from list
-  DvPicker <- SST_Data[[a]] # choose DV 
+SST_Data <- lapply(seq_along(SST_Data), function(a) { #Pick one dataframe from list
+  DvPicker <- SST_Data[[a]] #Choose DV 
   
   DvPicker$classifier <- sapply(1:nrow(DvPicker), function(b) {
     if (rownames(DvPicker)[b] %in% rownames(data_clus_3e)) {
@@ -671,23 +670,23 @@ names(SST_Data) <- drivermut
 
 In order to characterize the SSTs, additional information on each SST was retrieved from the original data set and added to the data frames in `SST_Data`.
 
-First, the type of mutation was examined for each SST and each cell line in which it was mutated. For this purpose a nested `lapply` construction was used. Initially, a data frame of one driver mutation was chosen and the new column `mutType` was generated by the second `lapply` loop. Thus, iterating the SST candidates the mutation status of each SST in each cell line was determined inspecting the presence of the SST in the list of mutated genes for each cell line. If the SST candidate was mutated in a given cell line its type of mutation (stored in the `BCCL_Mutation`list as `Variant_Classification`) was obtained and saved in a temporary vector to which all possible types of mutations were collected for each SST. Finally, this vector was concatenated as a string, which was assigned to the `mutType` column.
+First, the type of mutation was examined for each SST and each cell line in which it was mutated. For this purpose a nested `apply` construction was used. Initially, a data frame of one driver mutation was chosen and the new column `mutType` was generated by a `sapply` loop. Thus, iterating the SST candidates the mutation status of each SST in each cell line was determined inspecting the presence of the SST in the list of mutated genes for each cell line. If the SST candidate was mutated in a given cell line its type of mutation (stored in the `BCCL_Mutation`list as `Variant_Classification`) was obtained and saved in a temporary vector to which all possible types of mutations were collected for each SST. Finally, this vector was concatenated as a string, which was assigned to the `mutType` column.
 
 ```{r warning=FALSE}
 SST_Data <- lapply(seq_along(SST_Data), function(a) {
-  dvPicker <- SST_Data[[a]] #pick a data frame of one driver mutation
+  dvPicker <- SST_Data[[a]] #Pick a data frame of one driver mutation
   
   dvPicker$mutType <- sapply(seq_along(rownames(dvPicker)), function(b) {
-    SSTPicker <- rownames(dvPicker)[b] #select an SST candidate
+    SSTPicker <- rownames(dvPicker)[b] #Select an SST candidate
     
     mutTypeData <- c()
     for (i in 1:ncol(BCCL_kd.ceres)) { 
-      if (SSTPicker %in% BCCL_Mutation[[i]]$Hugo_Symbol) { #check whether the SST mutation is present in a cell line
-        out <- BCCL_Mutation[[i]]$Variant_Classification[a] #get type of mutation per SST and cell line
-        mutTypeData <- c(mutTypeData, out) #store type of mutation in vector
+      if (SSTPicker %in% BCCL_Mutation[[i]]$Hugo_Symbol) { #Check whether the SST mutation is present in a cell line
+        out <- BCCL_Mutation[[i]]$Variant_Classification[a] #Get type of mutation per SST and cell line
+        mutTypeData <- c(mutTypeData, out) #Store type of mutation in vector
       }
     }
-    dvPicker[b, 2] <- paste(mutTypeData, collapse = ", ") #create a string of SST mutation types based on the vector
+    dvPicker[b, 2] <- paste(mutTypeData, collapse = ", ") #Create a string of SST mutation types based on the vector
   })
   return(dvPicker)
 })
@@ -700,18 +699,18 @@ Most strikingly, many of the SST gene functions comprise proteins contributing t
 
 ```{r warning=FALSE, error=FALSE}
 functionTable <- list(
-read_delim(paste0(root.dir,"/functionTable_ERBB2.csv"), ";", escape_double = FALSE, col_names = TRUE, trim_ws = TRUE),  read_delim(paste0(root.dir,"/functionTable_MYCBP.csv"), ";", escape_double = FALSE, col_names = TRUE, trim_ws = TRUE), read_delim(paste0(root.dir,"/functionTable_PARP10.csv"), ";", escape_double = FALSE, col_names = TRUE, trim_ws = TRUE), read_delim(paste0(root.dir,"/functionTable_PIK3CA.csv"), ";", escape_double = FALSE, col_names = TRUE, trim_ws = TRUE)) #create list of data frames containing the data of the Excel files (e.g. gene function, references)
+read_delim(paste0(root.dir,"/functionTable_ERBB2.csv"), ";", escape_double = FALSE, col_names = TRUE, trim_ws = TRUE),  read_delim(paste0(root.dir,"/functionTable_MYCBP.csv"), ";", escape_double = FALSE, col_names = TRUE, trim_ws = TRUE), read_delim(paste0(root.dir,"/functionTable_PARP10.csv"), ";", escape_double = FALSE, col_names = TRUE, trim_ws = TRUE), read_delim(paste0(root.dir,"/functionTable_PIK3CA.csv"), ";", escape_double = FALSE, col_names = TRUE, trim_ws = TRUE)) #Create list of data frames containing the data of the Excel files (e.g. gene function, references)
 
 SST_Data <- lapply(seq_along(SST_Data), function(a) {
-  SST_Data[[a]] <- cbind(SST_Data [[a]], as.data.frame(functionTable[[a]]["function"])) #add gene function for every SST of every DV
+  SST_Data[[a]] <- cbind(SST_Data [[a]], as.data.frame(functionTable[[a]]["function"])) #Add gene function for every SST of every DV
 })
 
-names(SST_Data) <- drivermut #regenerate names
+names(SST_Data) <- drivermut #Regenerate names
 
 paged_table(SST_Data$ERBB2)
 paged_table(SST_Data$MYCBP)
 paged_table(SST_Data$PARP10)
-paged_table(SST_Data$PIK3CA) #have a look at the SSTs
+paged_table(SST_Data$PIK3CA) #Have a look at the SSTs
 ```
 
 ### Database research and outcome of analysis
@@ -736,20 +735,20 @@ The last twelve candidates showed different characteristics. A few of them like 
 
 ## Exploiting interactions: Regression analysis to predict CERES scores of driver mutation
 
-For the regression model, we want to predict the CERES score of the driver mutation (dependent variable) based on the CERES score of the SST candidates (independent variables).
+For the regression model, we wanted to predict the CERES score of the driver mutation (dependent variable) based on the CERES score of the SST candidates (independent variables).
 
 ### Conditioning the dataset
 
-To run multilinear regression, we reform the `BCCL_kd.ceres` matrix. By transposings and a format change, we obtain a matrix with colnames = Gene names and rownames = Cell line indices (equal to tPatients_ID). Then, we collect the relevant the CERES scores for the mutations for the linear regression.
+To run a multilinear regression, we reform the `BCCL_kd.ceres` matrix. By transposings and a format change, we obtain a matrix with colnames = Gene names and rownames = Cell line indices (equal to tPatients_ID). Then, we collect the relevant the CERES scores for the mutations for the linear regression.
 All columns with the corresponding names of the SST genes plus the driver mutation will be collected and copied into a new dataframe.
       
 ```{r Regression sample construction, fig.align = 'center', warning=FALSE}
-#reformat BCCL CERES matrix
+#Reformat BCCL CERES matrix
 BCCL_kd.ceres_df <- as.data.frame(t(BCCL_kd.ceres))
 rownames(BCCL_kd.ceres_df) <- tPatients_ID
 colnames(BCCL_kd.ceres_df) <- rownames(BCCL_kd.ceres)
 
-#generate a dataframe containing data for each DV
+#Generate a dataframe containing data for each DV
 linRegData_ERBB2 <- BCCL_kd.ceres_df %>% select(rownames(SST_Data$ERBB2), "ERBB2")
 linRegData_MYCBP <- BCCL_kd.ceres_df %>% select(rownames(SST_Data$MYCBP), "MYCBP")
 linRegData_PARP10 <- BCCL_kd.ceres_df %>% select(rownames(SST_Data$PARP10), "PARP10")
@@ -759,17 +758,17 @@ data_regression <- list(linRegData_ERBB2, linRegData_MYCBP, linRegData_PARP10, l
 names(data_regression) <- c("ERBB2", "MYCBP", "PARP10", "PIK3CA")
 ```
 
-To run regression, certain conditions must be fulfilled:
-- Normal distribution, checked with a qqPlot: Using the aes-function for aesthetic plots, provided by the "ggplot2" package.
-- Multicollinearity, which is given if two dependent variables are strongly correlated, which can lead to difficulties in further analysis.
+To run a regression, certain conditions must be fulfilled:
+* Normal distribution, checked with a qqPlot: Using the aes-function for aesthetic plots, provided by the "ggplot2" package.
+* Multicollinearity, which is given if two dependent variables are strongly correlated, which can lead to difficulties in further analysis.
     + As rule of thumb, the Pearson correlation coefficient should be lower than 0.8:
       $r < 0.80$
 If this requirement is not met, one of the correlated variables should be deleted as it is seen as redundant.
 
-```{r Regression sample distribution, fig.align = 'center', fig.cap="Fig. 8 QQ plots for each driver mutation", warning=FALSE}
+```{r Regression sample distribution, fig.align = 'center', fig.cap="Fig. 8 Heatmaps and QQ plots for each driver mutation", warning=FALSE}
 lapply(seq_along(data_regression), function(a){  
-  par(mfrow=c(1,2)) #hmmm should show them beneath .... 
-  p <- ggplot(data_regression[[a]], aes(sample=data_regression[[a]][,ncol(data_regression[[a]])])) + stat_qq() +           stat_qq_line() #create qq-Plot with line for comparison to normal distribution +
+  par(mfrow=c(1,2)) #Hmmm should show them beneath .... 
+  p <- ggplot(data_regression[[a]], aes(sample=data_regression[[a]][,ncol(data_regression[[a]])])) + stat_qq() +           stat_qq_line() #Create qq-Plot with line for comparison to normal distribution +
         labs(title = "QQ-Plot", subtitle = "Check if data is approx. normally distributed") +
           theme(legend.position ="none",
             plot.title = element_text(hjust = 0.4),
@@ -777,11 +776,11 @@ lapply(seq_along(data_regression), function(a){
             legend.title= element_blank(),
             axis.title.x = element_text(),
             strip.text.y = element_text(angle = 0))
-  r <-  round(cor(data_regression[[a]]),2) #create table with correlation values between all SSTs; the values are rounded to two decimal places [,2)]
+  r <-  round(cor(data_regression[[a]]),2) #Create table with correlation values between all SSTs; the values are rounded to two decimal places [,2)]
   col <- colorRampPalette(c("magenta", "white", "blue1"))(n = 1000)
   cormap <- heatmap.2(r, scale = "none", col = col, 
           trace = "none", density.info = "none", dendrogram = c("both"), main = "Correlation of driver mutations")
-  return(list(p,r)) #Muss hier nicht noch r rein oder funktioniert es so?
+  return(list(p,r)) 
    })
 ```
 The QQ-Plots show that the sample Data of MYCBP and PARP10 is approx. normally distributed; ERBB2 and PIK3CA do not present normal distribution.
@@ -789,19 +788,19 @@ As one can see in the heatmaps of the Pearson correlation values, no multicollin
   
 ### Design of the multilinear regression
 
-To run the Multilinear Regression, it is advised to create a long function which splits the dataset in 75:25 training: test data.
-Then the function conducts training of regression model, with training data to predict Driver mutation CERES (y; dep.variable) from SST CERES scores (x1 ... xn; indep.variables)
+To run the multilinear regression, it is advised to create a long function which splits the dataset in 75:25 training: test data.
+Then the function conducts training of regression model, with training data to predict Driver mutation CERES (y; dep.variable) from SST CERES scores (x1 ... xn; indep.variables).
 Followed by checking model assumptions of residual normal distribution and homoscedasticity.
-Later on, the function runs the test Data on model for performance evaluation and finally calculates and plots Spearman correlation to further asses model performance.
+Later on, the function runs the test data on model for performance evaluation and finally calculates and plots Spearman correlation to further asses model performance.
 
-For the Spearman correlation, the rank-correlation coefficient can take values from +1 to -1
-+ rho ~ 1: perfect positive association of ranks
-+ rho ~ 0: no association of ranks
-+ rho ~ -1: perfect negative association of ranks
+For the Spearman correlation, the rank-correlation coefficient can take values from +1 to -1.
+* rho ~ 1: perfect positive association of ranks
+* rho ~ 0: no association of ranks
+* rho ~ -1: perfect negative association of ranks
 
 To further interprete the p-value, we construct a H0 / H1 hypothesis:
-+ H0: There is no association between the predicted and observed variable.
-+ H1: There is an association between the predicted and observed variable.
+* H0: There is no association between the predicted and observed variable.
+* H1: There is an association between the predicted and observed variable.
 Most importantly, it is not possible to assess the strength of the correlation based on the p-value. It rather judges the statistical test than the resulting value. As default, we set the significance level to 0.05.
 
 We will the compare this values for the different models. For a positive correlation, two variables move in the same direction. For a well-designed model, we expect the predicted and observed CERES scores being approx. even. Thus, optimal model design is achieved if the correlation coefficient is close to 1 and the p-value p < 0.05.
@@ -811,36 +810,36 @@ Additionally, we plot the distributions of predicted against observed values for
 input_data <- data_regression
 
 plottingData <- lapply(seq_along(input_data), function(a) {
-  set.seed(123) #initialize the random numbers, ensures better repoducibility
-  data <- input_data[[a]] #get the data
+  set.seed(123) #Initialize the random numbers, ensures better repoducibility
+  data <- input_data[[a]] #Get the data
   colnames(data)[length(colnames(data))] <- "Predictor"
   
-  split = sample.split(data[,ncol(data)], SplitRatio = 0.75) #split the dataset into 3/4 Training and 1/4 Testing dataset
-  training_set = subset(data, split == TRUE) #use the labels to get the training data
+  split = sample.split(data[,ncol(data)], SplitRatio = 0.75) #Split the dataset into 3/4 Training and 1/4 Testing dataset
+  training_set = subset(data, split == TRUE) #Use the labels to get the training data
   test_set = subset(data, split == FALSE)
   
   regressor = lm(formula = Predictor ~ ., 
-                 data = training_set)  #predict CERES of Driver Mutation based on all (=.) the input variables (SSTs)
+                 data = training_set)  #Predict CERES of Driver Mutation based on all (=.) the input variables (SSTs)
   
-  pdf(paste0(root.dir, "/Resid-HomoPlot_",drivermut[a],".pdf")) #save plots as pdf, in working directory "wd"
-  hist(resid(regressor), main = paste0('Histogram of residuals: ', driver_mut[a]),xlab='Standardised Residuals',ylab='Frequency') #plot a histogram of standardised residuals to check the assumption of normality
-  dev.off() #closing the figure file
+  pdf(paste0(root.dir, "/Resid-HomoPlot_",drivermut[a],".pdf")) #Save plots as pdf, in working directory "wd"
+  hist(resid(regressor), main = paste0('Histogram of residuals: ', driver_mut[a]),xlab='Standardised Residuals',ylab='Frequency') #Plot a histogram of standardised residuals to check the assumption of normality
+  dev.off() #Closing the figure file
   
-  pdf(paste0(root.dir, "/HomoPlot_",drivermut[a],".pdf")) #save plots as pdf, in working directory "wd"
-  plot(regressor, which = 1) #fitted values and residuals plot to check the assumption of homoscedasticity
-  dev.off() #closing the figure file
+  pdf(paste0(root.dir, "/HomoPlot_",drivermut[a],".pdf")) #Save plots as pdf, in working directory "wd"
+  plot(regressor, which = 1) #Fitted values and residuals plot to check the assumption of homoscedasticity
+  dev.off() #Closing the figure file
   
-  y_pred = predict(regressor, newdata = test_set) #predict the Driver mut. CERES score based on the test data
-  test_set$Prediction = y_pred #adding predictions to the dataset
+  y_pred = predict(regressor, newdata = test_set) #Predict the Driver mut. CERES score based on the test data
+  test_set$Prediction = y_pred #Adding predictions to the dataset
   
   df = cbind(test_set$Predictor, test_set$Prediction)
   colnames(df) <- c("Predictor", "Prediction")
   rownames(df) <- rownames(test_set)
   
-  return(df) #create a dataframe with predicted and observed CERES values
+  return(df) #Create a dataframe with predicted and observed CERES values
 })
 
-# Plot the data external 
+#Plot the data external 
 plottingFunction <- function(inputData, driverMut) {
   df = melt(inputData)
   p <- ggplot(data = df, aes(x=value, fill=Var2)) + 
@@ -848,18 +847,18 @@ plottingFunction <- function(inputData, driverMut) {
     ggtitle(paste0("Spearman Correlation plot: ", driverMut)) +
     ylab("Predicted score") +
     xlab("Observed score") +
-    theme_bw(base_size = 7) + #design input
+    theme_bw(base_size = 7) + #Design input
     theme(legend.position="bottom",
           legend.direction="horizontal",
           plot.title = element_text(hjust = 0.5),
-          axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),#design input
+          axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),#Design input
           legend.title= element_blank(),
           axis.title.x = element_blank(),
           strip.text.y = element_text(angle = 0))
   
   pdf(paste0(root.dir, "/SpearmanPlot",driverMut,".pdf"))
   print(p)
-  dev.off()#closing the figure file
+  dev.off()#Closing the figure file
 }
 
 plottingFunction(plottingData[[1]], drivermut[1])
@@ -870,11 +869,11 @@ plottingFunction(plottingData[[4]], drivermut[4])
 #Get the correlation values
 correlations <- lapply(seq_along(plottingData), function(a) {
   df = plottingData[[a]]
-  corVal <- cor.test(df[,1] , df[,2], method = "spearman") #to judge model performance, calculate Spearman corr. between predicted and observed values
+  corVal <- cor.test(df[,1] , df[,2], method = "spearman") #To judge model performance, calculate Spearman corr. between predicted and observed values
   return(corVal)
 })
 names(correlations) <- drivermut
-correlations #look at the dat
+correlations #Look at the dat
 ```
 
 *How about doing a linear regression model and comparing the F-statistic values?*
@@ -889,7 +888,7 @@ MCYBP     | yes               | no                   | yes            | no      
 PARP      | yes               | no                   | yes            | no                  |
 PIK3CA    | no                | yes                  | no             | no                  |
 
-Checking distributional assumptions (= normal distribution) is also important and a different model should be chosen if needed. (Harrell 2001). 
+Checking distributional assumptions (= normal distribution) is also important and a different model should be chosen if needed (Harrell, 2001). 
 As shown in the qq-Plots, normal distribution does only apply to the models of MYCBP and PARP10. ERBB2 on the other hand, delivers the highest rho, but is in no way approx. normal distributed.The PIK3CA model also does not fulfill the condition of normal distribution.
 
 The normal distribution does not lead to higher correlation coefficients. But not satisfying distribution assumptions should be treated as a red flag; and the model is not suited for further use.
@@ -950,7 +949,7 @@ The aim of this project was to identify genes, so called second site targets, wh
 If this equation is fulfilled, the model is supposed to be reliable.(Harrell 2001). For our four models the calculation suggests that our data set has the appropriate size for a basic regression model.
 
 ```{r Table Captions, include=FALSE}
-library(captioner)#another temporary "bugfix"
+library(captioner)#Another temporary "bugfix"
 table_nums <- captioner(prefix = "Table")
 
 table_nums("Assumption", "Summary of the Regression assumption checks for the four models. Conditions were met (yes) or not (no).")
@@ -962,9 +961,9 @@ table_nums("Spearman", "Summary of Spearman Correlation Test between observed an
 
 The aim of this project was to identify genes, so called second site targets, which interact genetically with selected driver mutations to promote cell viability and proliferation in breast cell cancers. Our hope was that these genes could be potential new targets for more specific therapies. 
 
-After selection of five non-tumor suppressor gene driver mutations (CCND, ERBB2, MYC, PARP10, PIK3CA) form literature, datasets were formatted to include only breast cancer cell lines. Subsequent, general data exploration revealed a large variety of CERES scores and expression values across both selected driver mutations and remaining genes of breast cell cancer lines. This proved the need to undertake further steps of data cleanup. Thus, in order to analyze only mutated genes, the mutImpact matrix was generated, containing CERES values only of mutated genes in a given cell line, otherwise with the entry for a given cell line being â€œNAâ€. Further data cleanup was performed by removing all genes which contained all â€œNAâ€ values and whose mean CERES scores were greater than zero. Through this process, 4934 possible SST genes remained, fitting the criteria of being mutated and having a positive impact on cell viability. However, in this process genes with a nonuniform distribution or of CERES scores across cell lines or unique outliers distorting mean values could have been mistakenly removed.
+After selection of five non-tumor suppressor gene driver mutations (CCND, ERBB2, MYC, PARP10, PIK3CA) form literature, datasets were formatted to include only breast cancer cell lines. Subsequent, general data exploration revealed a large variety of CERES scores and expression values across both selected driver mutations and remaining genes of breast cell cancer lines. This proved the need to undertake further steps of data cleanup. Thus, in order to analyze only mutated genes, the mutImpact matrix was generated, containing CERES values only of mutated genes in a given cell line, otherwise with the entry for a given cell line being €œNA€. Further data cleanup was performed by removing all genes which contained all €œNA€ values and whose mean CERES scores were greater than zero. Through this process, 4934 possible SST genes remained, fitting the criteria of being mutated and having a positive impact on cell viability. However, in this process genes with a nonuniform distribution or of CERES scores across cell lines or unique outliers distorting mean values could have been mistakenly removed.
 
-With this findings, the selection of driver mutations from literature research was verified by performing k means clustering of associated CERES scores. After calculation of within sum squares values for a range of cluster numbers, the optimal cluster number was identified to be four, using the elbow method. Clustering revealed four out of five driver mutations to be colocalized in cluster three, hence having similar positive effects of improving the viability of breast cancer cells while not being tumor suppressor genes. These genes thus proved appropriate for further analysis. While CCND was removed early on in data clean up stages due to not being mutated in any breast cancer cell line, ERBB2IP on the other hand was found in cluster four instead. Since both genes did not match the criteria of driver mutations they were excluded from further analysis. Overall, it must however be noted that although the optimal cluster number was identified to be four, the cluster plot shows that clusters were not distinctly separated from one another. Alternative cluster numbers could therefore have resulted in a different assignment of driver mutations and consequently other results based on our selection method. 
+With these findings, the selection of driver mutations from literature research was verified by performing k means clustering of associated CERES scores. After calculation of within sum squares values for a range of cluster numbers, the optimal cluster number was identified to be four, using the elbow method. Clustering revealed four out of five driver mutations to be colocalized in cluster three, hence having similar positive effects of improving the viability of breast cancer cells while not being tumor suppressor genes. These genes thus proved appropriate for further analysis. While CCND was removed early on in data clean up stages due to not being mutated in any breast cancer cell line, ERBB2IP on the other hand was found in cluster four instead. Since both genes did not match the criteria of driver mutations they were excluded from further analysis. Overall, it must be noted that although the optimal cluster number was identified to be four, the cluster plot shows that clusters were not distinctly separated from one another. Alternative cluster numbers could therefore have resulted in a different assignment of driver mutations and consequently other results based on our selection method. 
 
 Nevertheless ERBB2, MYCBP, PARP10 and PIK3CA were used as central driver mutations for further analysis. Box-and whisker plots of CERES scores revealed mutations of the MYCB gene to have greatest essentiality, with least variation, for cell survival. ERBB2 on the other hand had the highest average of CERES scores, greatest variation and lowest impact on cell proliferation. In contrast the ERBB2 driver mutation showed highest TPM values and hence suggested overexpression. The gene however remained the gene with greatest variation in values closely followed by PARP10. TPM expression values were lowest for PIK3CA, with little variation which was also seen for MYCBP. 
 
@@ -973,7 +972,7 @@ Since our approach had defined SSTs to be genes expected to interact synergistic
 Based on the result of the Wilcoxon test, the top 15 genes with highest p-values for each mutation were chosen.  Due to some genes having the same p-value, ERBB2 and PARP10 were each selected to have 17 potential SST candidates, PIK3CA 18 potential candidates while MYCBP had 15 candidates. In the next step all potential SST candidates were verified, by checking their cluster assignment in the previously completed k means clustering. As expected, all SST candidates were confirmed to be found in in the same cluster 3 as the driver mutations. With this verification, all SSTs were characterized and labelled with mutation type and the physiological gene function using the universal protein database (UniProt). Most strikingly, many SST gene functions comprised proteins contributing to cell cycle progression, cell motility and polarity together with transcriptional regulators affecting cell metabolism. The most common type of mutation was a missense or silent mutation for SSTs of all driver mutations. 
 After discovering all functions of found SSTs we investigated if there is already research, searching for their therapeutic potential. In our cohort of 67 SSTs only one SST is already targetable with a drug. While a few of them are not very present in ongoing research, most of the SSTs have be already been related to tumor diseases. Upon further investigation four SSTS, "TNS3", "BCL9L, "CREBBP" and "SLC4A7" represent the main targets for future therapy investigations. We would be thrilled to see some of them in a drug database in the future.
 
-The final step in this project was to exploit the identified interactions and design a regression model to predict CERES scores of driver mutations based on the SST candidate CERES scores. This would allow us to predict the impact of driver mutations on cell viability based on the effect of SSTs on breast cancer cell proliferation. After data preparation, the conditions of normality and multicollinearity were verified. While MYCBP and PARP10 CERES values were approximately normally distributed, ERBB2 and PIK3CA values were not, thus not meeting the criteria for a multilinear regression. Additionally, no multicollinearity was detected with all values smaller than 0.80.
+The final step in this project, was to exploit the identified interactions and design a regression model to predict CERES scores of driver mutations based on the SST candidate CERES scores. This would allow us to predict the impact of driver mutations on cell viability based on the effect of SSTs on breast cancer cell proliferation. After data preparation, the conditions of normality and multicollinearity were verified. While MYCBP and PARP10 CERES values were approximately normally distributed, ERBB2 and PIK3CA values were not, thus not meeting the criteria for a multilinear regression. Additionally, no multicollinearity was detected with all values smaller than 0.80.
 
 Model     | Data distribution | Residual distribution| Homoscedastity |Spearman correlation |
 ----------|-------------------|----------------------|----------------|---------------------|
@@ -997,14 +996,14 @@ PIK3CA    | 0.7131      |         H0          | -0.1786  | weak negative     |
 table_nums("Spearman")
 ```
 
-To improve data quality, especially for the supervised machine learning process, a larger data set is necessary for the construction of an appropriate model and leads in general to improved results. It might be helpful to obtain and analyze larger data sets instead of comparing different learning techniques on small training sets.(Banko and Brill 2001).For expample, sample sizes up to n = 50,000 are reported for comparable tasks (Libbrecht and Noble 2015). 
+To improve data quality, especially for the supervised machine learning process, a larger data set is necessary for the construction of an appropriate model and leads in general to improved results. It might be helpful to obtain and analyze larger data sets instead of comparing different learning techniques on small training sets (Banko and Brill, 2001).For expample, sample sizes up to n = 50,000 are reported for comparable tasks (Libbrecht and Noble, 2015). 
 It should also be considered, that CERES scores of SST candidates and driver mutations may have a nonlinear correlation, requiring different prediction models. 
 
 ### Literature
   + Aleskandarany, M. A., E. A. Rakha, M. A. H. Ahmed, D. G. Powe, E. C. Paish, R. D. Macmillan, I. O. Ellis and A. R. Green (2010). "PIK3CA expression in invasive breast cancer: a biomarker of poor prognosis." Breast Cancer Research and Treatment 122(1): 45-53.
   + Arnold, A. and A. Papanikolaou (2005). "Cyclin D1 in Breast Cancer Pathogenesis." Journal of Clinical Oncology 23(18): 4215-4224.
   + Barnes, B., K. Kraywinkel, E. Nowossadeck, I. SchÃ¶nfeld, A. Starker, A. Wienecke and U. Wolf (2016). Bericht zum Krebsgeschehen in Deutschland 2016, Robert Koch-Institut.
-  + + Banko, M. and E. Brill (2001). Scaling to very very large corpora for natural language disambiguation. Proceedings of the 39th Annual Meeting on Association for Computational Linguistics. Toulouse, France, Association for Computational Linguistics: 26-33.
+  + Banko, M. and E. Brill (2001). Scaling to very very large corpora for natural language disambiguation. Proceedings of the 39th Annual Meeting on Association for Computational Linguistics. Toulouse, France, Association for Computational Linguistics: 26-33.
   + Gabay, M., Y. Li and D. W. Felsher "MYC activation is a hallmark of cancer initiation and maintenance." Cold Spring Harbor perspectives in medicine 4(6): a014241.
   + Harrell, F. E. (2001). Regression modeling strategies : with applications to linear models, logistic regression, and survival analysis. New York ; Berlin ; Heidelberg [u.a.], Springer.
   + Hutchinson, L. (2010). "Challenges, controversies, breakthroughs." Nature Reviews Clinical Oncology 7: 669.
