@@ -3,14 +3,14 @@ title: 'Final Report: Identification of SSTs'
 author: "Elias Benjamin Farr, Lennart Linke, Lisa Marie Milchsack, Salome Steinke"
 date: "17. Juli 2019"
 output:
+  word_document:
+    toc: yes
   html_document:
     highlight: pygments
     number_sections: yes
     theme: lumen
     toc: yes
     df_print: paged
-  word_document:
-    toc: yes
 ---
 
 <style type="text/css">
