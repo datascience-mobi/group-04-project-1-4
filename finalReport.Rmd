@@ -11,6 +11,7 @@ output:
     number_sections: yes
     theme: lumen
     toc: yes
+---
 
 <style type="text/css">
 
@@ -26,7 +27,7 @@ h1.title {
   font-size: 40px;
   font-weight: 400
   color: #013644;
-  font: "SegoeUI";
+  font: "Segoe UI", Frutiger;
 }
 h1 { /* Header 1 */
   font-size: 28px;
