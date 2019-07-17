@@ -821,7 +821,7 @@ plottingData <- lapply(seq_along(input_data), function(a) {
   regressor = lm(formula = Predictor ~ ., 
                  data = training_set)  #Predict CERES of Driver Mutation based on all (=.) the input variables (SSTs)
   
-  pdf(paste0(root.dir, "/Resid-HomoPlot_",drivermut[a],".pdf")) #Save plots as pdf, in working directory "wd"
+  pdf(paste0(root.dir, "/Resid-HomoPlot_",drivermut[a],".pdf")) #Save plots as pdf, in root directory
   hist(resid(regressor), main = paste0('Histogram of residuals: ', driver_mut[a]),xlab='Standardised Residuals',ylab='Frequency') #Plot a histogram of standardised residuals to check the assumption of normality
   dev.off() #Closing the figure file
   
@@ -840,8 +840,8 @@ plottingData <- lapply(seq_along(input_data), function(a) {
 })
 
 #Plot the data external 
-plottingFunction <- function(inputData, driverMut) {
-  df = melt(inputData)
+plottingFunction <- function(inputData, driverMut) { #Design plot function observed vs. predicted values
+  df = melt(inputData) #Default for ggplot
   p <- ggplot(data = df, aes(x=value, fill=Var2)) + 
     geom_density(alpha=.3) +
     ggtitle(paste0("Spearman Correlation plot: ", driverMut)) +
@@ -856,7 +856,7 @@ plottingFunction <- function(inputData, driverMut) {
           axis.title.x = element_blank(),
           strip.text.y = element_text(angle = 0))
   
-  pdf(paste0(root.dir, "/SpearmanPlot",driverMut,".pdf"))
+  pdf(paste0(root.dir, "/SpearmanPlot",driverMut,".pdf")) #Save plots as pdf, in root directory
   print(p)
   dev.off()#Closing the figure file
 }
@@ -875,9 +875,6 @@ correlations <- lapply(seq_along(plottingData), function(a) {
 names(correlations) <- drivermut
 correlations #Look at the dat
 ```
-
-*How about doing a linear regression model and comparing the F-statistic values?*
-
 #Checking assumptions
 All four models were tested on the assumptions. The following table provides a quick overview if our constructed assumptions was met (yes) or not (no). For multicollinarity, all models met the condition r < 0.8 for all variables.
 
@@ -913,7 +910,7 @@ PIK3CA    | 0.7131      |         H0          | -0.1786  | weak negative     |
 
 The rho value of the MYCBP-model leads to very weak negative correlation. A p-value of ~ 0.78 leads to confident acceptance of H0.
 
-For the PARP10-model, the rho value of ~ -0.67 is a moderate negative relationship. The p-value leads to acceptance of H0. The p-value is the lowest with ~ 0.11. But even if we would raise the confidence level to 0.10 (which would be a questionable move in statistics), the result wouldn´t be significant to accept H1.
+For the PARP10-model, the rho value of ~ -0.67 is a moderate negative relationship. The p-value leads to acceptance of H0. The p-value is the lowest with ~ 0.11. But even if we would raise the confidence level to 0.10 (which would be a questionable move in statistics), the result wouldnÂ´t be significant to accept H1.
     
 The rho value of the PIK3CA-model leads to very weak negative correlation. A p-value of ~ 0.78  leads to confident acceptance of H0.
 
@@ -961,7 +958,7 @@ table_nums("Spearman", "Summary of Spearman Correlation Test between observed an
 
 The aim of this project was to identify genes, so called second site targets, which interact genetically with selected driver mutations to promote cell viability and proliferation in breast cell cancers. Our hope was that these genes could be potential new targets for more specific therapies. 
 
-After selection of five non-tumor suppressor gene driver mutations (CCND, ERBB2, MYC, PARP10, PIK3CA) form literature, datasets were formatted to include only breast cancer cell lines. Subsequent, general data exploration revealed a large variety of CERES scores and expression values across both selected driver mutations and remaining genes of breast cell cancer lines. This proved the need to undertake further steps of data cleanup. Thus, in order to analyze only mutated genes, the mutImpact matrix was generated, containing CERES values only of mutated genes in a given cell line, otherwise with the entry for a given cell line being ��NA��. Further data cleanup was performed by removing all genes which contained all ��NA�� values and whose mean CERES scores were greater than zero. Through this process, 4934 possible SST genes remained, fitting the criteria of being mutated and having a positive impact on cell viability. However, in this process genes with a nonuniform distribution or of CERES scores across cell lines or unique outliers distorting mean values could have been mistakenly removed.
+After selection of five non-tumor suppressor gene driver mutations (CCND, ERBB2, MYC, PARP10, PIK3CA) form literature, datasets were formatted to include only breast cancer cell lines. Subsequent, general data exploration revealed a large variety of CERES scores and expression values across both selected driver mutations and remaining genes of breast cell cancer lines. This proved the need to undertake further steps of data cleanup. Thus, in order to analyze only mutated genes, the mutImpact matrix was generated, containing CERES values only of mutated genes in a given cell line, otherwise with the entry for a given cell line being NA. Further data cleanup was performed by removing all genes which contained all NA values and whose mean CERES scores were greater than zero. Through this process, 4934 possible SST genes remained, fitting the criteria of being mutated and having a positive impact on cell viability. However, in this process genes with a nonuniform distribution or of CERES scores across cell lines or unique outliers distorting mean values could have been mistakenly removed.
 
 With these findings, the selection of driver mutations from literature research was verified by performing k means clustering of associated CERES scores. After calculation of within sum squares values for a range of cluster numbers, the optimal cluster number was identified to be four, using the elbow method. Clustering revealed four out of five driver mutations to be colocalized in cluster three, hence having similar positive effects of improving the viability of breast cancer cells while not being tumor suppressor genes. These genes thus proved appropriate for further analysis. While CCND was removed early on in data clean up stages due to not being mutated in any breast cancer cell line, ERBB2IP on the other hand was found in cluster four instead. Since both genes did not match the criteria of driver mutations they were excluded from further analysis. Overall, it must be noted that although the optimal cluster number was identified to be four, the cluster plot shows that clusters were not distinctly separated from one another. Alternative cluster numbers could therefore have resulted in a different assignment of driver mutations and consequently other results based on our selection method. 
 
@@ -1002,12 +999,12 @@ It should also be considered, that CERES scores of SST candidates and driver mut
 ### Literature
   + Aleskandarany, M. A., E. A. Rakha, M. A. H. Ahmed, D. G. Powe, E. C. Paish, R. D. Macmillan, I. O. Ellis and A. R. Green (2010). "PIK3CA expression in invasive breast cancer: a biomarker of poor prognosis." Breast Cancer Research and Treatment 122(1): 45-53.
   + Arnold, A. and A. Papanikolaou (2005). "Cyclin D1 in Breast Cancer Pathogenesis." Journal of Clinical Oncology 23(18): 4215-4224.
-  + Barnes, B., K. Kraywinkel, E. Nowossadeck, I. Schönfeld, A. Starker, A. Wienecke and U. Wolf (2016). Bericht zum Krebsgeschehen in Deutschland 2016, Robert Koch-Institut.
+  + Barnes, B., K. Kraywinkel, E. Nowossadeck, I. SchÃ¶nfeld, A. Starker, A. Wienecke and U. Wolf (2016). Bericht zum Krebsgeschehen in Deutschland 2016, Robert Koch-Institut.
   + Banko, M. and E. Brill (2001). Scaling to very very large corpora for natural language disambiguation. Proceedings of the 39th Annual Meeting on Association for Computational Linguistics. Toulouse, France, Association for Computational Linguistics: 26-33.
   + Gabay, M., Y. Li and D. W. Felsher "MYC activation is a hallmark of cancer initiation and maintenance." Cold Spring Harbor perspectives in medicine 4(6): a014241.
   + Harrell, F. E. (2001). Regression modeling strategies : with applications to linear models, logistic regression, and survival analysis. New York ; Berlin ; Heidelberg [u.a.], Springer.
   + Hutchinson, L. (2010). "Challenges, controversies, breakthroughs." Nature Reviews Clinical Oncology 7: 669.
-  + Koch-Institut, R. (2017). Krebs in Deutschland für 2013/2014, Robert Koch-Institut.
+  + Koch-Institut, R. (2017). Krebs in Deutschland fÃ¼r 2013/2014, Robert Koch-Institut.
   + Kumar R (2016) A novel therapeutic target for triple negative breast cancer. Biomed Genet Genomics. 1: DOI: 10.15761/BGG.1000101.
   + Libbrecht, M. W. and W. S. Noble (2015). "Machine learning applications in genetics and genomics." Nature reviews. Genetics 16(6): 321-332.
   + Shimoi, T., A. Hamada, M. Yamagishi, M. Hirai, M. Yoshida, T. Nishikawa, K. Sudo, A. Shimomura, E. Noguchi, M. Yunokawa, K. Yonemori, C. Shimizu, T.   + Kinoshita, T. Fukuda, Y. Fujiwara and K. Tamura (2018). "PIK3CA mutation profiling in patients with breast cancer, using a highly sensitive detection system." Cancer science 109(8): 2558-2566.
