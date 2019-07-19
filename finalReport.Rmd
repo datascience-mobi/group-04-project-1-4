@@ -607,7 +607,7 @@ rownames(testDataSummary) <- c("min", "1st quartile", "median", "mean", "3rd qua
 paged_table(testDataSummary) #Have a look at the distribution of p-values
 ```
 
-Based on the results of the Wilcoxon test, potential SSTs were chosen by means of the highest p-values. Thus, the list `SST_Data`consisting of one data frame per driver mutation was created based on the test results given in the `test_data` list. Therefore, an `lapply`command was used filtering each data frames of `test_data` by selecting the 15 reference genes which were found to have the most similar CERES scores as the driver mutation, indicated by high p-values. In this course, the rownames of the data frames had to be transferred to an extra column before selection and transferred back afterwards as otherwise the rownames would have been lost during the filtering process. Unequal numbers of SST candidates were found due to similar test results for several reference genes.
+Based on the results of the Wilcoxon test, potential SSTs were chosen by means of the highest p-values. Thus, the list`SST_Data`consisting of one data frame per driver mutation was created based on the test results given in the `test_data` list. Therefore, an `lapply`command was used filtering each data frames of `test_data` by selecting the 15 reference genes which were found to have the most similar CERES scores as the driver mutation, indicated by high p-values. In this course, the rownames of the data frames had to be transferred to an extra column before selection and transferred back afterwards as otherwise the rownames would have been lost during the filtering process. Unequal numbers of SST candidates were found due to similar test results for several reference genes.
 
 ```{r warning=FALSE}
 #Select 15 most promising SST candidates based on highest p-values
@@ -628,7 +628,7 @@ paged_table(SST_Data$PIK3CA)
 
 ### Verification of SST candidates by assigned k means cluster number 
 
-After selection of the SST candidates stored in `SST_Data` the coexistance of SST candidates and driver mutation in the same k means cluster was verified. An assignment to the same cluster would confirm a possible cooperation of gene pairs due to similar CERES scores. For this, the lapply function was used to chose each dataframe and thus driver mutation in turn from the list using the seq_along command.A further loop was installed such that for each driver mutation dataframes, the rownames of the `DvPicker` were compared to all possible  `data_clus_3e` rownames. If a coexistance of genes in the 3rd k means cluster was identified, genes were labelled as `verified` in a new column entitled "classifier". No match between rownames led to the `not verified`entry.
+After selection of the SST candidates stored in `SST_Data`, the coexistance of SST candidates and driver mutation in the same k means cluster was verified. An assignment to the same cluster would confirm a possible cooperation of gene pairs due to similar CERES scores. For this, the `lapply` function was used to chose each dataframe and thus driver mutation in turn from the list using the `seq_along` command. A further loop was installed such that for each driver mutation dataframe, the rownames of the `DvPicker` were compared to all possible  `data_clus_3e` rownames. If a coexistance of genes in the 3rd k means cluster was identified, genes were labelled as `verified` in a new column entitled `classifier`. No match between rownames led to the `not verified`entry.
 
 ```{r SST Cluster Check, warning=FALSE}
 SST_Data <- lapply(seq_along(SST_Data), function(a) { #Pick one dataframe from list
@@ -696,8 +696,8 @@ paged_table(SST_Data$PIK3CA) #Have a look at the SSTs
 ### Database research and outcome of analysis
 
 All 67 confirmed SSTs were investigated for already existing drugs and disease associations. In general our SSTs revealed a broad status of knowledge, spreading from genes not only associated with any disease to genes with an approved drug available. We classified our SSTs in 3 classes: class 1 containing genes already associated with at least one sort of breast cancer, class 2 consisting of genes with associations to at least one cancer type and class 3, genes with no known connection to cancer. 
-The largest group were SSTs of class 1, containing 43 genes followed by class 2 genes with 20 members. The third class was clearly the smallest containing only 4 genes. This confirmed that only a few genes not yet known in the research community were found. All of them except for one, "PDGFRA", are not targetable through a drug on the market. We decided to include only those SSTs in further analyis, having associations to more than 40 types of cancer or showing interesting characteristics, for example appearance in more than one driver gene. From this knowledge, we aimed to recommend experimental research for three to five SSTs.
-The last twelve candidates showed different characteristics. A few of them like APC or FANCA were known as tumorsupressor genes and therefore not further involved. Others showed activity only in neuroectodermal tumors and not in breast cancer. Therefore the following top four candidates for experimental drug research are:
+The largest group were SSTs of class 1, containing 43 genes followed by class 2 genes with 20 members. The third class was clearly the smallest containing only 4 genes. This confirmed that only a few genes not yet identified as related to cancer by the research community were found. All SSTs except for one, "PDGFRA", are not targetable through a drug on the market. We decided to include only those SSTs in further analyis, having associations to more than 40 types of cancer or showing interesting characteristics, for example appearance in more than one driver gene. From this knowledge, we aimed to recommend experimental research for three to five SSTs.
+The last twelve candidates showed different characteristics. A few of them like APC or FANCA were known as tumorsupressor genes and therefore not followed up further. Others showed activity only in neuroectodermal tumors and not in breast cancer. Therefore the following top four candidates for experimental drug research are:
 
 ####TNS3: 
 - verified SST for ERBB2 and PARP10. It is suggested to play a role in actin remodeling and associated with 47 tumor diseases[^1].
@@ -739,11 +739,9 @@ names(data_regression) <- c("ERBB2", "MYCBP", "PARP10", "PIK3CA")
 ```
 
 To run a regression, certain conditions must be fulfilled:
-* Normal distribution, checked with a qqPlot: Using the aes-function for aesthetic plots, provided by the "ggplot2" package.
-* Multicollinearity, which is given if two dependent variables are strongly correlated, which can lead to difficulties in further analysis.
-    + As rule of thumb, the Pearson correlation coefficient should be lower than 0.8:
-      $r < 0.80$
-If this requirement is not met, one of the correlated variables should be deleted as it is seen as redundant.
+*Normal distribution, checked with a qqPlot: Using the aes-function for aesthetic plots, provided by the "ggplot2" package.
+*Multicollinearity, which is given if two dependent variables are strongly correlated, which can lead to difficulties in further analysis.
+As rule of thumb, the Pearson correlation coefficient should be lower than 0.8: $r < 0.80$. If this requirement is not met, one of the correlated variables should be deleted as it is seen as redundant.
 
 ```{r Regression sample distribution, fig.align = 'center', fig.cap="_Fig. 7_ Heatmaps and QQ plots for each driver mutation", warning=FALSE}
 lapply(seq_along(data_regression), function(a){  
@@ -759,11 +757,11 @@ lapply(seq_along(data_regression), function(a){
   r <-  round(cor(data_regression[[a]]),2) #Create table with correlation values between all SSTs; the values are rounded to two decimal places [,2)]
   col <- colorRampPalette(c("magenta", "white", "blue1"))(n = 1000)
   cormap <- heatmap.2(r, scale = "none", col = col, 
-          trace = "none", density.info = "none", dendrogram = c("both"), main = "Correlation of driver mutations")
+          trace = "none", density.info = "none", dendrogram = c("both"), main = "Correlation of driver mutations with SSTs")
   return(list(p,r)) 
    })
 ```
-The QQ-Plots show that the sample Data of MYCBP and PARP10 is approx. normally distributed; ERBB2 and PIK3CA do not present normal distribution.
+The QQ-Plots show that the sample Data of MYCBP and PARP10 is approx. normally distributed while ERBB2 and PIK3CA do not show a normal distribution.
 As one can see in the heatmaps of the Pearson correlation values, no multicollinearity was detected, all x < 0.80.
   
 ### Design of the multilinear regression
@@ -778,12 +776,12 @@ For the Spearman correlation, the rank-correlation coefficient can take values f
 * rho ~ 0: no association of ranks
 * rho ~ -1: perfect negative association of ranks
 
-To further interprete the p-value, we construct a H0 / H1 hypothesis:
+To further interpretate the p-value, we construct a H0 / H1 hypothesis:
 * H0: There is no association between the predicted and observed variable.
 * H1: There is an association between the predicted and observed variable.
 Most importantly, it is not possible to assess the strength of the correlation based on the p-value. It rather judges the statistical test than the resulting value. As default, we set the significance level to 0.05.
 
-We will the compare this values for the different models. For a positive correlation, two variables move in the same direction. For a well-designed model, we expect the predicted and observed CERES scores being approx. even. Thus, optimal model design is achieved if the correlation coefficient is close to 1 and the p-value p < 0.05.
+We will the compare these values for the different models. For a positive correlation, two variables move in the same direction. For a well-designed model, we expect the predicted and observed CERES scores to be approximately the same. Thus, optimal model design is achieved if the correlation coefficient is close to 1 and the p-value p < 0.05.
 Additionally, we plot the distributions of predicted against observed values for each model.
 
 ```{r Multiple Regression function, fig.align = 'center', fig.cap="_Fig.8_ Residual, Homoscedasticity and Spearman correlation plots for each driver mutation", warning=FALSE}
@@ -855,8 +853,7 @@ correlations <- lapply(seq_along(plottingData), function(a) {
 names(correlations) <- drivermut
 correlations #Look at the dat
 ```
-#Checking assumptions
-All four models were tested on the assumptions. The following table provides a quick overview if our constructed assumptions was met (yes) or not (no). For multicollinarity, all models met the condition r < 0.8 for all variables.
+All four models were tested on the assumptions. The following table provides a quick overview of whether constructed assumptions were met (yes) or not (no). For multicollinarity, all models met the condition r < 0.8 for all variables.
 
 Model     | Data distribution | Residual distribution| Homoscedastity |Spearman correlation |
 ----------|-------------------|----------------------|----------------|---------------------|
@@ -866,17 +863,15 @@ PARP      | yes               | no                   | yes            | no      
 PIK3CA    | no                | yes                  | no             | no                  |
 
 Checking distributional assumptions (= normal distribution) is also important and a different model should be chosen if needed (Harrell, 2001). 
-As shown in the qq-Plots, normal distribution does only apply to the models of MYCBP and PARP10. ERBB2 on the other hand, delivers the highest rho, but is in no way approx. normal distributed.The PIK3CA model also does not fulfill the condition of normal distribution.
+As shown in the qq-Plots, normal distribution does only apply to the models of MYCBP and PARP10. ERBB2 on the other hand, delivers the highest rho, but is in no way approximately normally distributed. The PIK3CA model also does not fulfill the condition of being normally distributed.
 
-The normal distribution does not lead to higher correlation coefficients. But not satisfying distribution assumptions should be treated as a red flag; and the model is not suited for further use.
+The normal distribution does not lead to higher correlation coefficients. Unmet distribution assumptions should be treated as a red flag suggesting this model not to be suited for further use.
 
-The residual distribution of ERBB2 was closest to normal distribution. The PIK3CA residuals showed still acceptable approximation of normal distribution.
-MYCBP and PARP10 failed to show approx. normal residual distribution.
+The residual distribution of ERBB2 was closest to normal distribution. The PIK3CA residuals showed still acceptable approximation of normal distribution. MYCBP and PARP10 failed to show approximate normal residual distribution.
 
 Also known as homogeneity of variance, this condition is met if random variables have similar variance. Also, there is no pattern of variance change if the random variables in- or decrease. #citation
 ERBB2 and PIK3CA violate the condition, while MYCBP and PARP10 show homoscedasticity.
 
-#Interpretation
 We obtained the following p-values and correlation coefficients:
 
 Model     | p-value     | accepted hypothesis | rho      | relationship type |
@@ -886,11 +881,11 @@ MCYBP     | 0.7825      |         H0          | -0.1429  | weak negative     |
 PARP10    | 0.1095      |         H0          | -0.6786  | moderate negative |
 PIK3CA    | 0.7131      |         H0          | -0.1786  | weak negative     |
 
- The ERBB2-model shows the highest rho value of all four models, but ~ 0.1 is a rather weak positive relationship, but the p-value leads to acceptance of H0.
+The ERBB2-model shows the highest rho value of all four models, but ~ 0.1 is a rather weak positive relationship.The p-value leads to acceptance of H0.
 
 The rho value of the MYCBP-model leads to very weak negative correlation. A p-value of ~ 0.78 leads to confident acceptance of H0.
 
-For the PARP10-model, the rho value of ~ -0.67 is a moderate negative relationship. The p-value leads to acceptance of H0. The p-value is the lowest with ~ 0.11. But even if we would raise the confidence level to 0.10 (which would be a questionable move in statistics), the result wouldnÂ´t be significant to accept H1.
+For the PARP10-model, the rho value of ~ -0.67 is a moderate negative relationship. The p-value leads to acceptance of H0 and is lowest with ~ 0.11. But even if we would raise the confidence level to 0.10 (which would be a questionable move in statistics), the result wouldn´t be significant to accept H1.
     
 The rho value of the PIK3CA-model leads to very weak negative correlation. A p-value of ~ 0.78  leads to confident acceptance of H0.
 
@@ -919,11 +914,6 @@ In fact, this condition is true for all four models.
 Our data seems to have an appropriate size for a basic regression model.
 On the other hand, for the supervised machine learning process of the regression, sample sizes up to n = 50,000 are reported.(Libbrecht and Noble 2015) 
 In general, more data will lead to improved data quality. Generally, scientists are advised to focus on obtaining and analyzing larger data sets instead of comparing different learning techniques on small training sets.(Banko and Brill 2001)
-
-# Results and Discussion
-
-The aim of this project was to identify genes, so called second site targets, which interact genetically with selected driver mutations to promote cell viability and proliferation in breast cell cancers. Our hope was that these could be used as targets for more specific gene therapies. 
-If this equation is fulfilled, the model is supposed to be reliable.(Harrell 2001). For our four models the calculation suggests that our data set has the appropriate size for a basic regression model.
 
 ```{r Table Captions, include=FALSE}
 library(captioner)#Another temporary "bugfix"
