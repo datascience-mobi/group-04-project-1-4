@@ -446,21 +446,9 @@ ggplot(data = optimalKprocessedData, aes(x=OptimalK, y=WSS)) +
                   strip.text.y = element_text(angle = 0))
 ```
 
-From this plot it is evident that the optimal cluster number lies between 2 and 4 if elbow method is applied. To verify this result and to determine a precise number of optimal cluster, an alternative plotting method calculating the average WSS for cluster numbers between 2 and 15 for all 28 cell samples was performed. 
+From this plot it is evident that the optimal cluster number lies between 2 and 4 if the elbow method is applied. To verify this result and to determine a precise number of optimal cluster, an alternative plotting method calculating the average WSS for cluster numbers between 2 and 15 for all 28 cell samples was performed and with this the optimal cluster number k was identified to be 4. Thus, k means clustering of the data stored in `BCCL_kd.ceres_3` was performed with 10 iterations. The following cluster plot was generated.
 
-```{r warning=FALSE, fig.align="center", fig.cap="_Fig. 5_ Optimal cluster number k using WSS of all BCCLs combined" } 
-#Verification of optimal number of clusters k 
-km_CERES= kmeans(x = BCCL_kd.ceres_3, centers = 2, nstart = 10)
-table(km_CERES$cluster)
-wss = sapply(2:15, function(k) {
-    kmeans(x = BCCL_kd.ceres_3, centers = k)$tot.withinss
-})
-plot(2:15, wss, type = "b", pch = 19, xlab = "Number of clusters K", ylab = "Total within-clusters sum of squares", main = "Within sum square test of CERES scores", col = "gray40", lwd = 3) 
-```
-
-The optimal cluster number k was identified to be 4. Thus, k means clustering of the data stored in `BCCL_kd.ceres_3` was performed with 10 iterations. The following cluster plot was generated.
-
-```{r warning=FALSE, fig.align="center", fig.cap="_Fig. 6_ K means cluster plot"}
+```{r warning=FALSE, fig.align="center", fig.cap="_Fig. 5_ K means cluster plot"}
 km_CERES= kmeans(x = BCCL_kd.ceres_3, centers = 4, nstart = 10)
 table(km_CERES$cluster)
 fviz_cluster(km_CERES, data=BCCL_kd.ceres_3, labelsize = 6) #Plotting clusters
@@ -506,7 +494,7 @@ data_clus_3e["Driver mutation"] <- sapply(1:nrow(data_clus_3), function(j){
 
 CERES scores and expression in TPM values for the selected 4 driver mutations were visualised as box and whisker plots. Following the generation of the `GOI_X` dataframe containing either CERES or TPM values for the four mutations, the data was reshaped to contain two columns. One column being "variable" with the names of driver mutations, the other "value" with the corresponding CERES or TPM value. The ggplot function, part of the ggplot2 package, was used to plot the following box an whisker plots. 
 
-```{r data visualisation, fig.align = 'center', fig.cap= "_Fig. 7_ Boxplot of CERES and Expression values of selected driver mutations", warning=FALSE}
+```{r data visualisation, fig.align = 'center', fig.cap= "_Fig. 6_ Boxplot of CERES and Expression values of selected driver mutations", warning=FALSE}
 
 #CERES_boxplot
 GOI= BCCL_kd.ceres[c("ERBB2","MYCBP", "PARP10", "PIK3CA"),]
@@ -757,7 +745,7 @@ To run a regression, certain conditions must be fulfilled:
       $r < 0.80$
 If this requirement is not met, one of the correlated variables should be deleted as it is seen as redundant.
 
-```{r Regression sample distribution, fig.align = 'center', fig.cap="_Fig. 8_ Heatmaps and QQ plots for each driver mutation", warning=FALSE}
+```{r Regression sample distribution, fig.align = 'center', fig.cap="_Fig. 7_ Heatmaps and QQ plots for each driver mutation", warning=FALSE}
 lapply(seq_along(data_regression), function(a){  
   par(mfrow=c(1,2)) #Hmmm should show them beneath .... 
   p <- ggplot(data_regression[[a]], aes(sample=data_regression[[a]][,ncol(data_regression[[a]])])) + stat_qq() +           stat_qq_line() #Create qq-Plot with line for comparison to normal distribution +
@@ -798,7 +786,7 @@ Most importantly, it is not possible to assess the strength of the correlation b
 We will the compare this values for the different models. For a positive correlation, two variables move in the same direction. For a well-designed model, we expect the predicted and observed CERES scores being approx. even. Thus, optimal model design is achieved if the correlation coefficient is close to 1 and the p-value p < 0.05.
 Additionally, we plot the distributions of predicted against observed values for each model.
 
-```{r Multiple Regression function, fig.align = 'center', fig.cap="_Fig.9_ Residual, Homoscedasticity and Spearman correlation plots for each driver mutation", warning=FALSE}
+```{r Multiple Regression function, fig.align = 'center', fig.cap="_Fig.8_ Residual, Homoscedasticity and Spearman correlation plots for each driver mutation", warning=FALSE}
 input_data <- data_regression
 
 plottingData <- lapply(seq_along(input_data), function(a) {
