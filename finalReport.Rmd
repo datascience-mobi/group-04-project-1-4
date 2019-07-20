@@ -234,7 +234,7 @@ lapply(data, dim) #Get an impression on the data
 lapply(data, function(a) head(a)) #Look at the data 
 ```
 
-The dataset used contains six smaller datasets. Five of them are large data frames while the sixth (mutation data) is a list of data frames. For the extraction of this sixth variable we first separated it from the others and gave it a new strucure, which is easier to handle.
+The dataset used contains six smaller datasets. Five of them are large data frames while the sixth (mutation data) is a list of data frames. For the extraction of this sixth variable we first separated it as a list from the others, which was easier to handle.
 
 ```{r}
 #Extract the mutation data
@@ -276,7 +276,7 @@ tPatients_ID <- t(BCCL_Annotation[1]) #Create a vector of patientIDs useful for 
 ### Exploring gene expression patterns 
 
 The next step was to undertake some broad data analysis in order to get a feeling for the data distribution. 
-We made a heatmap of expression values as well as CERES scores and found a diverse and unordered expression of genes troughout the 28 breast cancer cell lines. Within the CERES scores a group of genes showed a clear negative effect on cell viability. This group is suggested to be so called "housekeeping-genes", genes fulfilling the essential roles in the cell cycle. All the other genes showed a large variety across the cell lines, suggesting a computer based approach to be useful. To make sure that all cell line can be used, cell lines values were analysed whether abnormal values were found. The boxplot, figure 2, below proves, this not to be the case. 
+We made a heatmap of expression values as well as CERES scores and found a diverse and unordered expression of genes troughout the 28 breast cancer cell lines. Within the CERES scores a group of genes showed a clear negative effect on cell viability. This group is suggested to be so called "housekeeping-genes", genes fulfilling the essential roles in the cell cycle. All the other genes showed a large variety across the cell lines, suggesting a computer based approach to be useful to find patterns in data. To make sure that all cell lines can be used, cell line values were analysed as whole cell. This was to prevent a whole cell line having a completely different expression or CERES picture. The boxplot, figure 2, below proves, this not to be the case. 
 
 ```{r warning = FALSE, echo=TRUE, fig.align= "center", fig.cap="_Fig. 1_ Heatmap of all BCCL CERES scores", eval=FALSE}
 #Create a heatmap for all Genes and their CERES score
@@ -310,7 +310,7 @@ GeneralExp_boxplot
 ```
 
 An issue was the very low level of expression of most genes, seen in the diagram above. In this phase of the project it was open if a second site target will have a high expression in every case. 
-Next, boxplots of expression values for DV suggested by literature were generated. These boxplots present the different roles of genes ending up in various expression values in a nice way. 
+Next, boxplots of expression values for DV suggested by literature were generated. These boxplots present the different roles of genes in cell ending up in various expression values. 
 
 
 ```{r warning = FALSE, echo=TRUE, fig.align= "center", fig.cap="_Fig. 3_ Expression values of 12 selected driver mutations"}
