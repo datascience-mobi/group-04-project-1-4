@@ -752,7 +752,7 @@ lapply(seq_along(data_regression), function(a){
    })
 ```
 
-```{r Hm and QQ, eval=TRUE, echo=FALSE, fig.cap="Heatmaps and QQ plots of SSTs", out.width = '100%', fig.align = "center"}
+```{r Hm and QQ, eval=TRUE, echo=FALSE, fig.cap=" _Fig. 7_ Heatmaps and QQ plots of SSTs", out.width = '100%', fig.align = "center"}
 knitr::include_graphics("File1.png")
 ```
 The QQ-Plots show that the sample Data of MYCBP and PARP10 is approx. normally distributed while ERBB2 and PIK3CA do not show a normal distribution.
