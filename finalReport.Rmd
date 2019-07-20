@@ -77,7 +77,7 @@ font_import()
 ```
 # Introduction
 
-## Breast Cancer:a challenging disease
+## Breast Cancer: a challenging disease
 > "The heterogeneity of breast cancers makes them both a fascinating and challenging solid tumor to diagnose and treat." 
 >
 > <small>Raj Kumar (2016) in <cite title="Source Title">A novel therapeutic target for triple negative breast cancer</cite></small>
@@ -745,7 +745,7 @@ As rule of thumb, the Pearson correlation coefficient should be lower than 0.8: 
 
 ```{r Regression sample distribution, fig.align = 'center', fig.cap="_Fig. 7_ Heatmaps and QQ plots for each driver mutation", warning=FALSE}
 lapply(seq_along(data_regression), function(a){  
-  par(mfrow=c(1,2)) #Hmmm should show them beneath .... 
+  par(mfrow=c(1,2)) 
   p <- ggplot(data_regression[[a]], aes(sample=data_regression[[a]][,ncol(data_regression[[a]])])) + stat_qq() +           stat_qq_line() #Create qq-Plot with line for comparison to normal distribution +
         labs(title = "QQ-Plot", subtitle = "Check if data is approx. normally distributed") +
           theme(legend.position ="none",
