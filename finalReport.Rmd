@@ -740,7 +740,7 @@ To run a regression, certain conditions must be fulfilled:
 
 ```{r Regression sample distribution, fig.align = 'center', fig.cap="_Fig. 7_ Heatmaps and QQ plots for each driver mutation", warning=FALSE}
 lapply(seq_along(data_regression), function(a){  
-  par(mfrow=c(1,2)) #Hmmm should show them beneath .... 
+  par(mfrow=c(1,2)) 
   p <- ggplot(data_regression[[a]], aes(sample=data_regression[[a]][,ncol(data_regression[[a]])])) + stat_qq() +           stat_qq_line() #Create qq-Plot with line for comparison to normal distribution +
         labs(title = "QQ-Plot", subtitle = "Check if data is approx. normally distributed") +
           theme(legend.position ="none",
