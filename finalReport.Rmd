@@ -77,7 +77,7 @@ font_import()
 ```
 # Introduction
 
-## Breast Cancer:, a challenging disease
+## Breast Cancer:a challenging disease
 > "The heterogeneity of breast cancers makes them both a fascinating and challenging solid tumor to diagnose and treat." 
 >
 > <small>Raj Kumar (2016) in <cite title="Source Title">A novel therapeutic target for triple negative breast cancer</cite></small>
@@ -205,12 +205,12 @@ library(captioner)
 font_import()
 ```
 
-```{r Lisa, include=FALSE, eval=TRUE}
+```{r Lisa, include=FALSE, eval=FALSE}
 data = readRDS("C:/Users/lisa-/Desktop/Studium/4. FS/Bioinfo/DepMap19Q1_allData.RDS")
 root.dir = "C:/Users/lisa-/Desktop/Studium/4. FS/Bioinfo/project-01-group-04"
 ```
 
-```{r Salome, include=FALSE, eval=FALSE}
+```{r Salome, include=FALSE, eval=TRUE}
 data = readRDS("C:/Users/Salome/Documents/4.FS/Bioinfo/DepMap19Q1_allData.RDS")
 root.dir = "C:/Users/Salome/Documents/4.FS/Bioinfo/Github/project-01-group-04"
 ```
@@ -699,16 +699,16 @@ All 67 confirmed SSTs were investigated for already existing drugs and disease a
 The largest group were SSTs of class 1, containing 43 genes followed by class 2 genes with 20 members. The third class was clearly the smallest containing only 4 genes. This confirmed that only a few genes not yet identified as related to cancer by the research community were found. All SSTs except for one, "PDGFRA", are not targetable through a drug on the market. We decided to include only those SSTs in further analyis, having associations to more than 40 types of cancer or showing interesting characteristics, for example appearance in more than one driver gene. From this knowledge, we aimed to recommend experimental research for three to five SSTs.
 The last twelve candidates showed different characteristics. A few of them like APC or FANCA were known as tumorsupressor genes and therefore not followed up further. Others showed activity only in neuroectodermal tumors and not in breast cancer. Therefore the following top four candidates for experimental drug research are:
 
-####TNS3: 
+**TNS3**: 
 - verified SST for ERBB2 and PARP10. It is suggested to play a role in actin remodeling and associated with 47 tumor diseases[^1].
 
-####BCL9L:
+**BCL9L**:
 - known to activate beta catenin, one of the main targets for colorectal cancer. A few other suggested functions in tumorigenesis and 65 associated neoplasms are reason enough to investigate therapeutic options[^1]. 
 
-####CREBBP: 
+**CREBBP**: 
 - This transcriptional activator of cAMP responsive genes is a SST of ERBB2. Already known active cell compounds prove the potential research community is giving to this protein. 176 associated tumor diseases and 463 diseases in general are incentive enough to dare a try [^1].
 
-####SLC4A7:
+**SLC4A7**:
 -strong associations to breast cancer and already known active cell compounds led our attention to this cotransporter[^1]. With a lot of knowledge inhibiting transporters in any disease, research community could find a way of inhibiting this protein.
 
 [^1]: SSTs_function_and_therapy
@@ -739,8 +739,8 @@ names(data_regression) <- c("ERBB2", "MYCBP", "PARP10", "PIK3CA")
 ```
 
 To run a regression, certain conditions must be fulfilled:
-*Normal distribution, checked with a qqPlot: Using the aes-function for aesthetic plots, provided by the "ggplot2" package.
-*Multicollinearity, which is given if two dependent variables are strongly correlated, which can lead to difficulties in further analysis.
+* Normal distribution, checked with a qqPlot: Using the aes-function for aesthetic plots, provided by the "ggplot2" package.
+* Multicollinearity, which is given if two dependent variables are strongly correlated, which can lead to difficulties in further analysis.
 As rule of thumb, the Pearson correlation coefficient should be lower than 0.8: $r < 0.80$. If this requirement is not met, one of the correlated variables should be deleted as it is seen as redundant.
 
 ```{r Regression sample distribution, fig.align = 'center', fig.cap="_Fig. 7_ Heatmaps and QQ plots for each driver mutation", warning=FALSE}
