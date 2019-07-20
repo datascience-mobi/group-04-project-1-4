@@ -211,9 +211,20 @@ CERESHeatmap <- heatmap.2(CERES50, scale = "none", col = col,
 
 
 
-
-
-
+```{r}
+library(ggplot2)
+lapply(seq_along(data_regression), function(a){  
+  par(mfrow=c(1,2)) 
+  p <- ggplot(data_regression[[a]], aes(sample=data_regression[[a]][,ncol(data_regression[[a]])])) + stat_qq() +           stat_qq_line() #Create qq-Plot with line for comparison to normal distribution +
+        labs(title = "QQ-Plot", subtitle = "Check if data is approx. normally distributed") 
+        
+  r <-  round(cor(data_regression[[a]]),2) #Create table with correlation values between all SSTs; the values are rounded to two decimal places [,2)]
+  col <- colorRampPalette(c("magenta", "white", "blue1"))(n = 1000)
+  cormap <- heatmap.2(r, scale = "none", col = col, 
+          trace = "none", density.info = "none", dendrogram = c("both"), main = "Correlation of DV with SSTs")
+  return(list(p,r)) 
+   })
+```
 
 
 
