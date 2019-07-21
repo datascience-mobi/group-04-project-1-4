@@ -862,7 +862,7 @@ MCYBP     | 0.7825      |         H0          | -0.1429  | weak negative     |
 PARP10    | 0.1095      |         H0          | -0.6786  | moderate negative |
 PIK3CA    | 0.7131      |         H0          | -0.1786  | weak negative     |
 
-```{r Spearman, eval=TRUE, echo=FALSE, fig.cap=" _Fig. 10_ Comparing distribution of predicted (blue) and observed (red) CERES scores by Spearman correlation", out.width = '100%', fig.align = "center"}
+```{r Spearman, eval=TRUE, echo=FALSE, fig.cap=" _Fig. 10_ Comparing distribution of predicted (blue) and observed (red) CERES scores ", out.width = '100%', fig.align = "center"}
 knitr::include_graphics("Spearman_Plots1.png")
 ```
 
