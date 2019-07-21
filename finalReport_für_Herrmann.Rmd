@@ -326,7 +326,6 @@ Therefore, the BCCL_kd.ceres matrix containing CERES scores for all genes in bre
 Subsequently, CERES scores of genes, which were not mutated in a given cell line, were replaced with `NA` by implementing an "if statement". This statement included the enquiry whether the gene ID is present in the list of mutated genes of a considered cell line and in case the condition was met the CERES score was maintained. If `FALSE` was returned, the CERES score of the gene was replaced with `NA` for the considered cell line.
 
 ```{r, warning=FALSE}
-
 #Generate pre_mutImpact matrix containing all CERES values and with IDs as column names 
 pre_mutImpact <- BCCL_kd.ceres
 colnames(pre_mutImpact)<-tPatients_ID
@@ -474,7 +473,7 @@ data_clus_3e["Driver mutation"] <- sapply(1:nrow(data_clus_3), function(j){
 
 CERES scores and expression in TPM values for the selected four driver mutations were visualised as box and whisker plots. Following the generation of the `GOI_X` dataframe containing either CERES or TPM values for the four mutations, the data was reshaped to contain two columns. One column being "variable" with the names of driver mutations, the other "value" with the corresponding CERES or TPM value. The ggplot function, part of the ggplot2 package, was used to plot the following box an whisker plots. 
 
-```{r data visualisation, fig.align = 'center', fig.cap= "_Fig. 6_ Boxplot of CERES and Expression values of selected driver mutations", warning=FALSE}
+```{r data visualisation, fig.align = 'center', fig.cap= "_Fig. 6_ Boxplot of CERES values of selected driver mutations", warning=FALSE}
 
 #CERES_boxplot
 GOI= BCCL_kd.ceres[c("ERBB2","MYCBP", "PARP10", "PIK3CA"),]
@@ -495,8 +494,9 @@ CERES_boxplot = ggplot(CERES_driver_mut, aes(x = variable, y = value)) +
                   axis.title.x = element_text(),
                   strip.text.y = element_text(angle = 0))
 CERES_boxplot
+```
 
-  
+```{r data visualisation 2, fig.align= "center", fig.cap="_Fig. 7_ Boxplot of Expression values of selected driver mutations", warning=FALSE}
 #Expression_boxplot
 GOI_Exp= BCCL_Expression[c("ERBB2","MYCBP", "PARP10", "PIK3CA"),]
 Expression_driver_mut= melt(GOI_Exp)
@@ -863,7 +863,7 @@ The ERBB2-model shows the highest rho value of all four models, but ~ 0.1 is a r
 
 The rho value of the MYCBP-model leads to very weak negative correlation. A p-value of ~ 0.78 leads to confident acceptance of H0.
 
-```{r ResidHomo, eval=TRUE, echo=FALSE, fig.cap="Residual distribution histograms and Homoscedasticity Plots for all four models", out.width = '100%', fig.align = "center"}
+```{r ResidHomo, eval=TRUE, echo=FALSE, fig.cap="_Fig. 9_ Residual distribution histograms and homoscedasticity plots for all four models", out.width = '100%', fig.align = "center"}
 knitr::include_graphics("Resid-Homo_Plots.png")
 ```
 For the PARP10-model, the rho value of ~ -0.68 is a moderate negative relationship. The p-value leads to acceptance of H0 and is lowest with ~ 0.11. But even if we would raise the confidence level to 0.10 (which would be questionable in statistics), the result wouldn?t be significant to accept H1.
@@ -872,8 +872,8 @@ The rho value of the PIK3CA-model leads to very weak negative correlation. A p-v
 
 The models for MYCBP and PIK3CA only showed weak, negative correlation, which is not useful for further work with this model.
 
-```{r Spearman, eval=TRUE, echo=FALSE, fig.cap="Comparing Distribution of predicted and pbserved CERES score by Spearman correlation", out.width = '100%', fig.align = "center"}
-knitr::include_graphics("Spearman_Plots.png")
+```{r Spearman, eval=TRUE, echo=FALSE, fig.cap=" _Fig. 10_ Comparing distribution of predicted and observed CERES scores by Spearman correlation", out.width = '100%', fig.align = "center"}
+knitr::include_graphics("Spearman_Plots1.png")
 ```
 The PARP10 model resulted in a moderate negative relationship, which is not of relevance for our objective.
 The ERBB2 model did not deliver a significant p-value, but indeed contains at least a weak positive correlation.
