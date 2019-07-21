@@ -119,7 +119,7 @@ To begin with possible driver mutations from literature research were selected b
 
   1. overexpressed in breast cancer
   2. observed in a relevant percentage of clinical cases
-  3. part of processes/pathways of tumorgenesis
+  3. part of processes/pathways of tumorigenesis
   
 Finally, we selected:
 
@@ -859,7 +859,7 @@ MCYBP     | 0.7825      |         H0          | -0.1429  | weak negative     |
 PARP10    | 0.1095      |         H0          | -0.6786  | moderate negative |
 PIK3CA    | 0.7131      |         H0          | -0.1786  | weak negative     |
 
-The ERBB2-model shows the highest rho value of all four models, but ~ 0.1 is a rather weak positive relationship.The p-value leads to acceptance of H0.
+The ERBB2-model shows the highest rho value of all four models, but ~ 0.1 is a rather weak positive relationship. The p-value leads to acceptance of H0.
 
 The rho value of the MYCBP-model leads to very weak negative correlation. A p-value of ~ 0.78 leads to confident acceptance of H0.
 
@@ -878,7 +878,7 @@ knitr::include_graphics("Spearman_Plots1.png")
 The PARP10 model resulted in a moderate negative relationship, which is not of relevance for our objective.
 The ERBB2 model did not deliver a significant p-value, but indeed contains at least a weak positive correlation.
 
-## Discussion of the regression model
+### Discussion of the regression model
 All in all, all multilinear regression models failed to meet all regression prerequisites and do not deliver a p-value of significant relevance for the correlation. Thus, they should not be used for further predictions.
 Especially the models for ERBB2 and PIK3CA should have been discarded, since the sample values are not even normally distributed.
 It seems possible that the small sample size for the regression model lead to the lack of significant results, with only 28 events (CERES score observed in cell line) per predicting variable (SST gene).
