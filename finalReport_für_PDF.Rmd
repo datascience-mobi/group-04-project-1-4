@@ -372,7 +372,7 @@ for (j in 1:ncol(pre_mutImpact)){
 }
 
 #Have a look at the mutImpact matrix
-paged_table(as.data.frame(mutImpact))
+View(head(as.data.frame(mutImpact)))
 ```
 
 ## Selection of driver mutations
@@ -466,7 +466,7 @@ CheckKmNumber <- as.data.frame(sapply(seq_along(driver_mut), function(a){
 }))
 
 colnames(CheckKmNumber) <- "Cluster number"
-paged_table(CheckKmNumber)
+View(CheckKmNumber)
 ```
 
 Since our approach defined SSTs as genes expected to interact synergistically with the corresponding driver mutation in promoting cell viability, similar CERES scores were expected. Thus all potential SSTs candidates were expected to be found in cluster 3 as well. This characteristic of SSTs will be checked in section 3.3.2.  A dataframe `data_clus_3`was subsequently generated to contain all 1148 genes colocalized with driver mutations in cluster 3. 
@@ -606,7 +606,7 @@ testDataSummary <- as.data.frame(testDataSummary) #Transform matrix to dataframe
 colnames(testDataSummary) <- drivermut
 rownames(testDataSummary) <- c("min", "1st quartile", "median", "mean", "3rd quartile", "max") #Rename rows and columns
 
-paged_table(testDataSummary) #Have a look at the distribution of p-values
+View(testDataSummary) #Have a look at the distribution of p-values
 ```
 
 Based on the results of the Wilcoxon test, potential SSTs were chosen by means of the highest p-values. Thus, the list`SST_Data`consisting of one dataframe per DV was created based on the test results given in the `test_data` list. Therefore, an `lapply`command was used filtering each data frames of `test_data` by selecting the 15 reference genes which have the most similar CERES scores to the DV, indicated by high p-values. In this course, the rownames of the dataframes had to be transferred to an extra column before selection and transferred back afterwards as otherwise the rownames would have been lost during the filtering process. Unequal numbers of SST candidates were found due to similar test results for several reference genes.
@@ -622,10 +622,10 @@ SST_Data <- lapply(seq_along(testData), function(a) {
 names(SST_Data) <- drivermut
 
 #Have a look at the SST candidates
-paged_table(SST_Data$ERBB2)
-paged_table(SST_Data$MYCBP)
-paged_table(SST_Data$PARP10)
-paged_table(SST_Data$PIK3CA) 
+View(SST_Data$ERBB2)
+View(SST_Data$MYCBP)
+View(SST_Data$PARP10)
+View(SST_Data$PIK3CA) 
 ```
 
 ### Verification of SST candidates by assigned k means cluster number 
@@ -689,10 +689,10 @@ SST_Data <- lapply(seq_along(SST_Data), function(a) {
 
 names(SST_Data) <- drivermut #Regenerate names
 
-paged_table(SST_Data$ERBB2)
-paged_table(SST_Data$MYCBP)
-paged_table(SST_Data$PARP10)
-paged_table(SST_Data$PIK3CA) #Have a look at the SSTs
+View(SST_Data$ERBB2)
+View(SST_Data$MYCBP)
+View(SST_Data$PARP10)
+View(SST_Data$PIK3CA) #Have a look at the SSTs
 ```
 
 ### Database research and outcome of analysis
