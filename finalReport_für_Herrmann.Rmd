@@ -863,11 +863,18 @@ The ERBB2-model shows the highest rho value of all four models, but ~ 0.1 is a r
 
 The rho value of the MYCBP-model leads to very weak negative correlation. A p-value of ~ 0.78 leads to confident acceptance of H0.
 
+```{r ResidHomo, eval=TRUE, echo=FALSE, fig.cap="Possible_Driver_Mutations", out.width = '100%', fig.align = "center"}
+knitr::include_graphics("Resid-Homo_Plots.png")
+```
 For the PARP10-model, the rho value of ~ -0.68 is a moderate negative relationship. The p-value leads to acceptance of H0 and is lowest with ~ 0.11. But even if we would raise the confidence level to 0.10 (which would be questionable in statistics), the result wouldn?t be significant to accept H1.
     
 The rho value of the PIK3CA-model leads to very weak negative correlation. A p-value of ~ 0.78  leads to confident acceptance of H0.
 
 The models for MYCBP and PIK3CA only showed weak, negative correlation, which is not useful for further work with this model.
+
+```{r Spearman, eval=TRUE, echo=FALSE, fig.cap="Possible_Driver_Mutations", out.width = '100%', fig.align = "center"}
+knitr::include_graphics("Spearman_Plots.png")
+```
 The PARP10 model resulted in a moderate negative relationship, which is not of relevance for our objective.
 The ERBB2 model did not deliver a significant p-value, but indeed contains at least a weak positive correlation.
 
@@ -891,7 +898,7 @@ Our data seems to have an appropriate size for a basic regression model.
 On the other hand, for the supervised machine learning process of the regression, sample sizes up to n = 50,000 are reported. (Libbrecht and Noble, 2015) In general, more data will lead to improved regression quality. Generally, scientists are advised to focus on obtaining and analyzing larger data sets instead of comparing different learning techniques on small training sets. (Banko and Brill, 2001)
 
 ```{r Table Captions, include=FALSE}
-library(captioner)#Another temporary "bugfix"
+library(captioner)
 table_nums <- captioner(prefix = "Table")
 
 table_nums("Assumption", "Summary of the Regression assumption checks for the four models. Conditions were met (yes) or not (no).")
