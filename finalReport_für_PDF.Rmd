@@ -883,6 +883,9 @@ PIK3CA    | 0.7131      |         H0          | -0.1786  | weak negative     |
 
 The ERBB2-model shows the highest rho value of all four models, but ~ 0.1 is a rather weak positive relationship.The p-value leads to acceptance of H0.
 
+```{r ResidHomo, eval=TRUE, echo=FALSE, fig.cap="Residual distribution histograms and Homoscedasticity Plots for all four models", out.width = '100%', fig.align = "center"}
+knitr::include_graphics("Resid-Homo_Plots.png")
+```
 The rho value of the MYCBP-model leads to very weak negative correlation. A p-value of ~ 0.78 leads to confident acceptance of H0.
 
 For the PARP10-model, the rho value of ~ -0.68 is a moderate negative relationship. The p-value leads to acceptance of H0 and is lowest with ~ 0.11. But even if we would raise the confidence level to 0.10 (which would be questionable in statistics), the result wouldn?t be significant to accept H1.
@@ -890,6 +893,10 @@ For the PARP10-model, the rho value of ~ -0.68 is a moderate negative relationsh
 The rho value of the PIK3CA-model leads to very weak negative correlation. A p-value of ~ 0.78  leads to confident acceptance of H0.
 
 The models for MYCBP and PIK3CA only showed weak, negative correlation, which is not useful for further work with this model.
+
+```{r Spearman, eval=TRUE, echo=FALSE, fig.cap="Comparing Distribution of predicted and pbserved CERES score by Spearman correlation", out.width = '100%', fig.align = "center"}
+knitr::include_graphics("Spearman_Plots.png")
+```
 The PARP10 model resulted in a moderate negative relationship, which is not of relevance for our objective.
 The ERBB2 model did not deliver a significant p-value, but indeed contains at least a weak positive correlation.
 
