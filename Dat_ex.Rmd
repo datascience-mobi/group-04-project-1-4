@@ -226,6 +226,15 @@ lapply(seq_along(data_regression), function(a){
    })
 ```
 
+```{r}
+#install.packages("gridExtra")
+library("gridExtra")
+mutImpact_table <- head(as.data.frame(mutImpact))
+grid.table(mutImpact_table)
+dev.off()
+mutImpact_table
+```
+
 
 
 
