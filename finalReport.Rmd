@@ -696,7 +696,7 @@ paged_table(SST_Data$PIK3CA) #Have a look at the SSTs
 
 ### Database research and outcome of analysis
 
-All 67 confirmed SSTs were investigated for already existing drugs and disease associations. In general, SSTs revealed a broad status of knowledge, ranging from genes not associated with any disease to genes with an approved drug available. We divided our SSTs up into three classes: class 1 containing genes already associated with at least one type of breast cancer, class 2 consisting of genes with associations to at least one cancer type and class 3 inlcuding genes with no known connection to cancer. 
+All 67 confirmed SSTs were investigated for already existing drugs and disease associations. In general, SSTs revealed a broad status of knowledge, ranging from genes not associated with any disease to genes with an approved drug available (Jones et al., 2006). We divided our SSTs up into three classes: class 1 containing genes already associated with at least one type of breast cancer, class 2 consisting of genes with associations to at least one cancer type and class 3 inlcuding genes with no known connection to cancer. 
 
 The largest group were SSTs of class 1, containing 43 genes followed by class 2 genes with 20 members. The third class was the smallest containing only 4 genes. This demonstrates that our findings are consistent with the research conducted by goups worldwide. However, all SSTs except for PDGFRA are not targetable by a drug on the market. For further investigations we decided to include only those SSTs associated to more than 40 types of cancer or showing interesting characteristics, e.g. appearance as an SST for more than one DV. From this knowledge, we aim to recommend experimental research for three to five SSTs.
 From twelve candidates being left from th filtering a few are known to be tumorsupressor genes (e.g. APC, FANCA) and therefore not followed up further. Others were only active in neuroectodermal tumors and not in breast cancer. Therefore the following top four SST candidates for experimental drug research were found to be:
@@ -984,6 +984,7 @@ To improve the quality of the model, especially for the unsupervised machine lea
   + Hanahan, D., & Weinberg, R. A. (2000). The hallmarks of cancer. Cell, 100(1), 57-70.
   + Harrell, F. E. (2001). Regression modeling strategies : with applications to linear models, logistic regression, and survival analysis. New York ; Berlin ; Heidelberg [u.a.], Springer.
   + Hutchinson, L. (2010). "Challenges, controversies, breakthroughs." Nature Reviews Clinical Oncology 7: 669.
+  + Jones, C.A., Kirkpatrick, P., and Atkins, M. (2006). Sunitinib maleate. Nature Reviews Drug Discovery 5, 279-280.
   + Koch-Institut, R. (2017). Krebs in Deutschland fÃ¼r 2013/2014, Robert Koch-Institut.
   + Kumar R (2016) A novel therapeutic target for triple negative breast cancer. Biomed Genet Genomics. 1: DOI: 10.15761/BGG.1000101.
   + Lacouture, M., & Sibaud, V. (2018). Toxic Side Effects of Targeted Therapies and Immunotherapies Affecting the Skin, Oral Mucosa, Hair, and Nails. Am J Clin Dermatol, 19(Suppl 1), 31-39. 
