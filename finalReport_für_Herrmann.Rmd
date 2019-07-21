@@ -428,7 +428,7 @@ ggplot(data = optimalKprocessedData, aes(x=OptimalK, y=WSS)) +
 From this plot it is evident that the optimal cluster number lies between 2 and 4 if the elbow method is applied. To verify this result and to determine a precise number of optimal cluster, an alternative plotting method calculating the average WSS for cluster numbers between 2 and 15 for all 28 cell samples was performed and with this the optimal cluster number k was identified to be 4. Thus, k means clustering of the data stored in `BCCL_kd.ceres_3` was performed with 10 iterations. The following cluster plot was generated.
 
 ```{r warning=FALSE, fig.align="center", fig.cap="_Fig. 5_ K means cluster plot"}
-km_CERES= kmeans(x = BCCL_kd.ceres_3, centers = 4, nstart = 10)
+km_CERES= kmeans(x = BCCL_kd.ceres_3, centers = 4, nstart = 10) #Performing kmeans clustering
 table(km_CERES$cluster)
 fviz_cluster(km_CERES, data=BCCL_kd.ceres_3, labelsize = 6) #Plotting clusters
 ```
@@ -449,7 +449,7 @@ paged_table(CheckKmNumber)
 Since our approach defined SSTs as genes expected to interact synergistically with the corresponding driver mutation in promoting cell viability, similar CERES scores were expected. Thus all potential SSTs candidates were expected to be found in cluster 3 as well. This characteristic of SSTs will be checked in section 3.3.2.  A dataframe `data_clus_3`was subsequently generated to contain all 1148 genes colocalized with driver mutations in cluster 3. 
 
 ```{r warning=FALSE}
-data_cluster = as.data.frame(km_CERES$cluster)
+data_cluster = as.data.frame(km_CERES$cluster) #Create dataframe of cluster numbers
 rownames(data_cluster) = rownames(BCCL_kd.ceres_3)
 data_clus_3 = BCCL_kd.ceres_3[data_cluster == 3,] #Dataframe with all 1148 genes in same cluster as driver mutations 
 ```
@@ -471,7 +471,7 @@ data_clus_3e["Driver mutation"] <- sapply(1:nrow(data_clus_3), function(j){
 
 ### Data visualisation of CERES and TPM values for selected driver mutations 
 
-CERES scores and expression in TPM values for the selected four driver mutations were visualised as box and whisker plots. Following the generation of the `GOI_X` dataframe containing either CERES or TPM values for the four mutations, the data was reshaped to contain two columns. One column being "variable" with the names of driver mutations, the other "value" with the corresponding CERES or TPM value. The ggplot function, part of the ggplot2 package, was used to plot the following box an whisker plots. 
+CERES scores and expression in TPM values for the selected four driver mutations were visualised as box and whisker plots. Following the generation of the `GOI_X` dataframe containing either CERES or TPM values for the four mutations, the data was reshaped to contain two columns. One column being `variable with the names of driver mutations, the other `value` with the corresponding CERES or TPM value. The ggplot function, part of the ggplot2 package, was used to plot the following box an whisker plots. 
 
 ```{r data visualisation, fig.align = 'center', fig.cap= "_Fig. 6_ Boxplot of CERES values of selected driver mutations", warning=FALSE}
 
