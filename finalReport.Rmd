@@ -494,7 +494,7 @@ data_clus_3e["Driver mutation"] <- sapply(1:nrow(data_clus_3), function(j){
 
 CERES scores and expression in TPM values for the selected four driver mutations were visualised as box and whisker plots. Following the generation of the `GOI_X` dataframe containing either CERES or TPM values for the four mutations, the data was reshaped to contain two columns. One column being "variable" with the names of driver mutations, the other "value" with the corresponding CERES or TPM value. The ggplot function, part of the ggplot2 package, was used to plot the following box an whisker plots. 
 
-```{r data visualisation, fig.align = 'center', fig.cap= "_Fig. 6_ Boxplot of CERES and Expression values of selected driver mutations", warning=FALSE}
+```{r data visualisation, fig.align = 'center', fig.cap= "_Fig. 6_ Boxplot of CERES values of selected driver mutations", warning=FALSE}
 
 #CERES_boxplot
 GOI= BCCL_kd.ceres[c("ERBB2","MYCBP", "PARP10", "PIK3CA"),]
@@ -515,8 +515,9 @@ CERES_boxplot = ggplot(CERES_driver_mut, aes(x = variable, y = value)) +
                   axis.title.x = element_text(),
                   strip.text.y = element_text(angle = 0))
 CERES_boxplot
+```
 
-  
+```{r data visualisation 2, fig.align= "center", fig.cap="_Fig. 7_ Boxplot of Expression values of selected driver mutations", warning=FALSE}
 #Expression_boxplot
 GOI_Exp= BCCL_Expression[c("ERBB2","MYCBP", "PARP10", "PIK3CA"),]
 Expression_driver_mut= melt(GOI_Exp)
@@ -738,7 +739,7 @@ To run a regression, certain conditions must be fulfilled:
 + Normal distribution, checked with a qqPlot: Using the aes-function for aesthetic plots, provided by the "ggplot2" package.
 + Multicollinearity, which is given if two dependent variables are strongly correlated, which can lead to difficulties in further analysis.Here, as rule of thumb, the Pearson correlation coefficient should be lower than 0.8: $r < 0.80$. If this requirement is not met one of the correlated variables should be deleted as it is seen as redundant.
 
-```{r Regression sample distribution, fig.align = 'center', fig.cap="_Fig. 7_ Heatmaps and QQ plots for each driver mutation", warning=FALSE, eval = FALSE}
+```{r Regression sample distribution, fig.align = 'center', fig.cap="_Fig. 8_ Heatmaps and QQ plots for each driver mutation", warning=FALSE, eval = FALSE}
 lapply(seq_along(data_regression), function(a){  
   par(mfrow=c(2,4)) #Plot in 2 rows ans 4 columns
   p <- ggplot(data_regression[[a]], aes(sample=data_regression[[a]][,ncol(data_regression[[a]])])) + stat_qq() +           stat_qq_line() #Create qq-Plot with line for comparison to normal distribution +
@@ -752,7 +753,7 @@ lapply(seq_along(data_regression), function(a){
    })
 ```
 
-```{r Hm and QQ, eval=TRUE, echo=FALSE, fig.cap=" _Fig. 7_ Heatmaps and QQ plots of SSTs", out.width = '100%', fig.align = "center"}
+```{r Hm and QQ, eval=TRUE, echo=FALSE, fig.cap=" _Fig. 8_ Heatmaps and QQ plots of SSTs", out.width = '100%', fig.align = "center"}
 knitr::include_graphics("File1.png")
 ```
 The QQ-Plots show that the sample Data of MYCBP and PARP10 is approx. normally distributed while ERBB2 and PIK3CA do not show a normal distribution.
@@ -780,7 +781,7 @@ Most importantly, it is not possible to assess the strength of the correlation b
 Subsequently, the latter values will be evaluated for the different models. In case of a positive correlation, two variables move in the same direction. For a well-designed model, we expect the predicted and observed CERES scores to be approximately the same. Thus, optimal model design is achieved if the correlation coefficient is close to 1 and the p-value p < 0.05.
 Additionally, we plot the distributions of predicted against observed values for each model.
 
-```{r Multiple Regression function, fig.align = 'center', fig.cap="_Fig.8_ Residual, Homoscedasticity and Spearman correlation plots for each driver mutation", warning=FALSE}
+```{r Multiple Regression function, fig.align = 'center', fig.cap="_Fig.9_ Residual, Homoscedasticity and Spearman correlation plots for each driver mutation", warning=FALSE}
 input_data <- data_regression
 
 plottingData <- lapply(seq_along(input_data), function(a) {
