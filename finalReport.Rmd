@@ -278,7 +278,7 @@ tPatients_ID <- t(BCCL_Annotation[1]) #Create a vector of patientIDs useful for 
 The next step was to undertake some broad data analysis in order to get a feeling for the data distribution. 
 We made a heatmap of expression values as well as CERES scores and found a diverse and unordered expression of genes troughout the 28 breast cancer cell lines. Within the CERES scores a group of genes showed a clear negative effect on cell viability. This group is suggested to be so called "housekeeping-genes", genes fulfilling the essential roles in the cell cycle. All the other genes showed a large variety across the cell lines, suggesting a computer based approach to be useful to find patterns in data. To make sure that all cell lines can be used, cell line values were analysed as whole cell. This was to prevent a whole cell line having a completely different expression or CERES picture. The boxplot, figure 2, below proves, this not to be the case. 
 
-```{r warning = FALSE, echo=TRUE, fig.align= "center", fig.cap="_Fig. 1_ Heatmap of all BCCL CERES scores", eval=FALSE}
+```{r warning = FALSE, echo=TRUE, fig.align= "center", fig.cap="_Fig. 1_ Heatmap of all BCCL CERES scores", eval= TRUE}
 #Create a heatmap for all Genes and their CERES score
 CERES50 <- as.matrix(BCCL_kd.ceres[c(1:nrow(BCCL_kd.ceres)),c(1:ncol(BCCL_kd.ceres))])
 col <- colorRampPalette(c("seagreen3", "white", "red2"))(n = 1000) #Defining the colours for the heatmap
@@ -864,6 +864,7 @@ As shown in the qq-Plots, normal distribution does only apply to the models of M
 The normal distribution does not lead to higher correlation coefficients. Unmet distribution assumptions should be treated as a red flag suggesting this model not to be suited for further use.
 
 Residual are the differences between actual and predicted y-values . For a good model, we expect the model to return positive and negative residual values with the same chance, resulting in residual normal distribution (Motulsky 2018).
+
 The residual distribution of ERBB2 was closest to normal distribution. The PIK3CA residuals showed still acceptable approximation of normal distribution. MYCBP and PARP10 failed to show approximate normal residual distribution.
 
 Homoscedastity is also known as homogeneity of variance, assuming that the probability distribution for the response variable has the same standard deviation, independent of the x value.This condition is met if random variables have similar variance. Also, there is no pattern of variance change if the random variables in- or decrease. (Achen and Shively 1995)
@@ -883,11 +884,18 @@ The ERBB2-model shows the highest rho value of all four models, but ~ 0.1 is a r
 
 The rho value of the MYCBP-model leads to very weak negative correlation. A p-value of ~ 0.78 leads to confident acceptance of H0.
 
+```{r ResidHomo, eval=TRUE, echo=FALSE, fig.cap="_Fig. 8_ Residual distribution histograms and homoscedasticity plots for all four models", out.width = '100%', fig.align = "center"}
+knitr::include_graphics("Resid-Homo_Plots.png")
+```
 For the PARP10-model, the rho value of ~ -0.68 is a moderate negative relationship. The p-value leads to acceptance of H0 and is lowest with ~ 0.11. But even if we would raise the confidence level to 0.10 (which would be questionable in statistics), the result wouldn?t be significant to accept H1.
     
 The rho value of the PIK3CA-model leads to very weak negative correlation. A p-value of ~ 0.78  leads to confident acceptance of H0.
 
 The models for MYCBP and PIK3CA only showed weak, negative correlation, which is not useful for further work with this model.
+
+```{r Spearman, eval=TRUE, echo=FALSE, fig.cap="_Fig. 9_ Comparing distribution of predicted and observed CERES scores by Spearman correlation", out.width = '100%', fig.align = "center"}
+knitr::include_graphics("Spearman_Plots1.png")
+```
 The PARP10 model resulted in a moderate negative relationship, which is not of relevance for our objective.
 The ERBB2 model did not deliver a significant p-value, but indeed contains at least a weak positive correlation.
 
