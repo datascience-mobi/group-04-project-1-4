@@ -473,7 +473,7 @@ data_clus_3e["Driver mutation"] <- sapply(1:nrow(data_clus_3), function(j){
 
 CERES scores and expression in TPM values for the selected four driver mutations were visualised as box and whisker plots. Following the generation of the `GOI_X` dataframe containing either CERES or TPM values for the four mutations, the data was reshaped to contain two columns. One column being "variable" with the names of driver mutations, the other "value" with the corresponding CERES or TPM value. The ggplot function, part of the ggplot2 package, was used to plot the following box an whisker plots. 
 
-```{r data visualisation, fig.align = 'center', fig.cap= "_Fig. 6_ Boxplot of CERES and Expression values of selected driver mutations", warning=FALSE}
+```{r data visualisation, fig.align = 'center', fig.cap= "_Fig. 6_ Boxplot of CERES values of selected driver mutations", warning=FALSE}
 
 #CERES_boxplot
 GOI= BCCL_kd.ceres[c("ERBB2","MYCBP", "PARP10", "PIK3CA"),]
@@ -494,8 +494,9 @@ CERES_boxplot = ggplot(CERES_driver_mut, aes(x = variable, y = value)) +
                   axis.title.x = element_text(),
                   strip.text.y = element_text(angle = 0))
 CERES_boxplot
+```
 
-  
+```{r data visualisation 2, fig.align= "center", fig.cap="_Fig. 7_ Boxplot of Expression values of selected driver mutations", warning=FALSE}
 #Expression_boxplot
 GOI_Exp= BCCL_Expression[c("ERBB2","MYCBP", "PARP10", "PIK3CA"),]
 Expression_driver_mut= melt(GOI_Exp)
