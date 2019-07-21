@@ -766,13 +766,16 @@ Then the function constructs a regression model with training data to predict DV
 Later on, the function runs the test data on model for performance evaluation and finally calculates and plots the Spearman correlation to further asses model performance.
 
 For the Spearman correlation, the rank-correlation coefficient can take values from +1 to -1.
+
 + rho ~ 1: perfect positive association of ranks
 + rho ~ 0: no association of ranks
 + rho ~ -1: perfect negative association of ranks
 
 To further interpretate the p-value, we construct a H0 / H1 hypothesis:
+
 + H0: There is no association between the predicted and observed variable.
 + H1: There is an association between the predicted and observed variable.
+
 Most importantly, it is not possible to assess the strength of the correlation based on the p-value. It rather judges the statistical test than the resulting value. As default, we set the significance level to 0.05.
 
 Subsequently, the latter values will be evaluated for the different models. In case of a positive correlation, two variables move in the same direction. For a well-designed model, we expect the predicted and observed CERES scores to be approximately the same. Thus, optimal model design is achieved if the correlation coefficient is close to 1 and the p-value p < 0.05.
@@ -845,7 +848,7 @@ correlations <- lapply(seq_along(plottingData), function(a) {
   return(corVal)
 })
 names(correlations) <- drivermut
-correlations #Look at the dat
+correlations #Look at the data
 ```
 All four models were tested on the assumptions. The following table provides a quick overview of whether constructed assumptions were met (yes) or not (no). For multicollinarity, all models met the condition r < 0.8 for all variables.
 
@@ -881,7 +884,7 @@ The ERBB2-model shows the highest rho value of all four models, but ~ 0.1 is a r
 
 The rho value of the MYCBP-model leads to very weak negative correlation. A p-value of ~ 0.78 leads to confident acceptance of H0.
 
-For the PARP10-model, the rho value of ~ -0.67 is a moderate negative relationship. The p-value leads to acceptance of H0 and is lowest with ~ 0.11. But even if we would raise the confidence level to 0.10 (which would be questionable in statistics), the result wouldn?t be significant to accept H1.
+For the PARP10-model, the rho value of ~ -0.68 is a moderate negative relationship. The p-value leads to acceptance of H0 and is lowest with ~ 0.11. But even if we would raise the confidence level to 0.10 (which would be questionable in statistics), the result wouldn?t be significant to accept H1.
     
 The rho value of the PIK3CA-model leads to very weak negative correlation. A p-value of ~ 0.78  leads to confident acceptance of H0.
 
