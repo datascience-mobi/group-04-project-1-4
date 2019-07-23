@@ -379,10 +379,10 @@ paged_table(as.data.frame(mutImpact))
 
 In order to verify our selection of DVs from literature research, k means clustering of CERES scores was performed. Suitable DVs were expected to be found in the same cluster based on scaled CERES scores, since in this way equal effects on cell viability can be ensured. 
 
-K means clustering was performed with all genes mutated at least once in 28 cell line samples and whose CERES score is not greater than zero. For this, all genes with only NA values (hence, not mutated in the `MutImpact Matrix`) were removed. A new dataframe `BCCL_kd.ceres_2`was generated containing all 28 CERES scores for each gene, with gene names in the first column. These names were compared to the rownames of `mutImpact_c` to generate the `BCCL_kd.ceres_3` dataframe. The resulting dataframe contains CERES scores of all genes mutated at least once for each breast cell cancer lines. Subsequently, the average mean CERES score for each gene was computed using the `rowMeans` function and stored in the last column. To carry out this step, the column `rownameskdc2` was removed. Finally, all genes with CERES scores > 0 were deleted. The final `BCCL_kd.ceres_3` dataframe consisted of 4934 genes mutated at least once in the 28 breast cancer cell lines and with mean CERES scores equal to or below 0. 
+K means clustering was performed with all genes mutated at least once in 28 cell line samples and whose CERES score is not greater than zero. For this, all genes with only NA values (hence, not mutated in the `MutImpact Matrix`) were removed. A new dataframe `BCCL_kd.ceres_2`was generated containing all 28 CERES scores for each gene, with gene names in the first column. These names were compared to the rownames of `mutImpact_c` to generate the `BCCL_kd.ceres_3` dataframe. The resulting dataframe contains CERES scores of all genes mutated at least once for each breast cell cancer lines. Subsequently, the average mean CERES score for each gene was computed using the `rowMeans` function and stored in the last column. To carry out this step, the column `rownameskdc2` was removed. Finally, all genes with CERES scores > 0 were deleted. The final `BCCL_kd.ceres_3` dataframe consists of 4934 genes mutated at least once in the 28 breast cancer cell lines and with mean CERES scores equal to or below 0. 
 
 ```{r}
-#Selecting only genes mutated at least once and with Ceres <= 0
+#Selecting only genes mutated at least once and with CERES <= 0
 mutImpact_c = mutImpact[rowSums(is.na(mutImpact)) != ncol(mutImpact),] #Remove all genes with all NA values
 rownamesmutImpc = rownames(mutImpact_c)
 mutImpact_c = cbind(rownamesmutImpc, mutImpact_c[,2:ncol(mutImpact_c)]) #Insert new column with row names
@@ -395,11 +395,11 @@ BCCL_kd.ceres_3 = cbind(BCCL_kd.ceres_3, rowMeans(BCCL_kd.ceres_3))[rowMeans(cbi
 dim(BCCL_kd.ceres_3)
 ```
 
-In preparation of k means clustering, the column containing average CERES scores for each gene was removed (new dataframe `BCCL_kd.ceresKS`) and the optimal number of k clusters identified. For each column (cell sample) of the dataframe, the values were scaled. For cluster numbers between 2 and 15 the within sum of squares (WSS) for each cell sample was calculated and stored as a separate dataframe. To ensure that the same result is obtained each time the code is run, the set.seed(1234) function was used.  
+In preparation of k means clustering, the column containing average CERES scores for each gene was removed (new dataframe `BCCL_kd.ceresKS`) and the optimal number of k clusters identified. For each column (cell sample) of the dataframe, the values were scaled. For cluster numbers between 2 and 15 the within sum of squares (WSS) for each cell sample was calculated and stored as a separate dataframe. To ensure that the same result is obtained each time the code is run, the `set.seed(1234)` function was used.  
 
 ```{r warning=FALSE}
 #Determine optimal cluster number k
-BCCL_kd.ceresKS = BCCL_kd.ceres_3[,-c(28)] #Remove column of average CERES value column 
+BCCL_kd.ceresKS = BCCL_kd.ceres_3[,-c(28)] #Remove column of average CERES value 
 
 CERES_Optimal_K <- function(BCCL_kd.ceresKS, specifier) {
   output <- lapply(1:ncol(BCCL_kd.ceresKS), function(a){
@@ -407,7 +407,7 @@ CERES_Optimal_K <- function(BCCL_kd.ceresKS, specifier) {
    wss <-(nrow(df-1))*sum(apply(df,2,var)) #Define method of wss computation 
    for (i in 2:15){ #For k between 2 and 15
      set.seed(1234) #To ensure reproducability of results 
-     wss[i] <- sum(kmeans(df, centers = i)$withinss)
+     wss[i] <- sum(kmeans(df, centers = i)$withinss) #sum for total within sum squares value
      } 
    return(wss)
   })
@@ -418,10 +418,10 @@ return(output)
 BCCL_kd.ceres_optKS <- CERES_Optimal_K(BCCL_kd.ceresKS, "CERES Optimal Clusters k") 
 ```
 
-To enable the plotting of within sum square values for clusters from 2 to 15 for each breast cancer cell, each vector was individually picked and formatted into a dataframe. The cell sample name was then added as a label in a new column "Cell_Sample" and the cluster numbers from 2 to 15 in the column "OptimalK".
-The output of this lapply function (`optimalKprocessedData`), a list of 28 dataframes, was then combined into one and columns renamed accordingly. Subsequently, the ggplot function was used to plot all data stored in `optimalKprocessedData` in one plot. 
+To enable the plotting of within sum square values for clusters from 2 to 15 for each breast cancer cell, each vector was individually picked and formatted into a dataframe. The cell sample name was then added as a label in a new column `Cell_Sample`" and the cluster numbers from 2 to 15 in the column `OptimalK`.
+The output of this `lapply` function (`optimalKprocessedData`), a list of 28 dataframes, was then combined into one and columns renamed accordingly. Subsequently, the ggplot function was used to plot all data stored in `optimalKprocessedData` in one plot. 
 
-```{r warning=FALSE, fig.align="center", fig.cap="_Fig. 4_ Optimal number of clusters k using WSS of each BBCLs"}
+```{r warning=FALSE, fig.align="center", fig.cap="_Fig. 4_ Optimal number of clusters k using WSS of each BCCLs"}
 #Plotting wss function 
 optimalKprocessedData <- lapply(seq_along(BCCL_kd.ceres_optKS), function(a){
   dtPicker <- as.data.frame(BCCL_kd.ceres_optKS[[a]]) #One vector picked and formatted into dataframe
@@ -446,7 +446,7 @@ ggplot(data = optimalKprocessedData, aes(x=OptimalK, y=WSS)) +
                   strip.text.y = element_text(angle = 0))
 ```
 
-From this plot it is evident that the optimal cluster number lies between 2 and 4 if the elbow method is applied. To verify this result and to determine a precise number of optimal cluster, an alternative plotting method calculating the average WSS for cluster numbers between 2 and 15 for all 28 cell samples was performed and with this the optimal cluster number k was identified to be 4. Thus, k means clustering of the data stored in `BCCL_kd.ceres_3` was performed with 10 iterations. The following cluster plot was generated.
+From this plot it is evident that the optimal cluster number lies between 2 and 4 if the elbow method is applied. To verify this result and to determine a precise number of optimal clusters, an alternative plotting method calculating the average WSS for cluster numbers between 2 and 15 for all 28 cell samples was performed and with this the optimal cluster number k was identified to be 4. Thus, k means clustering of the data stored in `BCCL_kd.ceres_3` was performed with 10 iterations. The following cluster plot was generated.
 
 ```{r warning=FALSE, fig.align="center", fig.cap="_Fig. 5_ K means cluster plot"}
 km_CERES= kmeans(x = BCCL_kd.ceres_3, centers = 4, nstart = 10)
@@ -454,7 +454,7 @@ table(km_CERES$cluster)
 fviz_cluster(km_CERES, data=BCCL_kd.ceres_3, labelsize = 6) #Plotting clusters
 ```
 
-In order to verify our selection of driver mutations from literature, the cluster number of each DV was identified. All selected DVs from literature,"ERBB2", "MYCBP", "PARP10" and "PIK3CA" were colocalized in cluster 3, hence with similar CERES scores, with the exception of "CCND" and "ERBBIP". While "CCND" was removed in the filtering process (removal of not mutated genes and genes with CERES >0) and no longer found in`BCCL_kd.ceres_3`, "ERBB2IP" was found in cluster 2. For these reasons the two mentioned mutations were excluded from further analysis, to leave only "ERBB2", "MYCBP", "PARP10" and "PIK3CA" as selected driver mutations.
+In order to verify our selection of driver mutations from literature, the cluster number of each DV was identified. All selected DVs from literature, "ERBB2", "MYCBP", "PARP10" and "PIK3CA" were colocalized in cluster 3, hence with similar CERES scores, with the exception of "CCND" and "ERBBIP". While "CCND" was removed in the filtering process (removal of not mutated genes and genes with CERES >0) and no longer found in`BCCL_kd.ceres_3`, "ERBB2IP" was found in cluster 2. For these reasons the two mentioned mutations were excluded from further analysis, to leave only "ERBB2", "MYCBP", "PARP10" and "PIK3CA" as selected driver mutations.
 
 ```{r warning=FALSE}
 driver_mut <- c("ERBB2","ERBB2IP", "MYCBP", "PARP10", "PIK3CA") #Enter DVs
@@ -475,7 +475,7 @@ rownames(data_cluster) = rownames(BCCL_kd.ceres_3)
 data_clus_3 = BCCL_kd.ceres_3[data_cluster == 3,] #Dataframe with all 1148 genes in same cluster as DVs 
 ```
 
-A further dataframe `data_clus_3e` was subsequently generated labelling the four driver mutations in a separate column, by implementing an "if" loop. If a rowname of `data_clus_3e`was found in a previously created vector containing driver mutations names (`drivermut`), it was labelled as "driver mutation". Otherwise genes were labelled as "no driver mutation".
+A further dataframe `data_clus_3e` was then generated labelling the four driver mutations in a separate column, by implementing an "if" loop. If a rowname of `data_clus_3e`was found in a previously created vector containing driver mutations names (`drivermut`), it was labelled as "driver mutation". Otherwise genes were labelled as "no driver mutation".
 
 ```{r Labeling driver mutations, warning=FALSE}
 drivermut =  c("ERBB2","MYCBP", "PARP10", "PIK3CA") #Create vector with DV names
@@ -492,7 +492,7 @@ data_clus_3e["Driver mutation"] <- sapply(1:nrow(data_clus_3), function(j){
 
 ### Data visualisation of CERES and TPM values for selected driver mutations 
 
-CERES scores and expression in TPM values for the selected four DVs were visualised as box and whisker plots. Following the generation of the `GOI_X` dataframe containing either CERES or TPM values for the four mutations, the data was reshaped to contain two columns. One column being "variable" with the names of DVs, the other "value" with the corresponding CERES or TPM value. The ggplot function, part of the ggplot2 package, was used to plot the following box an whisker plots. 
+CERES scores and expression in TPM values for the selected four DVs were visualised as box and whisker plots. Following the generation of the `GOI_X` dataframe containing either CERES or TPM values for the four mutations, the data was reshaped to contain two columns. One column being "variable" with the names of DVs, the other "value" with the corresponding CERES or TPM value. The ggplot function, part of the ggplot2 package, was used to plot the following box and whisker plots. 
 
 ```{r data visualisation, fig.align = 'center', fig.cap= "_Fig. 6_ Boxplot of CERES values of selected driver mutations", warning=FALSE}
 
@@ -649,7 +649,7 @@ names(SST_Data) <- drivermut
 
 ### Characterization of second-site targets
 
-In order to characterize the SSTs, additional information on each SST was retrieved from the original dataset as well as from literatre research and added to the dataframes in `SST_Data`.
+In order to characterize the SSTs, additional information on each SST was retrieved from the original dataset as well as from literature research and added to the dataframes in `SST_Data`.
 
 First, the type of mutation was examined for each SST and each cell line in which it was mutated. For this purpose a nested `apply` construction was used. Initially, a dataframe of one DV was chosen and the new column `mutType` was generated by a `sapply` loop. Thus, upon iterating the SST candidates the mutation status of each SST in each cell line was determined by inspecting the presence of the SST in the list of mutated genes for each cell line. If the SST candidate was mutated in a given cell line its type of mutation (stored in the `BCCL_Mutation` list as `Variant_Classification`) was obtained and saved in a temporary vector to which all possible types of mutations were collected for each SST. Finally, this vector was concatenated as a string, which was assigned to the `mutType` column.
 
@@ -698,8 +698,8 @@ paged_table(SST_Data$PIK3CA) #Have a look at the SSTs
 
 All 67 confirmed SSTs were investigated for already existing drugs and disease associations. In general, SSTs revealed a broad status of knowledge, ranging from genes not associated with any disease to genes with an approved drug available. We divided our SSTs up into three classes: class 1 containing genes already associated with at least one type of breast cancer, class 2 consisting of genes with associations to at least one cancer type and class 3 inlcuding genes with no known connection to cancer. 
 
-The largest group were SSTs of class 1, containing 43 genes followed by class 2 genes with 20 members. The third class was the smallest containing only 4 genes. This demonstrates that our findings are consistent with the research conducted by goups worldwide. However, all SSTs except for PDGFRA are not targetable by a drug on the market(Jones et al., 2006). For further investigations we decided to include only those SSTs associated to more than 40 types of cancer or showing interesting characteristics, e.g. appearance as an SST for more than one DV. From this knowledge, we aim to recommend experimental research for three to five SSTs.
-From twelve candidates being left from th filtering a few are known to be tumorsupressor genes (e.g. APC, FANCA) and therefore not followed up further. Others were only active in neuroectodermal tumors and not in breast cancer. Therefore the following top four SST candidates for experimental drug research were found to be:
+The largest group were SSTs of class 1, containing 43 genes followed by class 2 genes with 20 members. The third class was the smallest containing only 4 genes. This demonstrates that our findings are consistent with the research conducted by goups worldwide. However, all SSTs except for PDGFRA are not targetable by a drug on the market (Jones et al., 2006). For further investigations we decided to include only those SSTs associated to more than 40 types of cancer or showing interesting characteristics, e.g. appearance as an SST for more than one DV. From this knowledge, we aim to recommend experimental research for three to five SSTs.
+From twelve candidates being left from the filtering a few are known to be tumorsuppressor genes (e.g. APC, FANCA) and therefore not followed up further. Others were only active in neuroectodermal tumors and not in breast cancer. Therefore the following top four SST candidates for experimental drug research were found to be:
 
 **TNS3**: verified SST for ERBB2 and PARP10. It is suggested to play a role in actin remodeling and associated with 47 tumor diseases[^1].
 
